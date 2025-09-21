@@ -4,7 +4,7 @@ import '../css/post.css'
 
 import { ReactNode, useRef, useState, useEffect } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors } from 'contentlayer/generated'
+// import type { Blog, Authors } from 'contentlayer/generated'
 import SectionContainer from '@/components/SectionContainer'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import FAQHeader, { AuthorProps } from '@/components/FAQHeader/FAQHeader'
@@ -25,8 +25,8 @@ export interface RelatedArticleProps {
 }
 
 interface LayoutProps {
-  content: CoreContent<Blog>
-  authorDetails: CoreContent<Authors>[]
+  content: CoreContent<any>
+  authorDetails: CoreContent<any>[]
   authors: string[]
   children: ReactNode
   toc: tocItemProps[]
@@ -34,7 +34,7 @@ interface LayoutProps {
 }
 
 export default function FAQLayout({ content, authors, children, toc }: LayoutProps) {
-  const { slug, date, title, tags, readingTime, relatedArticles } = content
+  // const { slug, date, title, tags, readingTime, relatedArticles } = content
   const mainRef = useRef<HTMLElement | null>(null)
   const [isTocVisible, setIsTocVisible] = useState(true)
   const lastScrollY = useRef(0)
@@ -72,14 +72,14 @@ export default function FAQLayout({ content, authors, children, toc }: LayoutPro
       <SectionContainer>
         <ScrollTopAndComment />
 
-        <FAQHeader
+        {/* <FAQHeader
           title={title}
           tags={tags}
           authors={authors}
           publishedDate={date}
           readingTime={readingTime.text}
           key={slug}
-        />
+        /> */}
         <ProgressBar target={mainRef} />
         <div className="post container flex flex-row-reverse overflow-clip">
           <div
@@ -109,9 +109,9 @@ export default function FAQLayout({ content, authors, children, toc }: LayoutPro
             </div>
           </div>
         </div>
-        {relatedArticles && Array.isArray(relatedArticles) && (
+        {/* {relatedArticles && Array.isArray(relatedArticles) && (
           <RelatedArticles relatedArticles={relatedArticles} />
-        )}
+        )} */}
       </SectionContainer>
 
       

@@ -4,7 +4,7 @@ import '../css/post.css'
 
 import { ReactNode, useRef, useState, useEffect } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors } from 'contentlayer/generated'
+// import type { Blog, Authors } from 'contentlayer/generated'
 import SectionContainer from '@/components/SectionContainer'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import BlogHeader from '@/components/BlogHeader/BlogHeader'
@@ -24,8 +24,8 @@ export interface RelatedArticleProps {
 }
 
 interface LayoutProps {
-  content: CoreContent<Blog>
-  authorDetails: CoreContent<Authors>[]
+  content: CoreContent<any>
+  authorDetails: CoreContent<any>[]
   authors: string[]
   children: ReactNode
   toc: tocItemProps[]

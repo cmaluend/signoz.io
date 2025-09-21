@@ -4,14 +4,14 @@ import { slug } from 'github-slugger'
 import { escape } from 'pliny/utils/htmlEscaper.js'
 import siteMetadata from '../data/siteMetadata.js'
 import tagData from '../app/tag-data.json' assert { type: 'json' }
-import {
-  allBlogs,
-  allDocs,
-  allComparisons,
-  allGuides,
-  allOpentelemetries,
-  allFAQs,
-} from '../.contentlayer/generated/index.mjs'
+// import {
+//   allBlogs,
+//   allDocs,
+//   allComparisons,
+//   allGuides,
+//   allOpentelemetries,
+//   allFAQs,
+// } from '../.contentlayer/generated/index.mjs'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
 const generateRssItem = (config, post) => {
@@ -24,13 +24,13 @@ const generateRssItem = (config, post) => {
 
   return `
   <item>
-    <guid>${config.siteUrl}/${urlPath}/${post.slug}</guid>
-    <title>${escape(post.title)}</title>
-    <link>${config.siteUrl}/${urlPath}/${post.slug}</link>
-    ${post.summary || post.description ? `<description>${escape(post.summary || post.description)}</description>` : ''}
-    <pubDate>${new Date(post.date).toUTCString()}</pubDate>
-    <author>${config.email} (${config.author})</author>
-    ${post.tags ? post.tags.map((t) => `<category>${t}</category>`).join('') : ''}
+    <guid>${config.siteUrl}/${urlPath}/${post?.slug}</guid>
+    <title>${escape(post?.title)}</title>
+    <link>${config.siteUrl}/${urlPath}/${post?.slug}</link>
+    ${post?.summary || post?.description ? `<description>${escape(post?.summary || post?.description)}</description>` : ''}
+    <pubDate>${new Date(post?.date).toUTCString()}</pubDate>
+    <author>${config?.email} (${config?.author})</author>
+    ${post?.tags ? post?.tags.map((t) => `<category>${t}</category>`).join('') : ''}
   </item>
 `
 }
@@ -44,7 +44,7 @@ const generateRss = (config, posts, page = 'feed.xml') => `
       <language>${config.language}</language>
       <managingEditor>${config.email} (${config.author})</managingEditor>
       <webMaster>${config.email} (${config.author})</webMaster>
-      <lastBuildDate>${new Date(posts[0].date).toUTCString()}</lastBuildDate>
+      <lastBuildDate>${new Date(posts[0]?.date).toUTCString()}</lastBuildDate>
       <atom:link href="${config.siteUrl}/${page}" rel="self" type="application/rss+xml"/>
       ${posts.map((post) => generateRssItem(config, post)).join('')}
     </channel>
@@ -61,7 +61,7 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 
   if (publishPosts.length > 0) {
     for (const tag of Object.keys(tagData)) {
-      const filteredPosts = allBlogs.filter((post) => post.tags.map((t) => slug(t)).includes(tag))
+      const filteredPosts = allBlogs.filter((post) => post?.tags.map((t) => slug(t)).includes(tag))
       const rss = generateRss(config, filteredPosts, `tags/${tag}/${page}`)
       const rssPath = path.join('public', 'tags', tag)
       mkdirSync(rssPath, { recursive: true })
@@ -71,7 +71,7 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 }
 
 const rss = () => {
-  generateRSS(siteMetadata, [...allBlogs, ...allComparisons, ...allGuides, ...allOpentelemetries, ...allDocs, ...allFAQs])
+  generateRSS(siteMetadata, [])
   console.log('RSS feed generated...')
 }
 

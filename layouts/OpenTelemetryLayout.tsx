@@ -2,7 +2,7 @@
 
 import { ReactNode, useRef, useState, useEffect } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors } from 'contentlayer/generated'
+// import type { Blog, Authors } from 'contentlayer/generated'
 import SectionContainer from '@/components/SectionContainer'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import { ProgressBar } from '@/components/ProgressBar/ProgressBar'
@@ -15,14 +15,14 @@ import MobileAuthorInfo from '@/components/MobileAuthorInfo/MobileAuthorInfo'
 import NewsletterSubscription from '@/components/NewsletterSubscription/NewsletterSubscription'
 
 // Extend the Blog type to include CTA fields
-interface OpenTelemetryContent extends Blog {
+interface OpenTelemetryContent {
   cta_title?: string
   cta_text?: string
 }
 
 interface LayoutProps {
   content: CoreContent<OpenTelemetryContent>
-  authorDetails: CoreContent<Authors>[]
+  authorDetails: CoreContent<any>[]
   authors: string[]
   children: ReactNode
   toc: TocItemProps[]
@@ -41,7 +41,7 @@ export default function OpenTelemetryLayout({
   children,
   toc,
 }: LayoutProps) {
-  const { slug, date, title, tags, readingTime, cta_title, cta_text, relatedArticles } = content
+  // const { slug, date, title, tags, readingTime, cta_title, cta_text, relatedArticles } = content
   const mainRef = useRef<HTMLElement | null>(null)
   const tocContainerRef = useRef<HTMLDivElement>(null)
   const [activeSection, setActiveSection] = useState<string>('')
@@ -79,7 +79,7 @@ export default function OpenTelemetryLayout({
     <main ref={mainRef}>
       <ScrollTopAndComment />
 
-      <OpenTelemetryBanner title={title} date={date} readingTime={readingTime.text} tags={tags} />
+      {/* <OpenTelemetryBanner title={title} date={date} readingTime={readingTime.text} tags={tags} /> */}
 
       <SectionContainer>
         <div className="post relative flex 2xl:max-w-[90rem]">
@@ -146,30 +146,30 @@ export default function OpenTelemetryLayout({
         {/* Bottom sections */}
         <div className="my-12 px-4 md:px-6">
           {/* Related Articles Section */}
-          {relatedArticles && Array.isArray(relatedArticles) && relatedArticles.length > 0 && (
+          {/* {relatedArticles && Array.isArray(relatedArticles) && relatedArticles.length > 0 && ( */}
             <div className="pt-16">
               <div className="mx-auto flex max-w-4xl flex-col items-start justify-between lg:flex-row">
                 <h2 className="mb-6 w-full text-xl font-semibold text-white lg:mb-0 lg:w-1/3">
                   Related Articles
                 </h2>
                 <div className="w-full space-y-4 lg:w-2/3">
-                  {relatedArticles.slice(0, 2).map((article, index) => (
-                    <TrackingLink
+                  {/* {relatedArticles.slice(0, 2).map((article, index) => ( */}
+                    {/* <TrackingLink
                       key={index}
-                      href={article.url}
+                      href={article?.url}
                       target="_blank"
                       clickType="Nav Click"
                       clickName="Related Article Link"
-                      clickText={article.title}
+                      clickText={article?.title}
                       clickLocation="Blog Related Articles"
                       className="group flex items-center justify-between rounded-lg border border-signoz_ink-300 bg-signoz_ink-400/50 p-4 transition-colors hover:border-signoz_robin-500 md:p-6"
                     >
                       <div>
                         <h3 className="text-base font-medium text-white md:text-lg">
-                          {article.title}
+                          {article?.title}
                         </h3>
                         <p className="mt-2 text-sm text-gray-400">
-                          {new Date(article.publishedOn).toLocaleDateString('en-US', {
+                          {new Date(article?.publishedOn).toLocaleDateString('en-US', {
                             month: 'long',
                             day: 'numeric',
                             year: 'numeric',
@@ -180,12 +180,12 @@ export default function OpenTelemetryLayout({
                         size={20}
                         className="text-gray-400 transition-colors group-hover:text-white"
                       />
-                    </TrackingLink>
-                  ))}
+                    </TrackingLink> */}
+                  {/* ))} */}
                 </div>
               </div>
             </div>
-          )}
+          {/* )} */}
         </div>
       </SectionContainer>
       <ProgressBar target={mainRef} />

@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog } from 'contentlayer/generated'
+// import type { Blog } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import React from 'react'
 import BlogPostCard from 'app/resource-center/Shared/BlogPostCard'
@@ -21,9 +21,9 @@ interface PaginationInternalProps extends PaginationProps {
 }
 
 interface GridLayoutProps {
-  posts: CoreContent<Blog>[]
+  posts: CoreContent<any>[]
   title: string
-  initialDisplayPosts?: CoreContent<Blog>[]
+  initialDisplayPosts?: CoreContent<any>[]
   pagination?: PaginationProps
   isDarkMode: boolean
 }
@@ -185,7 +185,7 @@ export default function GridLayout({
 }: GridLayoutProps) {
   const [searchValue, setSearchValue] = useState('')
   const filteredBlogPosts = posts.filter((post) => {
-    const searchContent = post.title + post.summary + post.tags?.join(' ')
+    const searchContent = post.title + post.summary + post.tags?.join(' ') as any
     return searchContent.toLowerCase().includes(searchValue.toLowerCase())
   })
 

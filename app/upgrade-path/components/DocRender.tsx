@@ -1,4 +1,3 @@
-import { allDocs, Doc } from "contentlayer/generated";
 import { coreContent } from "pliny/utils/contentlayer.js";
 import DocContent from "@/components/DocContent/DocContent"
 
@@ -9,7 +8,7 @@ const DocRenderer = ({docUrl, setHasError}: {docUrl: string, setHasError: (hasEr
           .replace(/^\/+/, '')}`
       )
     
-      const post = allDocs?.find((p) => p?.slug === slug) as Doc
+      const post = [].find((p: any) => p?.slug === slug) as any
     
       if (!post) {
         setHasError(true);

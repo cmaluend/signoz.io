@@ -1,13 +1,13 @@
 import { ReactNode } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Newsroom } from 'contentlayer/generated'
+// import type { Blog, Newsroom } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import SectionContainer from '@/components/SectionContainer'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import React from 'react'
 
 interface LayoutProps {
-  content: CoreContent<Blog | Newsroom>
+  content: CoreContent<any>
   children: ReactNode
   next?: { path: string; title: string }
   prev?: { path: string; title: string }

@@ -1,5 +1,4 @@
 import siteMetadata from '@/data/siteMetadata'
-import { Blog, Comparison, Guide, Opentelemetry } from 'contentlayer/generated'
 import Authors from '../../../constants/authors.json'
 import { Clock4 } from 'lucide-react'
 import Link from 'next/link'
@@ -9,7 +8,7 @@ import { formatDate } from 'pliny/utils/formatDate'
 export default function BlogPostCard({
   blog,
 }: {
-  blog: CoreContent<Blog | Comparison | Opentelemetry | Guide>
+  blog: CoreContent<any>
 }) {
   const { path, date, title, authors } = blog
 

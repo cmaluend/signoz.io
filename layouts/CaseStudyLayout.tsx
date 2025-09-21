@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import PageTitle from '@/components/PageTitle'
 import React from 'react'
-import { CaseStudy } from '../.contentlayer/generated'
+// import { CaseStudy } from '../.contentlayer/generated'
 
 export interface tocItemProps {
   url: string
@@ -13,7 +13,7 @@ export interface tocItemProps {
 }
 
 interface CaseStudyLayoutProps {
-  content: CoreContent<CaseStudy>
+  content: CoreContent<any>
   children: ReactNode
   toc: tocItemProps[]
 }

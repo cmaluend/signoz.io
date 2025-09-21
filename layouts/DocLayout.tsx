@@ -4,7 +4,7 @@ import '../css/doc.css'
 
 import { ReactNode, useEffect, useRef } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Doc } from 'contentlayer/generated'
+// import type { Doc } from 'contentlayer/generated'
 import SectionContainer from '@/components/SectionContainer'
 import { ProgressBar } from '@/components/ProgressBar/ProgressBar'
 import React from 'react'
@@ -22,7 +22,7 @@ export interface tocItemProps {
 }
 
 interface LayoutProps {
-  content: CoreContent<Doc>
+  content: CoreContent<any>
   children: ReactNode
   toc: tocItemProps[]
 }

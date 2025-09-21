@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useRef, useState, useEffect } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors } from 'contentlayer/generated'
+// import type { Blog, Authors } from 'contentlayer/generated'
 import SectionContainer from '@/components/SectionContainer'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
 import { ProgressBar } from '@/components/ProgressBar/ProgressBar'
@@ -15,14 +15,14 @@ import MobileAuthorInfo from '@/components/MobileAuthorInfo/MobileAuthorInfo'
 import NewsletterSubscription from '@/components/NewsletterSubscription/NewsletterSubscription'
 
 // Extend the Blog type to include CTA fields
-interface BlogContent extends Blog {
+interface BlogContent {
   cta_title?: string
   cta_text?: string
 }
 
 interface LayoutProps {
   content: CoreContent<BlogContent>
-  authorDetails: CoreContent<Authors>[]
+  authorDetails: CoreContent<any>[]
   authors: string[]
   children: ReactNode
   toc: TocItemProps[]
@@ -41,7 +41,7 @@ export default function GuidesLayout({
   children,
   toc,
 }: LayoutProps) {
-  const { slug, date, title, tags, readingTime, cta_title, cta_text, relatedArticles } = content
+  // const { slug, date, title, tags, readingTime, cta_title, cta_text, relatedArticles } = content
   const mainRef = useRef<HTMLElement | null>(null)
   const tocContainerRef = useRef<HTMLDivElement>(null)
   const [activeSection, setActiveSection] = useState<string>('')
@@ -79,7 +79,7 @@ export default function GuidesLayout({
     <main ref={mainRef}>
       <ScrollTopAndComment />
 
-      <BlogBanner title={title} date={date} readingTime={readingTime.text} tags={tags} />
+      {/* <BlogBanner title={title} date={date} readingTime={readingTime.text} tags={tags} /> */}
 
       <SectionContainer>
         <div className="post relative flex 2xl:max-w-[90rem]">
@@ -126,7 +126,7 @@ export default function GuidesLayout({
         {/* Bottom sections */}
         <div className="my-12 px-4 md:px-6">
           {/* Related Articles Section */}
-          {relatedArticles && Array.isArray(relatedArticles) && relatedArticles.length > 0 && (
+          {/* {relatedArticles && Array.isArray(relatedArticles) && relatedArticles.length > 0 && (
             <div className="pt-16">
               <div className="mx-auto flex max-w-4xl flex-col items-start justify-between lg:flex-row">
                 <h2 className="mb-6 w-full text-xl font-semibold text-white lg:mb-0 lg:w-1/3">
@@ -165,7 +165,7 @@ export default function GuidesLayout({
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </SectionContainer>
       <ProgressBar target={mainRef} />
