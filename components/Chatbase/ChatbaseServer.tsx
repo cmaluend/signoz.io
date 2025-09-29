@@ -21,7 +21,7 @@ export default async function ChatbaseServer({
   const secret = process.env.CHATBASE_SECRET_KEY
 
   if (!secret) {
-    console.warn('CHATBASE_SECRET_KEY not found in environment variables')
+    // console.warn('CHATBASE_SECRET_KEY not found in environment variables')
     return (
       <>
         <ChatbaseCookieSync />

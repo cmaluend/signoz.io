@@ -233,3 +233,174 @@ export const fetchChangelogById = async (
     throw error
   }
 }
+
+// MDX Content schema
+export type MDXContent = {
+  id: number
+  documentId: string
+  title: string
+  slug: string
+  path: string
+  content: string
+  excerpt?: string
+  publishedAt: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type MDXContentApiResponse = {
+  data: MDXContent[]
+  meta: {
+    pagination: {
+      page: number
+      pageSize: number
+      pageCount: number
+      total: number
+    }
+  }
+}
+
+export type MDXContentByIdApiResponse = {
+  data: MDXContent
+  meta: {}
+}
+
+// Cache for storing paths to avoid repeated API calls - avoid later maybe
+let pathsCache: string[] | null = null
+let pathsCacheTimestamp: number = 0
+const PATHS_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+// Fetch MDX content by path - has path nesting
+export const fetchMDXContentByPath = async (
+  path: string
+): Promise<MDXContentByIdApiResponse> => {
+  try {
+    // Ensure path starts with a slash and has no trailing slashes
+    const normalizedPath = `/${path.replace(/^\/+|\/+$/g, '')}`
+    console.log('Normalized path for Strapi query:', normalizedPath)
+    
+    const queryObject = {
+      filters: {
+        path: {
+          $eq: normalizedPath,
+        },
+      }
+    }
+
+    const queryParams = qs.stringify(queryObject, {
+      encode: false,
+      addQueryPrefix: true,
+      arrayFormat: 'repeat',
+    })
+
+    if (!API_URL) {
+      throw new Error('NEXT_PUBLIC_SIGNOZ_CMS_API_URL is not configured')
+    }
+
+    const response = await fetch(`${API_URL}/api/mdx-contents${queryParams}`, {
+      next: {
+        revalidate: 3600, // Same as export const revalidate = 3600; in the page
+        tags: [`mdx-content-${path}`]
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Content not found')
+      }
+      const errorMessage = await response.text()
+      throw new Error(`Network response was not ok: ${response.status} ${errorMessage}`)
+    }
+
+    const data: MDXContentApiResponse = await response.json()
+
+    if (!data.data || data.data.length === 0) {
+      throw new Error('Content not found')
+    }
+
+    return {
+      data: data.data[0],
+      meta: {},
+    }
+  } catch (error) {
+    console.error(`Error fetching MDX content by path ${path}:`, error)
+    throw error
+  }
+}
+
+// Fetch all MDX content paths for static generation if needed
+export const fetchAllMDXPaths = async (useCache: boolean = true): Promise<string[]> => {
+  // Check cache first
+  if (useCache && pathsCache && Date.now() - pathsCacheTimestamp < PATHS_CACHE_TTL) {
+    return pathsCache
+  }
+
+  try {
+    const queryObject = {
+      fields: ['path'],
+      pagination: {
+        pageSize: 1000, // TODO: Adjust based on content volume
+      },
+      sort: ['publishedAt:desc'],
+    }
+
+    const queryParams = qs.stringify(queryObject, {
+      encode: false,
+      addQueryPrefix: true,
+      arrayFormat: 'repeat',
+    })
+
+    const response = await fetch(`${API_URL}/api/mdx-contents${queryParams}`, {
+      next: {
+        revalidate: 3600,
+        tags: ['mdx-paths']
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+
+    if (!response.ok) {
+      const errorMessage = await response.text()
+      throw new Error(`Network response was not ok: ${response.status} ${errorMessage}`)
+    }
+
+    const data: MDXContentApiResponse = await response.json()
+    const paths = data.data.map((item) => item.path)
+
+    // Update cache
+    pathsCache = paths
+    pathsCacheTimestamp = Date.now()
+
+    return paths
+  } catch (error) {
+    console.error('Error fetching all MDX paths:', error)
+    // Return cached data if available, otherwise empty array
+    return pathsCache || []
+  }
+}
+
+// Utility function to validate MDX content structure
+export const validateMDXContent = (content: any): content is MDXContent => {
+  return (
+    content &&
+    typeof content.id === 'number' &&
+    typeof content.documentId === 'string' &&
+    typeof content.title === 'string' &&
+    typeof content.slug === 'string' &&
+    typeof content.path === 'string' &&
+    typeof content.content === 'string' &&
+    typeof content.publishedAt === 'string' &&
+    typeof content.createdAt === 'string' &&
+    typeof content.updatedAt === 'string'
+  )
+}
+
+// Clear the paths cache (useful for revalidation)
+export const clearPathsCache = (): void => {
+  pathsCache = null
+  pathsCacheTimestamp = 0
+}
