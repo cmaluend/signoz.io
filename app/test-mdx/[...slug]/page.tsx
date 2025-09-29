@@ -130,13 +130,13 @@ export async function generateMetadata({
       const { data: content } = await fetchMDXContentByPath(path)
 
       return {
-        title: content?.seo?.metaTitle || content.title,
-        description: content?.seo?.metaDescription || content?.excerpt || `Read about ${content.title}`,
-        keywords: content?.seo?.keywords,
+        title: content.title,
+        description: content?.excerpt || `Read about ${content.title}`,
+        // keywords: content?.keywords, // TODO: Add keyword support later
         authors: [{ name: 'SigNoz Team' }],
         openGraph: {
-          title: content?.seo?.metaTitle || content.title,
-          description: content?.seo?.metaDescription || content?.excerpt || `Read about ${content.title}`,
+          title: content.title,
+          description: content?.excerpt || `Read about ${content.title}`,
           type: 'article',
           publishedTime: content?.publishedAt,
           modifiedTime: content?.updatedAt,
@@ -144,8 +144,8 @@ export async function generateMetadata({
         },
         twitter: {
           card: 'summary_large_image',
-          title: content?.seo?.metaTitle || content.title,
-          description: content?.seo?.metaDescription || content?.excerpt || `Read about ${content.title}`,
+          title: content.title,
+          description: content?.excerpt || `Read about ${content.title}`,
         },
       }
     } catch (error) {
