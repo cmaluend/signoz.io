@@ -13,7 +13,6 @@ import { remarkExtractFrontmatter, remarkCodeTitles, remarkImgToJsx } from 'plin
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrismPlus from 'rehype-prism-plus'
-// import rehypePresetMinify from 'rehype-preset-minify' // Temporarily removed due to RSC compatibility issues
 
 // ISR Configuration
 export const revalidate = 3600 // Revalidate every hour
@@ -53,7 +52,6 @@ const mdxOptions = {
         },
       ],
       [rehypePrismPlus, { defaultLanguage: 'tsx', ignoreMissing: true }],
-      // Temporarily removed rehypePresetMinify due to RSC compatibility issues
     ],
   }
 }
@@ -176,7 +174,7 @@ export default async function TestMDXPage({
     // Handle root case (landing page)
     if (!params.slug || params.slug.length === 0) {
       return (
-        <div className="min-h-screen bg-white">something something test here blabla</div>
+        <div className="min-h-screen">something something test here blabla</div>
       )
     }
 
@@ -228,36 +226,25 @@ export default async function TestMDXPage({
       compiledContent = mdxContent
     } catch (error) {
       console.error('Error compiling MDX:', error)
-      // Fallback to raw content display - this should never happen
-      compiledContent = (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h3 className="text-red-800 font-medium mb-2">MDX Compilation Error</h3>
-          <p className="text-red-700 text-sm mb-4">
-            There was an error processing the MDX content. The raw content is displayed below:
-          </p>
-          <pre className="text-xs text-gray-600 bg-white p-2 rounded border overflow-x-auto">
-            {content?.content}
-          </pre>
-        </div>
-      )
+      return notFound()
     }
 
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen">
         <div className="container mx-auto px-4 py-8 max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Main content */}
             <article className="lg:col-span-3">
               <header className="mb-8 pb-8 border-b border-gray-200">
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="text-4xl font-bold mb-4">
                   {content?.title}
                 </h1>
 
                 {content?.excerpt && (
-                  <p className="text-xl text-gray-600 mb-6">{content?.excerpt}</p>
+                  <p className="text-xl mb-6">{content?.excerpt}</p>
                 )}
 
-                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                <div className="flex items-center space-x-4 text-sm">
                   <time dateTime={content?.publishedAt}>
                     Published: {new Date(content?.publishedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
@@ -282,7 +269,7 @@ export default async function TestMDXPage({
               </header>
 
               {/* MDX Content */}
-              <div className="prose prose-lg max-w-none prose-headings:scroll-mt-16">
+              <div className="prose prose-lg max-w-none prose-headings:scroll-mt-16 dark:prose-invert">
                 {compiledContent}
               </div>
             </article>
@@ -291,8 +278,8 @@ export default async function TestMDXPage({
             {toc.length > 0 && (
               <aside className="lg:col-span-1">
                 <div className="sticky top-8">
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="rounded-lg p-6">
+                    <h2 className="text-lg font-semibold mb-4">
                       Table of Contents
                     </h2>
                     <nav>
@@ -307,7 +294,7 @@ export default async function TestMDXPage({
                           >
                             <a
                               href={heading.url}
-                              className="text-gray-600 hover:text-gray-900 transition-colors duration-200 block py-1"
+                              className="transition-colors duration-200 block py-1"
                             >
                               {heading.value}
                             </a>
@@ -315,17 +302,6 @@ export default async function TestMDXPage({
                         ))}
                       </ul>
                     </nav>
-                  </div>
-
-                  {/* Additional sidebar content can go here */}
-                  <div className="mt-6 bg-blue-50 rounded-lg p-6">
-                    <h3 className="text-sm font-semibold text-blue-900 mb-2">
-                      💡 Tip
-                    </h3>
-                    <p className="text-blue-800 text-sm">
-                      This content is served using ISR and will be automatically refreshed every hour.
-                      Use the revalidation API for immediate updates.
-                    </p>
                   </div>
                 </div>
               </aside>
@@ -337,35 +313,6 @@ export default async function TestMDXPage({
 
   } catch (error) {
     console.error('Unexpected error rendering MDX page:', error)
-
-    // Return error fallback instead of notFound for unexpected errors
-    return (
-      <div className="min-h-screen bg-white">
-        <div className="container mx-auto px-4 py-16 max-w-4xl">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-red-600 mb-4">
-              Something went wrong
-            </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              We encountered an unexpected error while loading this page.
-            </p>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-left">
-              <h3 className="text-red-800 font-medium mb-2">Error Details</h3>
-              <pre className="text-sm text-red-700 overflow-x-auto">
-                {error instanceof Error ? error.message : String(error)}
-              </pre>
-            </div>
-            <div className="mt-8">
-              <a
-                href="/"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Go Home
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    return notFound()
   }
 }
