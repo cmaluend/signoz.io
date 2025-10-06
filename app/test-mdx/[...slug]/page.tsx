@@ -6,6 +6,11 @@ import { Metadata } from 'next'
 import readingTime from 'reading-time'
 import GithubSlugger from 'github-slugger'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import 'css/prism.css'
+import 'css/tailwind.css'
+import 'css/post.css'
+import 'css/global.css'
+import 'css/doc.css'
 
 // Remark and rehype plugins
 import remarkGfm from 'remark-gfm'
@@ -269,7 +274,7 @@ export default async function TestMDXPage({
               </header>
 
               {/* MDX Content */}
-              <div className="prose prose-lg max-w-none prose-headings:scroll-mt-16 dark:prose-invert">
+              <div className="prose max-w-none prose-headings:scroll-mt-16 dark:prose-invert">
                 {compiledContent}
               </div>
             </article>
