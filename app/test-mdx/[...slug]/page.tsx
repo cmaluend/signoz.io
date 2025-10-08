@@ -19,10 +19,8 @@ import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrismPlus from 'rehype-prism-plus'
 
-// ISR Configuration
-export const revalidate = 3600 // Revalidate every hour
-export const dynamicParams = true // Allow runtime generation of new paths
-export const dynamic = 'force-static' // Enable static generation with ISR
+export const revalidate = 0
+export const dynamicParams = true
 
 // Heroicon mini link for auto-linking headers
 const linkIcon = fromHtmlIsomorphic(
@@ -85,25 +83,9 @@ function generateTOC(content: string) {
   return headings
 }
 
-// Generate static params for build-time generation (limit to top pages for performance)
+// Generate static params - returning empty array to generate all pages at runtime
 export async function generateStaticParams() {
-  try {
-    const paths = await fetchAllMDXPaths()
-
-    // Limit to top 50 pages to prevent long build times
-    const priorityPaths = paths
-      .slice(0, 50)
-      .map((path) => ({
-        slug: path === '/' ? [] : path.split('/').filter(Boolean),
-      }))
-
-    console.log(`Generated ${priorityPaths.length} static params for build time`)
-    return priorityPaths
-  } catch (error) {
-    console.error('Error generating static params:', error)
-    // Return empty array to allow all pages to be generated on-demand
-    return []
-  }
+  return []
 }
 
 // Generate metadata for SEO optimization
@@ -156,6 +138,10 @@ export async function generateMetadata({
       return {
         title: 'Page Not Found',
         description: 'The requested page could not be found.',
+        robots: {
+          index: false,
+          follow: false,
+        },
       }
     }
   } catch (error) {
@@ -175,149 +161,136 @@ export default async function TestMDXPage({
 }) {
   console.log('Rendering page with params:', params)
 
-  try {
-    // Handle root case (landing page)
-    if (!params.slug || params.slug.length === 0) {
-      return (
-        <div className="min-h-screen">something something test here blabla</div>
-      )
-    }
-
-    const path = params.slug[0] === 'test-mdx' && params.slug.length > 1
-      ? `test-mdx/${params.slug.slice(1).join('/')}`
-      : params.slug.join('/')
-    console.log(`Fetching content for path: ${path}`)
-
-    // Fetch content from Strapi with error handling
-    let content: MDXContent
-    try {
-      if (!process.env.NEXT_PUBLIC_SIGNOZ_CMS_API_URL) {
-        throw new Error('Strapi API URL is not configured')
-      }
-      
-      const response = await fetchMDXContentByPath(path)
-      if (!response || !response.data) {
-        console.error(`Invalid response for path: ${path}`)
-        notFound()
-      }
-      content = response.data
-    } catch (error) {
-      console.error(`Error fetching content for path: ${path}`, error)
-      if (error instanceof Error && error.message.includes('not configured')) {
-        throw error // Re-throw configuration errors
-      }
-      notFound()
-    }
-
-    if (!content) {
-      console.log(`No content returned for path: ${path}`)
-      notFound()
-    }
-
-    console.log(`Successfully fetched content: ${content?.title}`)
-
-    // Generate computed fields similar to contentlayer
-    const readingTimeData = readingTime(content?.content)
-    const toc = generateTOC(content?.content)
-
-    // Compile MDX content with all plugins
-    let compiledContent
-    try {
-      const { content: mdxContent } = await compileMDX({
-        source: content?.content,
-        components,
-        options: mdxOptions as any,
-      })
-      compiledContent = mdxContent
-    } catch (error) {
-      console.error('Error compiling MDX:', error)
-      return notFound()
-    }
-
+  if (!params.slug || params.slug.length === 0) {
     return (
-      <div className="min-h-screen">
-        <div className="container mx-auto px-4 py-8 max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Main content */}
-            <article className="lg:col-span-3">
-              <header className="mb-8 pb-8 border-b border-gray-200">
-                <h1 className="text-4xl font-bold mb-4">
-                  {content?.title}
-                </h1>
+      <div className="min-h-screen">something something test here blabla</div>
+    )
+  }
 
-                {content?.excerpt && (
-                  <p className="text-xl mb-6">{content?.excerpt}</p>
-                )}
+  const path = params.slug.join('/')
+  console.log(`Fetching content for path: ${path}`)
 
-                <div className="flex items-center space-x-4 text-sm">
-                  <time dateTime={content?.publishedAt}>
-                    Published: {new Date(content?.publishedAt).toLocaleDateString('en-US', {
+  // Fetch content from Strapi with error handling
+  let content: MDXContent
+  try {
+    if (!process.env.NEXT_PUBLIC_SIGNOZ_CMS_API_URL) {
+      throw new Error('Strapi API URL is not configured')
+    }
+    
+    const response = await fetchMDXContentByPath(path)
+    if (!response || !response.data) {
+      console.error(`Invalid response for path: ${path}`)
+      notFound()
+    }
+    content = response.data
+  } catch (error) {
+    notFound()
+  }
+
+  if (!content) {
+    console.log(`No content returned for path: ${path}`)
+    notFound()
+  }
+
+  console.log(`Successfully fetched content: ${content?.title} for path: ${path}`)
+
+  // Generate computed fields similar to contentlayer
+  const readingTimeData = readingTime(content?.content)
+  const toc = generateTOC(content?.content)
+
+  // Compile MDX content with all plugins
+  let compiledContent
+  try {
+    const { content: mdxContent } = await compileMDX({
+      source: content?.content,
+      components,
+      options: mdxOptions as any,
+    })
+    compiledContent = mdxContent
+  } catch (error) {
+    console.error('Error compiling MDX:', error)
+    notFound()
+  }
+
+  return (
+    <div className="min-h-screen">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main content */}
+          <article className="lg:col-span-3">
+            <header className="mb-8 pb-8 border-b border-gray-200">
+              <h1 className="text-4xl font-bold mb-4">
+                {content?.title}
+              </h1>
+
+              {content?.excerpt && (
+                <p className="text-xl mb-6">{content?.excerpt}</p>
+              )}
+
+              <div className="flex items-center space-x-4 text-sm">
+                <time dateTime={content?.publishedAt}>
+                  Published: {new Date(content?.publishedAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </time>
+
+                {content?.updatedAt !== content?.publishedAt && (
+                  <span>
+                    Updated: {new Date(content?.updatedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
-                      month: 'long',
+                      month: 'long', 
                       day: 'numeric'
                     })}
-                  </time>
+                  </span>
+                )}
 
-                  {content?.updatedAt !== content?.publishedAt && (
-                    <span>
-                      Updated: {new Date(content?.updatedAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long', 
-                        day: 'numeric'
-                      })}
-                    </span>
-                  )}
-
-                  <span>•</span>
-                  <span>{readingTimeData.text}</span>
-                </div>
-              </header>
-
-              {/* MDX Content */}
-              <div className="prose max-w-none prose-headings:scroll-mt-16 dark:prose-invert">
-                {compiledContent}
+                <span>•</span>
+                <span>{readingTimeData.text}</span>
               </div>
-            </article>
+            </header>
 
-            {/* Sidebar with Table of Contents */}
-            {toc.length > 0 && (
-              <aside className="lg:col-span-1">
-                <div className="sticky top-8">
-                  <div className="rounded-lg p-6">
-                    <h2 className="text-lg font-semibold mb-4">
-                      Table of Contents
-                    </h2>
-                    <nav>
-                      <ul className="space-y-2 text-sm">
-                        {toc.map((heading, index) => (
-                          <li 
-                            key={index} 
-                            className={`${
-                              heading.depth === 2 ? 'ml-0' : 
-                              heading.depth === 3 ? 'ml-4' : 'ml-8'
-                            }`}
+            {/* MDX Content */}
+            <div className="prose max-w-none prose-headings:scroll-mt-16 dark:prose-invert">
+              {compiledContent}
+            </div>
+          </article>
+
+          {/* Sidebar with Table of Contents */}
+          {toc.length > 0 && (
+            <aside className="lg:col-span-1">
+              <div className="sticky top-8">
+                <div className="rounded-lg p-6">
+                  <h2 className="text-lg font-semibold mb-4">
+                    Table of Contents
+                  </h2>
+                  <nav>
+                    <ul className="space-y-2 text-sm">
+                      {toc.map((heading, index) => (
+                        <li 
+                          key={index} 
+                          className={`${
+                            heading.depth === 2 ? 'ml-0' : 
+                            heading.depth === 3 ? 'ml-4' : 'ml-8'
+                          }`}
+                        >
+                          <a
+                            href={heading.url}
+                            className="transition-colors duration-200 block py-1"
                           >
-                            <a
-                              href={heading.url}
-                              className="transition-colors duration-200 block py-1"
-                            >
-                              {heading.value}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </nav>
-                  </div>
+                            {heading.value}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
                 </div>
-              </aside>
-            )}
-          </div>
+              </div>
+            </aside>
+          )}
         </div>
       </div>
-    )
-
-  } catch (error) {
-    console.error('Unexpected error rendering MDX page:', error)
-    return notFound()
-  }
+    </div>
+  )
 }

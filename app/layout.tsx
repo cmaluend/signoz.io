@@ -107,7 +107,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <ThemeProviders>
           <GrowthBookProvider>
-            <Suspense>
+            {/* <Suspense> */}
               <SectionContainer>
                 <div className="relative flex h-screen flex-col justify-between ">
                   <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
@@ -117,7 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <MainFooter />
                 </div>
               </SectionContainer>
-            </Suspense>
+            {/* </Suspense> */}
           </GrowthBookProvider>
         </ThemeProviders>
       </body>
