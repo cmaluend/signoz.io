@@ -1,15 +1,15 @@
 ---
 date: 2025-05-12
 id: traces
-title: Migrate Traces from New Relic
-description: Migrating traces from New Relic to SigNoz. How to migrate APM traces from New Relic to SigNoz.
+title: Switch Traces from New Relic
+description: Switching traces from New Relic to SigNoz. How to switch APM traces from New Relic to SigNoz.
 ---
 
-Migrating distributed tracing from New Relic to SigNoz involves replacing New Relic APM agents with OpenTelemetry instrumentation. This guide will walk you through the process for different scenarios.
+Switching distributed tracing from New Relic to SigNoz involves replacing New Relic APM agents with OpenTelemetry instrumentation. This guide will walk you through the process for different scenarios.
 
 ## Understanding Trace Collection Differences
 
-Before migrating, it's important to understand the key differences between New Relic and SigNoz tracing:
+Before switching, it's important to understand the key differences between New Relic and SigNoz tracing:
 
 | Feature                | New Relic                                | SigNoz                                | Notes                                               |
 |------------------------|------------------------------------------|---------------------------------------|-----------------------------------------------------|
@@ -19,9 +19,9 @@ Before migrating, it's important to understand the key differences between New R
 | **Service Maps**           | Available                                | Available                             | Both provide dependency visualization                |
 | **Span Attributes**        | Custom attributes & dimensions           | OpenTelemetry attributes              | Different naming conventions                         |
 
-## Migration Approaches
+## Switching Approaches
 
-The approach for migrating traces depends on how you're currently collecting traces in New Relic.
+The approach for switching traces depends on how you're currently collecting traces in New Relic.
 
 ### 1. For Applications Already Using OpenTelemetry with New Relic
 
@@ -69,7 +69,7 @@ SigNoz provides detailed instrumentation guides for various languages and framew
 - [.NET](/docs/instrumentation/dotnet)
 - [PHP](/docs/instrumentation/php)
 Check this [document](https://signoz.io/docs/instrumentation/) for a list of languages and frameworks
-#### Example: Migrating from New Relic Java Agent to OpenTelemetry
+#### Example: Switching from New Relic Java Agent to OpenTelemetry
 
 **Step 1**: Remove the New Relic Java agent configuration from your application:
 - Remove the `-javaagent:/path/to/newrelic.jar` JVM argument
@@ -90,7 +90,7 @@ For more detailed instructions, see the [SigNoz Java Instrumentation document](/
 
 ## Attribute Mapping
 
-When migrating from New Relic to SigNoz, you'll need to map [New Relic's span attributes](https://docs.newrelic.com/attribute-dictionary/) to [OpenTelemetry's semantic conventions](https://opentelemetry.io/docs/specs/semconv/general/trace/). Here are some common mappings:
+When switching from New Relic to SigNoz, you'll need to map [New Relic's span attributes](https://docs.newrelic.com/attribute-dictionary/) to [OpenTelemetry's semantic conventions](https://opentelemetry.io/docs/specs/semconv/general/trace/). Here are some common mappings:
 
 | New Relic Attribute           | OpenTelemetry Attribute           |
 |-------------------------------|------------------------------------|
@@ -108,9 +108,9 @@ When migrating from New Relic to SigNoz, you'll need to map [New Relic's span at
 | `span.kind`                   | `span.kind`                        |
 | `peer.hostname`               | `server.address`                   |
 
-## Verifying Trace Migration
+## Verifying Trace Switching
 
-After migrating your instrumentation, verify that traces are being received correctly:
+After switching your instrumentation, verify that traces are being received correctly:
 
 1. Navigate to the **APM** section in SigNoz
 2. Look for your service in the list of services
@@ -118,13 +118,13 @@ After migrating your instrumentation, verify that traces are being received corr
 4. Click on your service to view traces
 5. Verify that spans are being captured correctly with the expected attributes
 
-Compare key metrics between New Relic and SigNoz during the migration period to ensure data consistency.
+Compare key metrics between New Relic and SigNoz during the switching period to ensure data consistency.
 
 ## Next Steps
 
-Once your traces are successfully migrating to SigNoz, consider:
+Once your traces are successfully switching to SigNoz, consider:
 
-- [Creating dashboards](/docs/migration/migrate-from-newrelic/dashboards) with trace-based panels
+- [Creating dashboards](/docs/switch-to-signoz/switch-from-newrelic/dashboards) with trace-based panels
 - [Setting up trace-based alerts](/docs/alerts-management/trace-based-alerts/) for performance and error monitoring
 - [Correlating traces with logs](/docs/logs-pipelines/guides/trace/) for comprehensive troubleshooting
 - [Exploring the Service Map](/docs/userguide/service-map/) to better understand your application architecture

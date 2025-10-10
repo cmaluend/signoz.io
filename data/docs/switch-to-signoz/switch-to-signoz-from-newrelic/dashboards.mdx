@@ -1,8 +1,8 @@
 ---
 date: 2025-05-12
 id: dashboards
-title: Migrate Dashboards from New Relic
-description: Migrating dashboards from New Relic to SigNoz. How to migrate dashboards from New Relic to SigNoz.
+title: Switch Dashboards from New Relic
+description: Switching dashboards from New Relic to SigNoz. How to switch dashboards from New Relic to SigNoz.
 ---
 
 New Relic dashboards need to be recreated in SigNoz due to differences in the dashboard JSON schemas between the platforms. This guide will help you transition your dashboards effectively.
@@ -95,14 +95,14 @@ To create a custom dashboard:
 4. Configure each panel with the appropriate metrics and visualization type
 5. Save your dashboard with a descriptive name
 
-When migrating complex New Relic dashboards, it's helpful to:
+When switching complex New Relic dashboards, it's helpful to:
 - Take screenshots of your New Relic dashboards for reference
 - Note which metrics are used in each panel
 - Identify the equivalent metrics in SigNoz's data model
 
 Please follow [Manage Dashboards in SigNoz documentation](/docs/userguide/manage-dashboards/#steps-to-create-a-custom-dashboard/) for more detailed instructions.
 
-### Migrating Dashboard Variables
+### Switching Dashboard Variables
 
 If your New Relic dashboards use variables for filtering content, you'll need to recreate these in SigNoz:
 
@@ -116,9 +116,9 @@ For more information, see the [Variables documentation](/docs/userguide/manage-v
 
 ## Next Steps
 
-Once your dashboards are successfully migrated to SigNoz, consider:
+Once your dashboards are successfully switched to SigNoz, consider:
 
-- [Migrating additional metrics](/docs/migration/migrate-from-newrelic/metrics) for your dashboards
-- [Setting up alerts](/docs/migration/migrate-from-newrelic/alerts) based on these metrics
-- [Migrating your traces](/docs/migration/migrate-from-newrelic/traces) for end-to-end observability
-- [Migrating your logs](/docs/migration/migrate-from-newrelic/logs) to complete your observability stack
+- [Switching additional metrics](/docs/switch-to-signoz/switch-from-newrelic/metrics) for your dashboards
+- [Setting up alerts](/docs/switch-to-signoz/switch-from-newrelic/alerts) based on these metrics
+- [Switching your traces](/docs/switch-to-signoz/switch-from-newrelic/traces) for end-to-end observability
+- [Switching your logs](/docs/switch-to-signoz/switch-from-newrelic/logs) to complete your observability stack

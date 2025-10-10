@@ -1,15 +1,15 @@
 ---
 date: 2025-05-12
 id: alerts
-title: Migrate Alerts from New Relic
-description: Migrating alerts from New Relic to SigNoz. How to migrate alert configurations from New Relic to SigNoz.
+title: Switch Alerts from New Relic
+description: Switching alerts from New Relic to SigNoz. How to switch alert configurations from New Relic to SigNoz.
 ---
 
-Migrating alerts from New Relic to SigNoz involves recreating your alert conditions and notification channels in the SigNoz platform. This guide will help you transition your alerting setup effectively.
+Switching alerts from New Relic to SigNoz involves recreating your alert conditions and notification channels in the SigNoz platform. This guide will help you transition your alerting setup effectively.
 
 ## Understanding Alert Differences
 
-Before migrating, it's important to understand the key differences between New Relic and SigNoz alerts:
+Before switching, it's important to understand the key differences between New Relic and SigNoz alerts:
 
 | Feature             | New Relic                               | SigNoz                                | Notes                                               |
 |---------------------|----------------------------------------|---------------------------------------|-----------------------------------------------------|
@@ -20,7 +20,7 @@ Before migrating, it's important to understand the key differences between New R
 
 ## Setting Up Notification Channels
 
-Before migrating alerts, you'll need to set up notification channels in SigNoz. Both New Relic and SigNoz support various notification channels, though there are some differences in the available integrations.
+Before switching alerts, you'll need to set up notification channels in SigNoz. Both New Relic and SigNoz support various notification channels, though there are some differences in the available integrations.
 
 ### Notification Channel Comparison
 
@@ -51,7 +51,7 @@ To set up a notification channel in SigNoz:
 
 For detailed setup instructions, refer to the [Alerts Notification Channel](/docs/alerts-management/notification-channel/) documentation.
 
-## Migrating Alert Conditions
+## Switching Alert Conditions
 
 SigNoz provides a comprehensive alert management system that supports:
 
@@ -75,20 +75,20 @@ Here are examples of converting common New Relic NRQL alert conditions to SigNoz
 
 ## Using Terraform for Alert Management
 
-If you manage alert rules as code in New Relic (for example, using `newrelic` Terraform provider), you can continue using the same approach when migrating to SigNoz by utilizing the [SigNoz Terraform Provider](/docs/alerts-management/terraform-provider-signoz/).
+If you manage alert rules as code in New Relic (for example, using `newrelic` Terraform provider), you can continue using the same approach when switching to SigNoz by utilizing the [SigNoz Terraform Provider](/docs/alerts-management/terraform-provider-signoz/).
 
-## Verifying Alert Migration
+## Verifying Alert Switching
 
-After migrating your alerts to SigNoz, verify that they're working correctly:
+After switching your alerts to SigNoz, verify that they're working correctly:
 
 1. Test alerts by temporarily lowering thresholds or triggering test conditions
 2. Verify that notifications are sent to the configured channels
 3. Monitor for any missed alerts during the transition period
-4. Gradually migrate all alerts, starting with non-critical ones
+4. Gradually switch all alerts, starting with non-critical ones
 
 ## Next Steps
 
-Once your alerts are successfully migrated to SigNoz, consider:
+Once your alerts are successfully switched to SigNoz, consider:
 
-- [Migrating dashboards](/docs/migration/migrate-from-newrelic/dashboards) to visualize metrics related to your alerts
+- [Switching dashboards](/docs/switching/switch-from-newrelic/dashboards) to visualize metrics related to your alerts
 - [Configuring maintenance windows](/docs/alerts-management/planned-maintenance/) to manage alert silencing during planned maintenance

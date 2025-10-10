@@ -1,13 +1,13 @@
 ---
 date: 2025-03-27
-id: migrate-from-signoz-self-host-to-signoz-cloud
-title: Migrate from Self-Hosted SigNoz to SigNoz Cloud
-description: Process about how to migrate from Self-Hosted SigNoz to SigNoz Cloud
+id: switch-from-signoz-self-host-to-signoz-cloud
+title: Switch from Self-Hosted SigNoz to SigNoz Cloud
+description: Process about how to switch from Self-Hosted SigNoz to SigNoz Cloud
 ---
 
-## Why Migrate to SigNoz Cloud?
+## Why Switch to SigNoz Cloud?
 
-Migrating to SigNoz Cloud offers a range of benefits that enhance your monitoring and observability experience:
+Switching to SigNoz Cloud offers a range of benefits that enhance your monitoring and observability experience:
 
 - **Simplified Management**: By moving to the cloud, you eliminate the need for manual updates, scaling, and maintenance, ensuring a hassle-free experience.
 
@@ -19,7 +19,7 @@ Migrating to SigNoz Cloud offers a range of benefits that enhance your monitorin
 
 - **Access to New Features**: Get access to the latest SigNoz features and updates automatically with no need to worry about migrations.
 
-## Steps to Migrate from Self-Hosted SigNoz to SigNoz Cloud
+## Steps to Switch from Self-Hosted SigNoz to SigNoz Cloud
 
 <Tabs>
 <TabItem value="own-collector" label="Using OTel Collector Agent" default>
@@ -86,9 +86,9 @@ Replace:
 </TabItem>
 </Tabs>
 
-## Migrate Dashboards & Metadata
+## Switch Dashboards & Metadata
 
-Regardless of your setup, you'll need to migrate your dashboards and configurations:
+Regardless of your setup, you'll need to switch your dashboards and configurations:
 
 - SigNoz support will handle the migration of your metadata, including dashboards, alerts, views, pipelines, users, and other configurations from your self-hosted instance to the cloud.
 - To begin the migration, provide the SQLite DB file from your self-hosted SigNoz instance. This can typically be found in the location where your SigNoz instance stores the database (usually `/path/to/sigNoz/database.db`).
@@ -98,7 +98,7 @@ Regardless of your setup, you'll need to migrate your dashboards and configurati
 ## Verify Migration
 
 - Confirm that data is flowing to SigNoz Cloud
-- Verify all dashboards and metadata have been migrated correctly by checking your cloud tenant.
+- Verify all dashboards and metadata have been switched correctly by checking your cloud tenant.
 
 ## Estimate SigNoz Cloud bill
 

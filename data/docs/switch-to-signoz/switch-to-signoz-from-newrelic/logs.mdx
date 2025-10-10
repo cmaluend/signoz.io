@@ -1,15 +1,15 @@
 ---
 date: 2025-05-12
 id: logs
-title: Migrate Logs from New Relic
-description: Migrating logs from New Relic to SigNoz. How to migrate logs from New Relic to SigNoz.
+title: Switch Logs from New Relic
+description: Switching logs from New Relic to SigNoz. How to switch logs from New Relic to SigNoz.
 ---
 
-Migrating logs from New Relic to SigNoz involves reconfiguring your log collection pipeline to send data to SigNoz instead. This guide covers different approaches based on your current setup.
+Switching logs from New Relic to SigNoz involves reconfiguring your log collection pipeline to send data to SigNoz instead. This guide covers different approaches based on your current setup.
 
 ## Understanding Log Collection Differences
 
-Before migrating, it's important to understand the key differences between New Relic and SigNoz logs:
+Before switching, it's important to understand the key differences between New Relic and SigNoz logs:
 
 | Feature             | New Relic                               | SigNoz                                | Notes                                               |
 |---------------------|----------------------------------------|---------------------------------------|-----------------------------------------------------|
@@ -18,7 +18,7 @@ Before migrating, it's important to understand the key differences between New R
 | **Storage**             | NRDB                                   | ClickHouse                            | Different backend storage                           |
 | **Log Processing**      | Pattern detection, attribute extraction | Log pipelines, structured logging     | Similar capabilities with different implementation  |
 
-## Migration Approaches
+## Switching Approaches
 
 ### 1. Using OpenTelemetry Collector for Logs
 
@@ -87,7 +87,7 @@ If you're already using FluentBit to forward logs to New Relic, you can reconfig
 
 Once FluentBit is configured to forward logs to the OpenTelemetry Collector, you can configure the OpenTelemetry Collector to receive logs from FluentBit following [this guide](/docs/userguide/fluentbit_to_signoz/).
 
-### 3. Migrating from New Relic APM Agent Log Forwarding
+### 3. Switching from New Relic APM Agent Log Forwarding
 
 If your logs were being collected via New Relic APM agents:
 
@@ -137,7 +137,7 @@ This configuration will:
 
 ### New Relic APM Log Format
 
-If you're migrating logs from New Relic APM agents, you may have logs in this format:
+If you're switching logs from New Relic APM agents, you may have logs in this format:
 
 ```
 2023-04-22 15:04:05 [INFO] [MyApp] [txn=WebTransaction/Controller/users/show] [traceId=abc123] Message content
@@ -174,7 +174,7 @@ For detailed information on how to use all the features of the Logs Explorer, re
 
 In case you will be querying logs from dashboards using ClickHouse SQL, you can refer to the [Logs Schema](/docs/userguide/logs_clickhouse_queries/).
 
-## Verifying Log Migration
+## Verifying Log Switching
 
 After setting up log collection in SigNoz, verify that logs are being collected correctly:
 
@@ -186,9 +186,9 @@ After setting up log collection in SigNoz, verify that logs are being collected 
 
 ## Next Steps
 
-Once your logs are successfully migrating to SigNoz, consider:
+Once your logs are successfully switching to SigNoz, consider:
 
-- [Creating dashboards](/docs/migration/migrate-from-newrelic/dashboards) with log-based panels
+- [Creating dashboards](/docs/switch-to-signoz/switch-from-newrelic/dashboards) with log-based panels
 - [Setting up log-based alerts](/docs/alerts-management/log-based-alerts/) for important log patterns
 - [Configuring log processing pipelines](/docs/logs-pipelines/introduction/) for advanced log enrichment and structuring
 - [Correlating logs with traces](/docs/logs-pipelines/guides/trace/) for comprehensive observability

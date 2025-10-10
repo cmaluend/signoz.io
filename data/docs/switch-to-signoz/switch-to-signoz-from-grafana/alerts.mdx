@@ -1,15 +1,15 @@
 ---
 date: 2025-04-22
-id: migrate-from-grafana-alerts
-title: Migrate Alerts from LGTM Stack
-description: Migrating alerts from LGTM Stack to SigNoz. How to migrate alerts from LGTM Stack to SigNoz.
+id: switch-from-grafana-alerts
+title: Switch Alerts from LGTM Stack
+description: Switching alerts from LGTM Stack to SigNoz. How to switch alerts from LGTM Stack to SigNoz.
 ---
 
-While migrating your observability stack from the LGTM stack to SigNoz, you'll also need to recreate your alerts in SigNoz's alert management system.
+While switching your observability stack from the LGTM stack to SigNoz, you'll also need to recreate your alerts in SigNoz's alert management system.
 
 ### Setting Up Notification Channels
 
-Before migrating your alerts to SigNoz, you will need to set up the notification channels you want to use. Below is a list of notification channels supported by AlertManager/Grafana and SigNoz:
+Before switching your alerts to SigNoz, you will need to set up the notification channels you want to use. Below is a list of notification channels supported by AlertManager/Grafana and SigNoz:
 
 | Notification Channel | AlertManager/Grafana | SigNoz             |
 |----------------------|----------------------|-------------------|
@@ -46,4 +46,4 @@ SigNoz provides a comprehensive alert management system that supports:
 
 Both Metrics-based and Anomaly-based alerts support using PromQL queries to define the alert condition, meaning you can use the same queries you used in Prometheus/Grafana.
 
-In case you define alert rules as code in your LGTM Stack (either as Prometheus rules or using Grafana Terraform provider), you can continue using the same approach while migrating to SigNoz, by utilizing the [SigNoz Terraform Provider](https://signoz.io/docs/alerts-management/terraform-provider-signoz/).
+In case you define alert rules as code in your LGTM Stack (either as Prometheus rules or using Grafana Terraform provider), you can continue using the same approach while switching to SigNoz, by utilizing the [SigNoz Terraform Provider](https://signoz.io/docs/alerts-management/terraform-provider-signoz/).

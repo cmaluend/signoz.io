@@ -18,38 +18,38 @@ interface IconCardData {
 
 const MigrateVendorsData: IconCardData[] = [
   {
-    name: 'Migrate from Datadog',
-    href: '/docs/migration/migrate-from-datadog/',
+    name: 'Switch from Datadog',
+    href: '/docs/migration/switch-from-datadog/',
     icon: <SiDatadog className="h-7 w-7 text-purple-500" />,
-    clickName: 'Migrate from Datadog',
+    clickName: 'Switch from Datadog',
   },
   {
-    name: 'Migrate from Grafana',
-    href: '/docs/migration/migrate-from-grafana/',
+    name: 'Switch from Grafana',
+    href: '/docs/migration/switch-from-grafana/',
     icon: <SiGrafana className="h-7 w-7 text-orange-500" />,
-    clickName: 'Migrate from Grafana',
+    clickName: 'Switch from Grafana',
   },
   {
-    name: 'Migrate from ELK',
-    href: '/docs/migration/migrate-from-elk/',
+    name: 'Switch from ELK',
+    href: '/docs/migration/switch-from-elk/',
     icon: <SiElastic className="h-7 w-7 text-pink-600" />,
-    clickName: 'Migrate from ELK',
+    clickName: 'Switch from ELK',
   },
   {
-    name: 'Migrate from New Relic',
-    href: '/docs/migration/migrate-from-newrelic/',
+    name: 'Switch from New Relic',
+    href: '/docs/migration/switch-from-newrelic/',
     icon: <SiNewrelic className="h-7 w-7 text-green-500" />,
-    clickName: 'Migrate from New Relic',
+    clickName: 'Switch from New Relic',
   },
   {
-    name: 'Migrate from OpenTelemetry',
-    href: '/docs/migration/migrate-from-opentelemetry-to-signoz/',
+    name: 'Switch from OpenTelemetry',
+    href: '/docs/migration/switch-from-opentelemetry-to-signoz/',
     icon: <SiOpentelemetry className="h-7 w-7 text-blue-500" />,
-    clickName: 'Migrate from OpenTelemetry',
+    clickName: 'Switch from OpenTelemetry',
   },
   {
-    name: 'Migrate from Self-Hosted SigNoz',
-    href: '/docs/migration/migrate-to-signoz-cloud/',
+    name: 'Switch from Self-Hosted SigNoz',
+    href: '/docs/migration/switch-to-signoz-cloud/',
     icon: (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -58,7 +58,7 @@ const MigrateVendorsData: IconCardData[] = [
         className="h-7 w-7 object-contain"
         />
     ),
-    clickName: 'Migrate from Self-Hosted SigNoz',
+    clickName: 'Switch from Self-Hosted SigNoz',
     }
 
 ]
@@ -67,7 +67,7 @@ export default function MigrateToSigNoz() {
   return (
     <IconCardGrid
       cards={MigrateVendorsData}
-      sectionName="Vendors Migrate Section"
+      sectionName="Vendors Switch Section"
       viewAllText="View all migration guides"
       gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4"
     />
