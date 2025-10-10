@@ -1,15 +1,15 @@
 ---
 date: 2025-04-22
-id: migrate-from-grafana-metrics
-title: Migrate Metrics from LGTM Stack
-description: Migrating metrics from LGTM Stack to SigNoz. How to migrate metrics from LGTM Stack to SigNoz.
+id: switch-from-grafana-metrics
+title: Switch Metrics from LGTM Stack
+description: Switching metrics from LGTM Stack to SigNoz. How to switch metrics from LGTM Stack to SigNoz.
 ---
 
-Migrating metrics from Prometheus/Mimir to SigNoz can be accomplished through several approaches, depending on your current setup and requirements.
+Switching metrics from Prometheus/Mimir to SigNoz can be accomplished through several approaches, depending on your current setup and requirements.
 
 ### Using Prometheus Receiver in OpenTelemetry Collector
 
-The simplest way to migrate your existing Prometheus/Mimir metrics is to configure the OpenTelemetry Collector with a [Prometheus Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/prometheusreceiver#prometheus-receiver). This allows you to continue using your existing Prometheus exporters while sending the data to SigNoz.
+The simplest way to switch your existing Prometheus/Mimir metrics is to configure the OpenTelemetry Collector with a [Prometheus Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/prometheusreceiver#prometheus-receiver). This allows you to continue using your existing Prometheus exporters while sending the data to SigNoz.
 
 1. [Install the OpenTelemetry Collector](/docs/tutorial/opentelemetry-binary-usage-in-virtual-machine/) in your environment if not already available.
 2. Configure the Prometheus Receiver in your OpenTelemetry Collector configuration file:

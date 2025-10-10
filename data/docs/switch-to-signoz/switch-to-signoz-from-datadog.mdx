@@ -1,13 +1,13 @@
 ---
 date: 2024-10-03
-id: migrate-from-datadog-to-signoz
-title: Migrate From Datadog
-description: Migrating from Datadog to SigNoz. How to migrate metrics, traces, and logs from Datadog to SigNoz.
+id: switch-from-datadog-to-signoz
+title: Switch From Datadog
+description: Switching from Datadog to SigNoz. How to switch metrics, traces, and logs from Datadog to SigNoz.
 ---
 
-SigNoz provides a unified OpenTelemetry native solution for monitoring metrics, traces, and logs, allowing for greater flexibility and control over your data. This guide will walk you through the steps to migrate your existing Datadog setup to SigNoz, covering all essential signals: metrics, traces, and logs.
+SigNoz provides a unified OpenTelemetry native solution for monitoring metrics, traces, and logs, allowing for greater flexibility and control over your data. This guide will walk you through the steps to switch your existing Datadog setup to SigNoz, covering all essential signals: metrics, traces, and logs.
 
-## Migrating Metrics
+## Switching Metrics
 
 Transitioning your metrics monitoring to SigNoz involves adopting the OpenTelemetry Protocol (OTLP) and configuring your systems to export metrics accordingly.
 
@@ -134,7 +134,7 @@ Refer to this [ingesting Datadog metrics tutorial](https://signoz.io/docs/migrat
 
 ---
 
-## Migrating Traces/APM
+## Switching Traces/APM
 
 Transitioning your tracing setup involves re-instrumenting your applications with OpenTelemetry SDKs to send trace data to SigNoz.
 
@@ -169,9 +169,9 @@ If re-instrumentation is not immediately possible, you can use the Datadog recei
 
 ---
 
-## Migrating Logs
+## Switching Logs
 
-To migrate your logging setup, you need to configure appropriate log receivers and set up parsing pipelines in SigNoz.
+To switch your logging setup, you need to configure appropriate log receivers and set up parsing pipelines in SigNoz.
 
 ### Use OpenTelemetry Log Receivers
 
@@ -211,7 +211,7 @@ Structuring logs enhances their usability and allows for more effective querying
 
 ## Conclusion
 
-Migrating from Datadog to SigNoz empowers you with an open-source observability platform that is flexible, extensible, and based on open standards. By leveraging OpenTelemetry, you avoid vendor lock-in and ensure compatibility across various tools and services. This guide provides a roadmap for transitioning your metrics, traces, and logs to SigNoz. For more detailed instructions and support, refer to the SigNoz documentation and community resources.
+Switching from Datadog to SigNoz empowers you with an open-source observability platform that is flexible, extensible, and based on open standards. By leveraging OpenTelemetry, you avoid vendor lock-in and ensure compatibility across various tools and services. This guide provides a roadmap for transitioning your metrics, traces, and logs to SigNoz. For more detailed instructions and support, refer to the SigNoz documentation and community resources.
 
 ---
 

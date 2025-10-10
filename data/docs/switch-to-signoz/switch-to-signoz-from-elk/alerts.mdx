@@ -1,14 +1,14 @@
 ---
 date: 2025-05-06
 id: alerts
-title: Migrate alerts from ELK Stack to SigNoz
+title: Switch alerts from ELK Stack to SigNoz
 description: A comprehensive guide for translating alerting mechanisms and configurations from the Elastic Stack (ELK Stack) to SigNoz.
 ---
 
 
 Translating alerting mechanisms from the Elastic Stack (ELK), encompassing [Kibana native alerting](https://www.elastic.co/kibana/alerting) and [ElastAlert](https://elastalert.readthedocs.io/en/latest/), to SigNoz presents a common challenge for organizations evolving their observability strategies. This guide provides a comprehensive approach to re-implementing established alerting logic, addressing differences in architectures, data models, and query languages.
 
-The ELK Stack offers alerting through Kibana's integrated features and the flexible ElastAlert framework, both leveraging Elasticsearch data. SigNoz, an [OpenTelemetry](https://signoz.io/why-opentelemetry/) (OTel) native observability platform, provides unified monitoring of logs, metrics, and traces, with alerting built upon this foundation. Migrating alerts is often part of a broader shift towards an OpenTelemetry native model, requiring a re-evaluation of telemetry collection and analysis pipelines. This guide aims to bridge the gap, enabling users to effectively migrate their alerting strategies.
+The ELK Stack offers alerting through Kibana's integrated features and the flexible ElastAlert framework, both leveraging Elasticsearch data. SigNoz, an [OpenTelemetry](https://signoz.io/why-opentelemetry/) (OTel) native observability platform, provides unified monitoring of logs, metrics, and traces, with alerting built upon this foundation. Switching alerts is often part of a broader shift towards an OpenTelemetry native model, requiring a re-evaluation of telemetry collection and analysis pipelines. This guide aims to bridge the gap, enabling users to effectively switch their alerting strategies.
 
 ### High-Level Comparison: ELK Stack vs. SigNoz Alerting
 
@@ -65,7 +65,7 @@ This is the most critical part of the migration, involving re-thinking your aler
 
 #### Query Language Conversion (KQL/Lucene to ClickHouse SQL/PromQL)
 
-Migrating from KQL/Lucene (text-search oriented) to ClickHouse SQL (analytical SQL) and PromQL (time-series functional language) is a significant shift.
+Switching from KQL/Lucene (text-search oriented) to ClickHouse SQL (analytical SQL) and PromQL (time-series functional language) is a significant shift.
 
 **Common KQL/Lucene to SigNoz ClickHouse SQL (for Logs):**
 
@@ -108,7 +108,7 @@ If ELK alerts were on metrics (e.g., from Metricbeat), ensure equivalent metrics
 
 ### Setting up Notification Channels
 
-Before migrating alerts, configure your desired notification channels in SigNoz (Settings > Alert Channels).
+Before switching alerts, configure your desired notification channels in SigNoz (Settings > Alert Channels).
 
 | Notification Channel | SigNoz             | ELK Stack (Alerting) | Notes                                                                                                 |
 |----------------------|--------------------|----------------------|-------------------------------------------------------------------------------------------------------|
@@ -136,8 +136,8 @@ Before migrating alerts, configure your desired notification channels in SigNoz 
     *   Document all existing ELK alerts: purpose, query, conditions, notifications, frequency.
     *   Prioritize critical alerts. Deprecate noisy or irrelevant ones.
 2.  **Phased Migration:**
-    *   **Pilot Phase:** Migrate a small, representative subset of alerts first to understand the process and identify challenges.
-    *   **Iterative Rollout:** Migrate remaining alerts in batches (by service, type, criticality).
+    *   **Pilot Phase:** Switch a small, representative subset of alerts first to understand the process and identify challenges.
+    *   **Iterative Rollout:** Switch remaining alerts in batches (by service, type, criticality).
 3.  **Query Translation Focus:**
     *   Understand the *intent* of the original ELK query.
     *   Use SigNoz's Logs Explorer and Metrics Explorer to test translated queries before creating alert rules.
@@ -170,7 +170,7 @@ SigNoz supports various alert types based on your queries:
 
 Refer to the specific SigNoz documentation pages for detailed steps on creating each type of alert.
 
-Migrating alerting from the ELK Stack to SigNoz involves a shift from Elasticsearch-centric querying to an OpenTelemetry-native approach using ClickHouse and Prometheus Alertmanager. While this requires translating query logic (KQL/Lucene to ClickHouse SQL/PromQL) and understanding new concepts, SigNoz offers powerful advantages:
+Switching alerting from the ELK Stack to SigNoz involves a shift from Elasticsearch-centric querying to an OpenTelemetry-native approach using ClickHouse and Prometheus Alertmanager. While this requires translating query logic (KQL/Lucene to ClickHouse SQL/PromQL) and understanding new concepts, SigNoz offers powerful advantages:
 
 *   **Unified Alerting:** Define alerts across logs, metrics, and traces from a single platform.
 *   **Flexible Querying:** Leverage the Query Builder for ease of use, PromQL for robust metric alerting, and ClickHouse SQL for complex analytical queries across all signals.

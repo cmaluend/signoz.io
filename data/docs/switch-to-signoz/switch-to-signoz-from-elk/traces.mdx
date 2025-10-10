@@ -1,11 +1,11 @@
 ---
 date: 2025-05-06
 id: traces
-title: Migrate traces from ELK Stack
-description: Migrating traces from ELK Stack to SigNoz. How to migrate traces from ELK to SigNoz.
+title: Switch traces from ELK Stack
+description: Switching traces from ELK Stack to SigNoz. How to switch traces from ELK to SigNoz.
 ---
 
-Migrating distributed traces involves replacing the proprietary [Elastic APM agents](https://www.elastic.co/docs/solutions/observability/apm/elastic-apm-agents) within your applications with standard [OpenTelemetry SDKs](https://opentelemetry.io/docs/languages/) and configuring them to send trace data to SigNoz.
+Switching distributed traces involves replacing the proprietary [Elastic APM agents](https://www.elastic.co/docs/solutions/observability/apm/elastic-apm-agents) within your applications with standard [OpenTelemetry SDKs](https://opentelemetry.io/docs/languages/) and configuring them to send trace data to SigNoz.
 
 ## Replacing Elastic APM Agents
 
@@ -44,7 +44,7 @@ For applications where a migration is too risky, Elastic provides a [bridge libr
   **Steps to follow: **
   1. Add the bridge [configuration](https://pkg.go.dev/go.elastic.co/apm/module/apmotel/v2)
   2. Incrementally replace Elastic APM instrumentation with OTel SDK instrumentation, deploying changes piece by piece. Traces continue to flow via the Elastic agent.  
-  3. Once all instrumentation is migrated, remove the Elastic APM agent and the bridge, and configure the OTel SDK to export directly or via a standard OTel Collector. 
+  3. Once all instrumentation is switched, remove the Elastic APM agent and the bridge, and configure the OTel SDK to export directly or via a standard OTel Collector. 
 * While this specific bridge is for Go, the concept of gradual migration or dual instrumentation might be possible in other languages using community tools or custom solutions.
 
 ## Verification

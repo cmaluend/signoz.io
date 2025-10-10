@@ -37,7 +37,7 @@ function Footer() {
                   Contributing
                 </Link>
                 <Link href="/docs/migration/migrate-from-datadog" className="mt-5 hover:underline">
-                  Migrate from Datadog
+                  Switch from Datadog
                 </Link>
                 <Link href="/api_reference/" className="mt-5 hover:underline">
                   SigNoz API
