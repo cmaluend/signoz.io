@@ -19,37 +19,37 @@ interface IconCardData {
 const MigrateVendorsData: IconCardData[] = [
   {
     name: 'Switch from Datadog',
-    href: '/docs/migration/switch-from-datadog/',
+    href: '/docs/switch-to-signoz/switch-from-datadog/',
     icon: <SiDatadog className="h-7 w-7 text-purple-500" />,
     clickName: 'Switch from Datadog',
   },
   {
     name: 'Switch from Grafana',
-    href: '/docs/migration/switch-from-grafana/',
+    href: '/docs/switch-to-signoz/switch-from-grafana/',
     icon: <SiGrafana className="h-7 w-7 text-orange-500" />,
     clickName: 'Switch from Grafana',
   },
   {
     name: 'Switch from ELK',
-    href: '/docs/migration/switch-from-elk/',
+    href: '/docs/switch-to-signoz/switch-from-elk/',
     icon: <SiElastic className="h-7 w-7 text-pink-600" />,
     clickName: 'Switch from ELK',
   },
   {
     name: 'Switch from New Relic',
-    href: '/docs/migration/switch-from-newrelic/',
+    href: '/docs/switch-to-signoz/switch-from-newrelic/',
     icon: <SiNewrelic className="h-7 w-7 text-green-500" />,
     clickName: 'Switch from New Relic',
   },
   {
     name: 'Switch from OpenTelemetry',
-    href: '/docs/migration/switch-from-opentelemetry-to-signoz/',
+    href: '/docs/switch-to-signoz/switch-from-opentelemetry-to-signoz/',
     icon: <SiOpentelemetry className="h-7 w-7 text-blue-500" />,
     clickName: 'Switch from OpenTelemetry',
   },
   {
     name: 'Switch from Self-Hosted SigNoz',
-    href: '/docs/migration/switch-to-signoz-cloud/',
+    href: '/docs/switch-to-signoz/switch-to-signoz-cloud/',
     icon: (
         // eslint-disable-next-line @next/next/no-img-element
         <img
