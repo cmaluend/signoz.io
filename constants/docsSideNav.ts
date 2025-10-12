@@ -249,7 +249,7 @@ const docsSideNav = [
         items: [
           {
             type: 'doc',
-            route: '/docs/operate/migration/upgrade-standard',
+            route: '/docs/operate/switch-to-signoz/upgrade-standard',
             label: 'Upgrade Standard',
           },
           {
@@ -2635,20 +2635,20 @@ const docsSideNav = [
     ],
   },
   {
-    label: 'Migrate to SigNoz',
+    label: 'Switch to SigNoz',
     type: 'category',
     isExpanded: false,
-    route: '/docs/migration/migrate-to-signoz',
+    route: '/docs/switch-to-signoz/switch-to-signoz',
     items: [
       {
         label: 'From Datadog',
         type: 'category',
         isExpanded: false,
-        route: '/docs/migration/migrate-from-datadog-to-signoz',
+        route: '/docs/switch-to-signoz/switch-to-signoz-from-datadog',
         items: [
           {
             type: 'doc',
-            route: '/docs/migration/opentelemetry-datadog-receiver',
+            route: '/docs/switch-to-signoz/opentelemetry-datadog-receiver',
             label: 'Using Datadog OTLP receiver',
           },
         ],
@@ -2658,31 +2658,31 @@ const docsSideNav = [
         className: 'new-doc',
         type: 'category',
         isExpanded: false,
-        route: '/docs/migration/migrate-from-grafana-to-signoz',
+        route: '/docs/switch-to-signoz/switch-to-signoz-from-grafana',
         items: [
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-grafana/metrics',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-grafana/metrics',
             label: 'Migrating Metrics',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-grafana/traces',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-grafana/traces',
             label: 'Migrating Traces',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-grafana/logs',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-grafana/logs',
             label: 'Migrating Logs',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-grafana/dashboards',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-grafana/dashboards',
             label: 'Migrating Dashboards',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-grafana/alerts',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-grafana/alerts',
             label: 'Migrating Alerts',
           },
         ],
@@ -2692,31 +2692,31 @@ const docsSideNav = [
         className: 'new-doc',
         type: 'category',
         isExpanded: false,
-        route: '/docs/migration/migrate-from-elk-to-signoz',
+        route: '/docs/switch-to-signoz/switch-to-signoz-from-elk',
         items: [
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-elk/metrics',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-elk/metrics',
             label: 'Migrating Metrics',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-elk/traces',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-elk/traces',
             label: 'Migrating Traces',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-elk/logs',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-elk/logs',
             label: 'Migrating Logs',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-elk/dashboards',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-elk/dashboards',
             label: 'Migrating Dashboards',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-elk/alerts',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-elk/alerts',
             label: 'Migrating Alerts',
           },
         ],
@@ -2726,31 +2726,31 @@ const docsSideNav = [
         className: 'new-doc',
         type: 'category',
         isExpanded: false,
-        route: '/docs/migration/migrate-from-newrelic-to-signoz',
+        route: '/docs/switch-to-signoz/switch-to-signoz-from-newrelic',
         items: [
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-newrelic/metrics',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-newrelic/metrics',
             label: 'Migrating Metrics',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-newrelic/traces',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-newrelic/traces',
             label: 'Migrating Traces',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-newrelic/logs',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-newrelic/logs',
             label: 'Migrating Logs',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-newrelic/dashboards',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-newrelic/dashboards',
             label: 'Migrating Dashboards',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-newrelic/alerts',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-newrelic/alerts',
             label: 'Migrating Alerts',
           },
         ],
@@ -2760,23 +2760,23 @@ const docsSideNav = [
         className: 'new-doc',
         type: 'category',
         isExpanded: false,
-        route: '/docs/migration/migrate-from-opentelemetry-to-signoz',
+        route: '/docs/switch-to-signoz/switch-to-signoz-from-opentelemetry',
         items: [
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-opentelemetry/cloud',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-opentelemetry/cloud',
             label: 'Migrate to SigNoz Cloud',
           },
           {
             type: 'doc',
-            route: '/docs/migration/migrate-from-opentelemetry/self-hosted',
+            route: '/docs/switch-to-signoz/switch-to-signoz-from-opentelemetry/self-hosted',
             label: 'Migrate to Self-Hosted SigNoz',
           },
         ],
       },
       {
         type: 'doc',
-        route: '/docs/migration/migrate-from-signoz-self-host-to-signoz-cloud',
+        route: '/docs/switch-to-signoz/switch-to-signoz-from-signoz-self-host-to-signoz-cloud',
         label: 'From Self-Hosted to Cloud',
       },
     ],
