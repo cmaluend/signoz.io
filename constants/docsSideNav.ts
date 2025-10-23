@@ -444,17 +444,6 @@ const docsSideNav = [
                 route: '/docs/userguide/authentication',
                 label: 'Authentication',
               },
-              {
-                type: 'doc',
-                route: '/docs/userguide/sso-authentication',
-                label: 'SSO',
-              },
-              {
-                type: 'doc',
-                route:
-                  '/docs/manage/administrator-guide/security-and-compliance/saml-authentication',
-                label: 'SAML',
-              },
             ],
           },
           {
@@ -485,6 +474,50 @@ const docsSideNav = [
                 route: '/docs/manage/administrator-guide/configuration/relational-database',
                 label: 'Relational Databases Support',
                 isExpanded: false,
+              },
+            ],
+          },
+          {
+            type: 'category',
+            label: 'SSO',
+            isExpanded: false,
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/manage/administrator-guide/sso/overview',
+                label: 'Overview',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-jumpcloud',
+                    label: 'JumpCloud - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-awsso',
+                    label: 'AWS SSO - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-okta',
+                    label: 'Okta - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-microsoft-entra',
+                    label: 'Microsoft Entra ID - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/sso-google',
+                    label: 'Google Workspace - Single Sign-on Authentication',
+                  },
+                ],
               },
             ],
           },
@@ -536,7 +569,7 @@ const docsSideNav = [
     label: 'Collection Agents',
     type: 'category',
     isExpanded: false,
-    route: '/docs/collection-agents/get-started',
+    route: '/docs/opentelemetry-collection-agents/get-started',
     items: [
       {
         type: 'category',
@@ -551,17 +584,17 @@ const docsSideNav = [
               {
                 label: 'Overview',
                 type: 'doc',
-                route: '/docs/collection-agents/k8s/k8s-infra/overview',
+                route: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/overview',
               },
               {
                 label: 'Install K8s Infra',
                 type: 'doc',
-                route: '/docs/collection-agents/k8s/k8s-infra/install-k8s-infra',
+                route: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/install-k8s-infra',
               },
               {
                 label: 'Configure K8s Infra',
                 type: 'doc',
-                route: '/docs/collection-agents/k8s/k8s-infra/configure-k8s-infra',
+                route: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/configure-k8s-infra',
               },
               {
                 type: 'category',
@@ -570,11 +603,18 @@ const docsSideNav = [
                 items: [
                   {
                     type: 'doc',
-                    route: '/docs/collection-agents/k8s/k8s-infra/user-guides/k8s-infra-multi-cluster',
-                    label: 'Monitor Multiple K8SClusters',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-cluster',
+                    label: 'Monitoring Kubernetes Clusters using Opentelemetry Collection Agents',
                   },
-                ]
-              }
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-infra-multi-cluster',
+                    label: 'Monitor Multiple K8S Clusters',
+                  },
+                ],
+              },
             ],
           },
           {
@@ -585,17 +625,31 @@ const docsSideNav = [
               {
                 label: 'Overview',
                 type: 'doc',
-                route: '/docs/collection-agents/k8s/serverless/overview',
+                route: '/docs/opentelemetry-collection-agents/k8s/serverless/overview',
               },
               {
                 label: 'Install',
                 type: 'doc',
-                route: '/docs/collection-agents/k8s/serverless/install',
+                route: '/docs/opentelemetry-collection-agents/k8s/serverless/install',
               },
-               {
+              {
                 label: 'Configure',
                 type: 'doc',
-                route: '/docs/collection-agents/k8s/serverless/configure',
+                route: '/docs/opentelemetry-collection-agents/k8s/serverless/configure',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/serverless/user-guides/k8s-cluster',
+                    label:
+                      'Monitoring Kubernetes Clusters in EKS Fargate using Opentelemetry Collection Agents',
+                  },
+                ],
               },
             ],
           },
@@ -607,20 +661,20 @@ const docsSideNav = [
               {
                 type: 'doc',
                 label: 'Overview',
-                route: '/docs/collection-agents/k8s/otel-operator/overview'
+                route: '/docs/opentelemetry-collection-agents/k8s/otel-operator/overview',
               },
               {
                 type: 'doc',
                 label: 'Install',
-                route: '/docs/collection-agents/k8s/otel-operator/install'
+                route: '/docs/opentelemetry-collection-agents/k8s/otel-operator/install',
               },
               {
                 type: 'doc',
                 label: 'Configure',
-                route: '/docs/collection-agents/k8s/otel-operator/configure'
-              }
-            ]
-          }
+                route: '/docs/opentelemetry-collection-agents/k8s/otel-operator/configure',
+              },
+            ],
+          },
         ],
       },
       {
@@ -653,7 +707,7 @@ const docsSideNav = [
             isExpanded: false,
             items: [
               {
-                route: '/docs/collection-agents/docker/install',
+                route: '/docs/opentelemetry-collection-agents/docker/install',
                 type: 'doc',
                 label: 'Install',
               },
@@ -665,12 +719,12 @@ const docsSideNav = [
             isExpanded: false,
             items: [
               {
-                route: '/docs/collection-agents/docker-swarm/install',
+                route: '/docs/opentelemetry-collection-agents/docker-swarm/install',
                 type: 'doc',
                 label: 'Install',
               },
               {
-                route: '/docs/collection-agents/docker-swarm/configure',
+                route: '/docs/opentelemetry-collection-agents/docker-swarm/configure',
                 type: 'doc',
                 label: 'Configure',
               },
@@ -691,17 +745,29 @@ const docsSideNav = [
               {
                 type: 'doc',
                 label: 'Overview',
-                route: '/docs/collection-agents/ecs/ec2/overview',
+                route: '/docs/opentelemetry-collection-agents/ecs/ec2/overview',
               },
               {
                 type: 'doc',
                 label: 'Install',
-                route: '/docs/collection-agents/ecs/ec2/install',
+                route: '/docs/opentelemetry-collection-agents/ecs/ec2/install',
               },
               {
                 type: 'doc',
                 label: 'Configure',
-                route: '/docs/collection-agents/ecs/ec2/configure',
+                route: '/docs/opentelemetry-collection-agents/ecs/ec2/configure',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route: '/docs/opentelemetry-collection-agents/ecs/ec2/user-guides/get-started',
+                    label: 'Monitoring ECS EC2 using Opentelemetry Collection Agentss',
+                  },
+                ],
               },
             ],
           },
@@ -713,19 +779,44 @@ const docsSideNav = [
               {
                 type: 'doc',
                 label: 'Overview',
-                route: '/docs/collection-agents/ecs/sidecar/overview',
+                route: '/docs/opentelemetry-collection-agents/ecs/sidecar/overview',
               },
               {
                 type: 'doc',
                 label: 'Install',
-                route: '/docs/collection-agents/ecs/sidecar/install',
+                route: '/docs/opentelemetry-collection-agents/ecs/sidecar/install',
               },
               {
                 type: 'doc',
                 label: 'Configure',
-                route: '/docs/collection-agents/ecs/sidecar/configure',
+                route: '/docs/opentelemetry-collection-agents/ecs/sidecar/configure',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/ecs/sidecar/user-guides/get-started',
+                    label: 'Monitoring ECS Fargate using Opentelemetry Collection Agents',
+                  },
+                ],
               },
             ],
+          },
+        ],
+      },
+      {
+        type: 'category',
+        label: 'OpenTelemetry Collector Reference',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            label: 'Configuration Components',
+            route: '/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration',
           },
         ],
       },
@@ -955,7 +1046,7 @@ const docsSideNav = [
                     route: '/docs/instrumentation/manual-instrumentation/java/annotations',
                     label: 'Using Annotations',
                   },
-                ]
+                ],
               },
               {
                 type: 'category',
@@ -971,6 +1062,12 @@ const docsSideNav = [
                     label: 'NodeJS',
                     route:
                       '/docs/instrumentation/manual-instrumentation/javascript/opentelemetry-nodejs',
+                  },
+                  {
+                    type: 'doc',
+                    label: 'Enable/disable Instrumentation',
+                    route:
+                      '/docs/instrumentation/manual-instrumentation/javascript/nodejs-selective-instrumentation',
                   },
                 ],
               },
@@ -1065,7 +1162,7 @@ const docsSideNav = [
           {
             type: 'doc',
             route: '/docs/traces-management/guides/pii-scrubbing/',
-            label: 'PII Scrubbing'
+            label: 'PII Scrubbing',
           },
           {
             type: 'doc',
@@ -1716,6 +1813,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/mastra-dashboard',
+            label: 'Mastra',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/memcached',
             label: 'Memcached',
           },
@@ -2028,7 +2130,7 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/alerts-management/user-guides/how-to-configure-alerts-for-missing-data',
             label: 'How to Configure Alerts for Missing Data',
-          }
+          },
         ],
       },
       {
@@ -2105,7 +2207,7 @@ const docsSideNav = [
     route: '/docs/llm-observability',
     label: 'LLM Observability',
 
-    items: [ 
+    items: [
       {
         route: '/docs/llm-community-integrations',
         label: 'LLM Community Integrations',
@@ -2113,57 +2215,62 @@ const docsSideNav = [
       },
       {
         route: '/docs/amazon-bedrock-monitoring',
-        label: 'Amazon Bedrock Monitoring',
+        label: 'Amazon Bedrock',
         type: 'doc',
       },
       {
         route: '/docs/anthropic-monitoring',
-        label: 'Anthropic API Monitoring',
+        label: 'Anthropic API',
         type: 'doc',
       },
       {
         route: '/docs/azure-openai-monitoring',
-        label: 'Azure OpenAI API Monitoring',
+        label: 'Azure OpenAI API',
         type: 'doc',
       },
       {
         route: '/docs/claude-code-monitoring',
-        label: 'Claude Code Monitoring',
+        label: 'Claude Code',
         type: 'doc',
       },
       {
-        route: '/docs/crewai-monitoring',
-        label: 'Crew AI Monitoring',
+        route: '/docs/crewai-observability',
+        label: 'Crew AI',
         type: 'doc',
       },
       {
         route: '/docs/deepseek-monitoring',
-        label: 'DeepSeek Monitoring',
+        label: 'DeepSeek',
         type: 'doc',
       },
       {
         route: '/docs/google-gemini-monitoring',
-        label: 'Google Gemini Monitoring',
+        label: 'Google Gemini',
         type: 'doc',
       },
       {
-        route: '/docs/langchain-monitoring',
-        label: 'LangChain/LangGraph Monitoring',
+        route: '/docs/langchain-observability',
+        label: 'LangChain/LangGraph',
         type: 'doc',
       },
       {
-        route: '/docs/llamaindex-monitoring',
-        label: 'LlamaIndex Monitoring',
+        route: '/docs/llamaindex-observability',
+        label: 'LlamaIndex',
         type: 'doc',
       },
       {
-        route: '/docs/opentelemetry-openai-monitoring',
-        label: 'OpenAI Monitoring',
+        route: '/docs/mastra-observability',
+        label: 'Mastra',
         type: 'doc',
       },
       {
-        route: '/docs/vercel-ai-sdk-monitoring',
-        label: 'Vercel AI SDK Monitoring',
+        route: '/docs/openai-monitoring',
+        label: 'OpenAI',
+        type: 'doc',
+      },
+      {
+        route: '/docs/vercel-ai-sdk-observability',
+        label: 'Vercel AI SDK',
         type: 'doc',
       },
     ],
@@ -2173,11 +2280,11 @@ const docsSideNav = [
     isExpanded: false,
     label: 'SigNoz MCP',
 
-    items: [ 
+    items: [
       {
-          type: 'doc',
-          route: '/docs/signoz-mcp-server',
-          label: 'SigNoz MCP Server',
+        type: 'doc',
+        route: '/docs/signoz-mcp-server',
+        label: 'SigNoz MCP Server',
       },
     ],
   },
@@ -2299,8 +2406,8 @@ const docsSideNav = [
       {
         type: 'doc',
         route: '/docs/integrations/nomad',
-        label: 'Nomad'
-      }
+        label: 'Nomad',
+      },
     ],
   },
   {
