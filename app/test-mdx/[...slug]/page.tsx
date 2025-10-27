@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import { fetchMDXContentByPath, fetchAllMDXPaths, MDXContent } from '@/utils/strapi'
+import { fetchMDXContentByPath, MDXContent } from '@/utils/strapi'
+import { generateStructuredData } from '@/utils/structuredData'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import { components } from '@/components/MDXComponents'
 import { Metadata } from 'next'
@@ -14,10 +15,15 @@ import 'css/doc.css'
 
 // Remark and rehype plugins
 import remarkGfm from 'remark-gfm'
-import { remarkExtractFrontmatter, remarkCodeTitles, remarkImgToJsx } from 'pliny/mdx-plugins/index.js'
+import {
+  remarkExtractFrontmatter,
+  remarkCodeTitles,
+  remarkImgToJsx,
+} from 'pliny/mdx-plugins/index.js'
 import rehypeSlug from 'rehype-slug'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypePrismPlus from 'rehype-prism-plus'
+import remarkMath from 'remark-math'
 
 export const revalidate = 0
 export const dynamicParams = true
@@ -40,6 +46,7 @@ const mdxOptions = {
       remarkExtractFrontmatter,
       remarkGfm,
       remarkCodeTitles,
+      remarkMath,
       remarkImgToJsx,
     ],
     rehypePlugins: [
@@ -56,7 +63,7 @@ const mdxOptions = {
       ],
       [rehypePrismPlus, { defaultLanguage: 'tsx', ignoreMissing: true }],
     ],
-  }
+  },
 }
 
 // Generate table of contents from MDX content
@@ -68,17 +75,15 @@ function generateTOC(content: string) {
   const regXCodeBlock = /```[\s\S]*?```/g
   const contentWithoutCodeBlocks = content.replace(regXCodeBlock, '')
 
-  const headings = Array.from(contentWithoutCodeBlocks.matchAll(regXHeader)).map(
-    ({ groups }) => {
-      const flag = groups?.flag
-      const content = groups?.content
-      return {
-        value: content,
-        url: content ? `#${slugger.slug(content)}` : undefined,
-        depth: flag?.length == 1 ? 1 : flag?.length == 2 ? 2 : 3,
-      }
+  const headings = Array.from(contentWithoutCodeBlocks.matchAll(regXHeader)).map(({ groups }) => {
+    const flag = groups?.flag
+    const content = groups?.content
+    return {
+      value: content,
+      url: content ? `#${slugger.slug(content)}` : undefined,
+      depth: flag?.length == 1 ? 1 : flag?.length == 2 ? 2 : 3,
     }
-  )
+  })
 
   return headings
 }
@@ -112,16 +117,16 @@ export async function generateMetadata({
     const path = params.slug.join('/')
 
     try {
-      const { data: content } = await fetchMDXContentByPath(path)
+      const { data: content } = await fetchMDXContentByPath('case-studies', path)
 
       return {
         title: content.title,
-        description: content?.excerpt || `Read about ${content.title}`,
+        description: content?.description || `Read about ${content.title}`,
         // keywords: content?.keywords, // TODO: Add keyword support later
         authors: [{ name: 'SigNoz Team' }],
         openGraph: {
           title: content.title,
-          description: content?.excerpt || `Read about ${content.title}`,
+          description: content?.description || `Read about ${content.title}`,
           type: 'article',
           publishedTime: content?.publishedAt,
           modifiedTime: content?.updatedAt,
@@ -130,7 +135,7 @@ export async function generateMetadata({
         twitter: {
           card: 'summary_large_image',
           title: content.title,
-          description: content?.excerpt || `Read about ${content.title}`,
+          description: content?.description || `Read about ${content.title}`,
         },
       }
     } catch (error) {
@@ -154,17 +159,11 @@ export async function generateMetadata({
 }
 
 // Main page component
-export default async function TestMDXPage({
-  params,
-}: {
-  params: { slug?: string[] }
-}) {
+export default async function TestMDXPage({ params }: { params: { slug?: string[] } }) {
   console.log('Rendering page with params:', params)
 
   if (!params.slug || params.slug.length === 0) {
-    return (
-      <div className="min-h-screen">something something test here blabla</div>
-    )
+    return <div className="min-h-screen">something something test here blabla</div>
   }
 
   const path = params.slug.join('/')
@@ -176,8 +175,8 @@ export default async function TestMDXPage({
     if (!process.env.NEXT_PUBLIC_SIGNOZ_CMS_API_URL) {
       throw new Error('Strapi API URL is not configured')
     }
-    
-    const response = await fetchMDXContentByPath(path)
+
+    const response = await fetchMDXContentByPath('case-studies', path)
     if (!response || !response.data) {
       console.error(`Invalid response for path: ${path}`)
       notFound()
@@ -193,7 +192,9 @@ export default async function TestMDXPage({
   }
 
   console.log(`Successfully fetched content: ${content?.title} for path: ${path}`)
-
+  console.log('Content:', content?.content)
+  console.log('Content Authors:', content?.authors)
+  console.log('Content related_faqs:', content?.related_faqs)
   // Generate computed fields similar to contentlayer
   const readingTimeData = readingTime(content?.content)
   const toc = generateTOC(content?.content)
@@ -201,47 +202,61 @@ export default async function TestMDXPage({
   // Compile MDX content with all plugins
   let compiledContent
   try {
-    const { content: mdxContent } = await compileMDX({
+    const { content: mdxContent, frontmatter } = await compileMDX({
       source: content?.content,
       components,
       options: mdxOptions as any,
     })
     compiledContent = mdxContent
+
+    console.log(
+      'Compiled Content:',
+      JSON.stringify(compiledContent, null, 2),
+      compiledContent?.structuredData,
+      frontmatter
+    )
   } catch (error) {
     console.error('Error compiling MDX:', error)
     notFound()
   }
 
+  // Generate structured data based on collection type
+  const structuredData = generateStructuredData('case-studies', content)
+  console.log('logging structured data for case-studies', structuredData)
+
   return (
     <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      {/* Add structured data script */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
           {/* Main content */}
           <article className="lg:col-span-3">
-            <header className="mb-8 pb-8 border-b border-gray-200">
-              <h1 className="text-4xl font-bold mb-4">
-                {content?.title}
-              </h1>
+            <header className="mb-8 border-b border-gray-200 pb-8">
+              <h1 className="mb-4 text-4xl font-bold">{content?.title}</h1>
 
-              {content?.excerpt && (
-                <p className="text-xl mb-6">{content?.excerpt}</p>
-              )}
+              {content?.description && <p className="mb-6 text-xl">{content?.description}</p>}
 
               <div className="flex items-center space-x-4 text-sm">
                 <time dateTime={content?.publishedAt}>
-                  Published: {new Date(content?.publishedAt).toLocaleDateString('en-US', {
+                  Published:{' '}
+                  {new Date(content?.publishedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: 'numeric',
                   })}
                 </time>
 
                 {content?.updatedAt !== content?.publishedAt && (
                   <span>
-                    Updated: {new Date(content?.updatedAt).toLocaleDateString('en-US', {
+                    Updated:{' '}
+                    {new Date(content?.updatedAt).toLocaleDateString('en-US', {
                       year: 'numeric',
-                      month: 'long', 
-                      day: 'numeric'
+                      month: 'long',
+                      day: 'numeric',
                     })}
                   </span>
                 )}
@@ -252,7 +267,7 @@ export default async function TestMDXPage({
             </header>
 
             {/* MDX Content */}
-            <div className="prose max-w-none prose-headings:scroll-mt-16 dark:prose-invert">
+            <div className="prose max-w-none dark:prose-invert prose-headings:scroll-mt-16">
               {compiledContent}
             </div>
           </article>
@@ -262,22 +277,19 @@ export default async function TestMDXPage({
             <aside className="lg:col-span-1">
               <div className="sticky top-8">
                 <div className="rounded-lg p-6">
-                  <h2 className="text-lg font-semibold mb-4">
-                    Table of Contents
-                  </h2>
+                  <h2 className="mb-4 text-lg font-semibold">Table of Contents</h2>
                   <nav>
                     <ul className="space-y-2 text-sm">
                       {toc.map((heading, index) => (
-                        <li 
-                          key={index} 
+                        <li
+                          key={index}
                           className={`${
-                            heading.depth === 2 ? 'ml-0' : 
-                            heading.depth === 3 ? 'ml-4' : 'ml-8'
+                            heading.depth === 2 ? 'ml-0' : heading.depth === 3 ? 'ml-4' : 'ml-8'
                           }`}
                         >
                           <a
                             href={heading.url}
-                            className="transition-colors duration-200 block py-1"
+                            className="block py-1 transition-colors duration-200"
                           >
                             {heading.value}
                           </a>
