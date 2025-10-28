@@ -856,6 +856,16 @@ module.exports = () => {
           destination: '/docs/manage/administrator-guide/sso/overview/',
           permanent: true,
         },
+        {
+          source: '/docs/overview/breaking-changes/breaking-changes-0.76',
+          destination: '/changelog/',
+          permanent: true,
+        },
+        {
+          source: '/docs/overview/whats-new/changelog-0.76/',
+          destination: '/changelog/',
+          permanent: true,
+        },
       ]
     },
     webpack: (config, options) => {
