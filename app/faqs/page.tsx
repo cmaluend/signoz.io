@@ -14,15 +14,15 @@ export default function FAQsPage() {
 
   // Get unique tags from all FAQs
   const allTags = Array.from(
-    new Set(allFAQs.filter((faq) => !faq.draft).flatMap((faq) => faq.tags || []))
+    new Set(allFAQs.filter((faq) => !faq?.draft).flatMap((faq) => faq?.tags || []))
   ).sort()
 
   // Filter only by tags
   const faqs = allFAQs
-    .filter((faq) => !faq.draft)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .filter((faq) => !faq?.draft)
+    .sort((a, b) => new Date(b?.date).getTime() - new Date(a?.date).getTime())
     .filter(
-      (faq) => selectedTags.length === 0 || selectedTags.some((tag) => faq.tags?.includes(tag))
+      (faq) => selectedTags.length === 0 || selectedTags.some((tag) => faq?.tags?.includes(tag))
     )
 
   const toggleTag = (tag: string) => {
@@ -77,18 +77,18 @@ export default function FAQsPage() {
         <div className="w-full py-8 sm:py-10">
           <ul className="space-y-4 p-2 sm:space-y-6">
             {faqs.map((faq) => (
-              <li key={faq.slug}>
+              <li key={faq?.slug}>
                 <Link
-                  href={`/faqs/${faq.slug}`}
+                  href={`/faqs/${faq?.slug}`}
                   className="block transform rounded-lg border border-signoz_slate-400 bg-signoz_ink-400 p-4 shadow-md transition duration-500 hover:shadow-lg sm:p-6"
                 >
                   <article>
                     <div>
                       <h2 className="mb-2 text-lg font-bold leading-snug tracking-tight text-signoz_vanilla-100 sm:mb-3 sm:text-xl">
-                        {faq.title}
+                        {faq?.title}
                       </h2>
                       <p className="prose mb-3 line-clamp-3 max-w-none text-sm text-signoz_vanilla-400 sm:text-base">
-                        {faq.description}
+                        {faq?.description}
                       </p>
                     </div>
                     <div className="text-sm font-medium leading-6 text-primary-500 hover:text-primary-400 sm:text-base">
