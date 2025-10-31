@@ -203,10 +203,10 @@ async function resolveRelations(folderName, frontmatter) {
       }
 
       // Check if matched and has documentId
-      if (matched && matched.documentId) {
+      if (matched && matched?.documentId) {
         matchedIds.push(matched.documentId)
         console.log(`    ✅ Matched "${value}" → ID: ${matched.documentId}`)
-      } else if (matched && !matched.documentId) {
+      } else if (matched && !matched?.documentId) {
         // Matched entity but no documentId
         unmatchedValues.push(value)
         console.warn(
