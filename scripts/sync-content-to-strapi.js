@@ -35,7 +35,7 @@ const COLLECTION_SCHEMAS = {
       },
     },
   },
-  case_studies: {
+  'case-study': {
     apiPath: 'api::case-study.case-study',
     endpoint: 'case-studies',
     fields: ['title', 'description', 'image', 'path', 'content', 'deployment_status'],
