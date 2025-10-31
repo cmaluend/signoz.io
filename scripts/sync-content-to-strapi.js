@@ -35,6 +35,18 @@ const COLLECTION_SCHEMAS = {
       },
     },
   },
+  case_studies: {
+    apiPath: 'api::case-study.case-study',
+    endpoint: 'case-studies',
+    fields: ['title', 'description', 'image', 'path', 'content', 'deployment_status'],
+    relations: {
+      authors: {
+        endpoint: 'authors',
+        matchField: 'key', // Match against author.key
+        frontmatterField: 'authors', // Array of author keys in frontmatter
+      },
+    },
+  },
   authors: {
     apiPath: 'api::author.author',
     endpoint: 'authors',

@@ -14,7 +14,7 @@ import readingTime from 'reading-time'
 import GithubSlugger from 'github-slugger'
 import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import { CaseStudy } from '../../../.contentlayer/generated'
+// import { CaseStudy } from '../../../.contentlayer/generated'
 
 // Remark and rehype plugins
 import remarkGfm from 'remark-gfm'
@@ -163,10 +163,6 @@ export async function generateStaticParams() {
 }
 
 export default async function Page({ params }: { params: { slug: string[] } }) {
-  if (!params.slug || params.slug.length === 0) {
-    return <div className="min-h-screen">Redirecting to case studies index...</div>
-  }
-
   const path = params.slug.join('/')
   console.log(`Fetching case study content for path: ${path}`)
 
@@ -212,7 +208,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   }
 
   // Prepare content for CaseStudyLayout
-  const mainContent: CoreContent<CaseStudy> = {
+  const mainContent: CoreContent<MDXContent> = {
     title: content?.title,
     slug: path,
     path: content?.path || `/case-study/${path}`,

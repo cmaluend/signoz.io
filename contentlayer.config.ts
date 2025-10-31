@@ -570,7 +570,7 @@ export const FAQ = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: 'data',
-  documentTypes: [Blog, Authors, Comparison, Guide, Opentelemetry, Doc, Newsroom, CaseStudy],
+  documentTypes: [Blog, Authors, Comparison, Guide, Opentelemetry, Doc, Newsroom],
   mdx: {
     cwd: process.cwd(),
     remarkPlugins: [
