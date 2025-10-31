@@ -177,6 +177,7 @@ async function resolveRelations(folderName, frontmatter) {
 
     // Match entities based on configuration
     const matchedIds = []
+    const unmatchedValues = []
 
     for (const value of frontmatterValues) {
       let matched = null
@@ -201,17 +202,36 @@ async function resolveRelations(folderName, frontmatter) {
         matched = entities.find((entity) => entity?.[relationConfig.matchField] === value)
       }
 
-      if (matched) {
+      // Check if matched and has documentId
+      if (matched && matched.documentId) {
         matchedIds.push(matched.documentId)
         console.log(`    ✅ Matched "${value}" → ID: ${matched.documentId}`)
+      } else if (matched && !matched.documentId) {
+        // Matched entity but no documentId
+        unmatchedValues.push(value)
+        console.warn(
+          `    ⚠️ Entity found for "${value}" but no documentId in ${relationConfig.endpoint}`
+        )
       } else {
+        // No match found
+        unmatchedValues.push(value)
         console.warn(`    ⚠️ No match found for "${value}" in ${relationConfig.endpoint}`)
       }
     }
 
+    // Log unmatched values for this field
+    if (unmatchedValues.length > 0) {
+      console.warn(
+        `  ⚠️ ${relationName}: ${unmatchedValues.length} unmatched value(s): ${unmatchedValues.join(', ')}`
+      )
+    }
+
+    // Only add relation if at least one valid documentId was found
     if (matchedIds.length > 0) {
       relations[relationName] = matchedIds
       console.log(`  ✅ ${relationName}: Resolved ${matchedIds.length} relation(s)`)
+    } else {
+      console.warn(`  ⚠️ ${relationName}: No valid relations found, key will be omitted`)
     }
   }
 
