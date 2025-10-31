@@ -274,7 +274,8 @@ const PATHS_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 // Fetch MDX content by path - has path nesting
 export const fetchMDXContentByPath = async (
   collectionName: string,
-  path: string
+  path: string,
+  deployment_status: string
 ): Promise<MDXContentByIdApiResponse> => {
   try {
     // Ensure path starts with a slash and has no trailing slashes
@@ -285,6 +286,9 @@ export const fetchMDXContentByPath = async (
       filters: {
         path: {
           $eq: normalizedPath,
+        },
+        deployment_status: {
+          $eq: deployment_status,
         },
       },
       populate: '*',

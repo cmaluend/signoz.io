@@ -120,13 +120,14 @@ export async function generateMetadata({
     // Convert slug array to path
     const path = params.slug.join('/')
 
+    const isProduction = process.env.VERCEL_ENV === 'production'
+
     try {
-      const { data: content } = await fetchMDXContentByPath('faqs', path)
+      const deployment_status = isProduction ? 'live' : 'staging'
+      const { data: content } = await fetchMDXContentByPath('faqs', path, deployment_status)
 
       // Extract author names from the content
-      const authorNames = content.authors?.data?.map((author) => author.attributes?.name) || [
-        'SigNoz Team',
-      ]
+      const authorNames = content.authors?.map((author) => author?.name) || ['SigNoz Team']
 
       return {
         title: content.title,
@@ -182,6 +183,8 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const path = params.slug.join('/')
   console.log(`Fetching FAQ content for path: ${path}`)
 
+  const isProduction = process.env.VERCEL_ENV === 'production'
+
   // Fetch content from Strapi with error handling
   let content: MDXContent
   try {
@@ -189,7 +192,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       throw new Error('Strapi API URL is not configured')
     }
 
-    const response = await fetchMDXContentByPath('faqs', path)
+    const deployment_status = isProduction ? 'live' : 'staging'
+
+    const response = await fetchMDXContentByPath('faqs', path, deployment_status)
     if (!response || !response.data) {
       console.error(`Invalid response for path: ${path}`)
       notFound()
