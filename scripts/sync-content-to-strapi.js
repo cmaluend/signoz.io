@@ -283,6 +283,10 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
 async function findEntryByPath(folderName, pathField) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
+    console.log(
+      `  🔍 [DEBUG] Searching for entry: endpoint=${schema.endpoint}, path=${pathField}, deployment_status=${DEPLOYMENT_STATUS}`
+    )
+
     const response = await axios.get(`${CMS_API_URL}/api/${schema.endpoint}`, {
       params: {
         filters: { path: { $eq: pathField }, deployment_status: { $eq: DEPLOYMENT_STATUS } },
@@ -294,11 +298,23 @@ async function findEntryByPath(folderName, pathField) {
       },
     })
 
+    console.log(`  🔍 [DEBUG] Response status: ${response.status}`)
+    console.log(`  🔍 [DEBUG] Response data:`, JSON.stringify(response.data, null, 2))
+
     if (response.data.data && response.data.data.length > 0) {
-      return response.data.data[0]
+      const entry = response.data.data[0]
+      console.log(`  ✅ [DEBUG] Entry found:`, JSON.stringify(entry, null, 2))
+      return entry
     }
+
+    console.log(`  ℹ️ [DEBUG] No entry found`)
     return null
   } catch (error) {
+    console.error(`  ❌ [DEBUG] Error in findEntryByPath:`, error.message)
+    if (error.response) {
+      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
+      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
+    }
     throw new Error(`Failed to find entry by path: ${error.message}`)
   }
 }
@@ -307,6 +323,10 @@ async function findEntryByPath(folderName, pathField) {
 async function createEntry(folderName, data) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
+    console.log(`  📝 [DEBUG] Creating entry in ${schema.endpoint}`)
+    console.log(`  📝 [DEBUG] Data keys:`, Object.keys(data).join(', '))
+    console.log(`  📝 [DEBUG] Full data:`, JSON.stringify(data, null, 2))
+
     const response = await axios.post(
       `${CMS_API_URL}/api/${schema.endpoint}`,
       { data },
@@ -317,13 +337,19 @@ async function createEntry(folderName, data) {
         },
       }
     )
+
+    console.log(`  ✅ [DEBUG] Create response:`, JSON.stringify(response.data, null, 2))
     return response.data
   } catch (error) {
     const errorMsg = error.response?.data?.error?.message || error.message
     const errorDetails = error.response?.data?.error?.details || {}
-    console.error(`  ❌ Create failed: ${errorMsg}`)
+    console.error(`  ❌ [DEBUG] Create failed: ${errorMsg}`)
     if (Object.keys(errorDetails).length > 0) {
-      console.error(`  Details:`, JSON.stringify(errorDetails, null, 2))
+      console.error(`  ❌ [DEBUG] Error details:`, JSON.stringify(errorDetails, null, 2))
+    }
+    if (error.response) {
+      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
+      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
     }
     throw error
   }
@@ -333,6 +359,12 @@ async function createEntry(folderName, data) {
 async function updateEntry(folderName, documentId, data) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
+    console.log(`  🔄 [DEBUG] Updating entry in ${schema.endpoint}`)
+    console.log(`  🔄 [DEBUG] Document ID: ${documentId}`)
+    console.log(`  🔄 [DEBUG] Update URL: ${CMS_API_URL}/api/${schema.endpoint}/${documentId}`)
+    console.log(`  🔄 [DEBUG] Data keys:`, Object.keys(data).join(', '))
+    console.log(`  🔄 [DEBUG] Full data:`, JSON.stringify(data, null, 2))
+
     const response = await axios.put(
       `${CMS_API_URL}/api/${schema.endpoint}/${documentId}`,
       { data },
@@ -343,13 +375,19 @@ async function updateEntry(folderName, documentId, data) {
         },
       }
     )
+
+    console.log(`  ✅ [DEBUG] Update response:`, JSON.stringify(response.data, null, 2))
     return response.data
   } catch (error) {
     const errorMsg = error.response?.data?.error?.message || error.message
     const errorDetails = error.response?.data?.error?.details || {}
-    console.error(`  ❌ Update failed: ${errorMsg}`)
+    console.error(`  ❌ [DEBUG] Update failed: ${errorMsg}`)
     if (Object.keys(errorDetails).length > 0) {
-      console.error(`  Details:`, JSON.stringify(errorDetails, null, 2))
+      console.error(`  ❌ [DEBUG] Error details:`, JSON.stringify(errorDetails, null, 2))
+    }
+    if (error.response) {
+      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
+      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
     }
     throw error
   }
@@ -383,7 +421,14 @@ function detectOperationType(filePath) {
 // Main sync logic
 async function syncToStrapi() {
   console.log('🚀 Starting sync to Strapi CMS...\n')
-  console.log(`📦 Deployment Status: ${DEPLOYMENT_STATUS}\n`)
+  console.log(`📦 Deployment Status: ${DEPLOYMENT_STATUS}`)
+  console.log(`🔗 CMS API URL: ${CMS_API_URL}`)
+  console.log(`📁 Sync Folders: ${SYNC_FOLDERS.join(', ')}`)
+  console.log(`📄 Changed Files (${CHANGED_FILES.length}):`)
+  CHANGED_FILES.forEach((file, idx) => {
+    console.log(`   ${idx + 1}. ${file}`)
+  })
+  console.log('')
 
   const results = {
     created: [],
@@ -394,23 +439,32 @@ async function syncToStrapi() {
   }
 
   for (const filePath of CHANGED_FILES) {
-    console.log(`\n📄 Processing: ${filePath}`)
+    console.log(`\n${'='.repeat(80)}`)
+    console.log(`📄 Processing: ${filePath}`)
+    console.log(`${'='.repeat(80)}`)
 
     try {
+      console.log(`  🔍 [DEBUG] Extracting folder name...`)
       const folderName = getFolderName(filePath)
+      console.log(`  🔍 [DEBUG] Folder name: ${folderName}`)
 
       if (!folderName || !SYNC_FOLDERS.includes(folderName)) {
         console.log(`⏭️ Skipped: Folder '${folderName}' not in sync list`)
+        console.log(`  ℹ️ [DEBUG] Sync folders: ${SYNC_FOLDERS.join(', ')}`)
         results.skipped.push(filePath)
         continue
       }
 
+      console.log(`  🛣️ [DEBUG] Generating path field...`)
       const pathField = generatePathField(filePath, folderName)
+      console.log(`  🛣️ [DEBUG] Path field: ${pathField}`)
+
       if (!pathField) {
         throw new Error('Could not generate path field')
       }
 
       const operationType = detectOperationType(filePath)
+      console.log(`  🔧 [DEBUG] Operation type: ${operationType}`)
 
       if (operationType === 'delete') {
         console.log(`🗑️ Deleting from CMS: ${pathField}`)
@@ -425,13 +479,30 @@ async function syncToStrapi() {
           results.skipped.push(filePath)
         }
       } else {
+        console.log(`  📖 [DEBUG] Parsing MDX file...`)
         const { frontmatter, content } = parseMDXFile(filePath)
-        const strapiData = await mapToStrapiSchema(folderName, frontmatter, content, pathField)
+        console.log(`  📖 [DEBUG] Frontmatter keys:`, Object.keys(frontmatter).join(', '))
 
+        console.log(`  🗺️ [DEBUG] Mapping to Strapi schema...`)
+        const strapiData = await mapToStrapiSchema(folderName, frontmatter, content, pathField)
+        console.log(`  🗺️ [DEBUG] Mapped data keys:`, Object.keys(strapiData).join(', '))
+
+        console.log(`  🔎 [DEBUG] Checking if entry exists in CMS...`)
         const existingEntry = await findEntryByPath(folderName, pathField)
+        console.log(`  🔎 [DEBUG] Existing entry result:`, existingEntry ? 'FOUND' : 'NOT FOUND')
 
         if (existingEntry) {
           console.log(`🔄 Updating in CMS: ${pathField}`)
+          console.log(
+            `  📋 [DEBUG] Entry details: id=${existingEntry.id}, documentId=${existingEntry.documentId}`
+          )
+
+          if (!existingEntry.documentId) {
+            throw new Error(
+              `Entry found but has no documentId. Entry keys: ${Object.keys(existingEntry).join(', ')}`
+            )
+          }
+
           await updateEntry(folderName, existingEntry.documentId, strapiData)
           console.log(`✅ Updated successfully`)
           results.updated.push(filePath)
@@ -443,6 +514,33 @@ async function syncToStrapi() {
         }
       }
     } catch (error) {
+      console.error(`\n❌ [DEBUG] ============ ERROR DETAILS ============`)
+      console.error(`❌ [DEBUG] File: ${filePath}`)
+      console.error(`❌ [DEBUG] Error message: ${error.message}`)
+      console.error(`❌ [DEBUG] Error name: ${error.name}`)
+      console.error(`❌ [DEBUG] Error stack:`, error.stack)
+
+      if (error.response) {
+        console.error(`❌ [DEBUG] HTTP Response status: ${error.response.status}`)
+        console.error(
+          `❌ [DEBUG] HTTP Response headers:`,
+          JSON.stringify(error.response.headers, null, 2)
+        )
+        console.error(
+          `❌ [DEBUG] HTTP Response data:`,
+          JSON.stringify(error.response.data, null, 2)
+        )
+      }
+
+      if (error.config) {
+        console.error(`❌ [DEBUG] Request config:`)
+        console.error(`  - URL: ${error.config.url}`)
+        console.error(`  - Method: ${error.config.method}`)
+        console.error(`  - Data: ${error.config.data}`)
+      }
+
+      console.error(`❌ [DEBUG] =========================================\n`)
+
       console.error(`❌ Error processing ${filePath}: ${error.message}`)
       results.errors.push({ file: filePath, error: error.message })
     }
