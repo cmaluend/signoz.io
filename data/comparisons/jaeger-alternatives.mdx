@@ -1,6 +1,6 @@
 ---
 title: Top 6 Jaeger Alternatives in 2025 [Open-Source Included]
-slug: jaeger-alternatives
+
 date: 2025-01-02
 tags: [tools-comparison]
 authors: [daniel]
@@ -9,16 +9,18 @@ image: /img/blog/2024/02/jaeger-alternatives-cover.webp
 hide_table_of_contents: false
 toc_min_heading_level: 2
 toc_max_heading_level: 2
-keywords: [Jaeger,opentelemetry,open-source,monitoring-tools,signoz]
+keywords: [Jaeger, opentelemetry, open-source, monitoring-tools, signoz]
 ---
+
 Jaeger is an open-source distributed tracing backend that has been on the market for a while. It was developed by Uber Technologies in 2015 and contributed to the Cloud Native Computing Foundation (CNCF). It is designed to monitor and troubleshoot complex distributed systems by providing insights into the flow of requests and responses across microservice architectures.
 
-
-
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/02/jaeger-alternatives-cover.webp" alt="Jaeger Alternatives cover image"/>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/02/jaeger-alternatives-cover.webp"
+    alt="Jaeger Alternatives cover image"
+  />
 </figure>
-
 
 Distributed tracing is critical for cloud-native microservices-based applications. Before we look into Jaeger alternatives, let’s have a brief overview of distributed tracing.
 
@@ -34,9 +36,9 @@ Distributed tracing is useful in identifying bottlenecks, latency issues, and er
 
 Jaeger is a powerful tool for distributed tracing, but it has its downsides, which may necessitate considering an alternative tool. Jaeger’s UI is limited, and you might need more capabilities for analyzing your trace data.
 
-Another notable limitation is its narrow focus on distributed tracing. In today's complex software ecosystems, troubleshooting and resolving issues require more than just tracing requests across microservices. 
+Another notable limitation is its narrow focus on distributed tracing. In today's complex software ecosystems, troubleshooting and resolving issues require more than just tracing requests across microservices.
 
-You need access to rich metrics that offer insights into system performance, resource utilization, and application behavior. Jaeger lacks observability features such as metrics collection, logging, and profiling. This means you may need to use additional tools alongside Jaeger to gather comprehensive observability data. Using multiple tools for monitoring is not easy and often requires more engineering bandwidth. 
+You need access to rich metrics that offer insights into system performance, resource utilization, and application behavior. Jaeger lacks observability features such as metrics collection, logging, and profiling. This means you may need to use additional tools alongside Jaeger to gather comprehensive observability data. Using multiple tools for monitoring is not easy and often requires more engineering bandwidth.
 
 Another limitation worth considering is the maintenance required for the databases supported by Jaeger. Currently, Jaeger supports Cassandra and Elasticsearch as its backends, but these databases require ongoing maintenance and may not scale as easily as other options. This can be a concern for teams that are looking for a more scalable and easier-to-maintain solution for their distributed tracing needs.
 
@@ -51,30 +53,39 @@ Here are the top 6 Jaeger alternatives to consider adopting in 2024:
 - [New Relic](#new-relic)
 - [Aspecto](#aspecto)
 
-
 ## SigNoz
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/common/signoz_flamegraphs.webp" alt="Traces represented as Flamegraphs and Gantt charts in SigNoz dashbaord"/>
-    <figcaption><i>Traces represented as Flamegraphs and Gantt charts in SigNoz dashbaord</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/common/signoz_flamegraphs.webp"
+    alt="Traces represented as Flamegraphs and Gantt charts in SigNoz dashbaord"
+  />
+  <figcaption>
+    <i>Traces represented as Flamegraphs and Gantt charts in SigNoz dashbaord</i>
+  </figcaption>
 </figure>
-
 
 [SigNoz](https://signoz.io/) is a robust alternative to Jaeger, offering a full-stack, open-source solution that provides a unified view of logs, metrics, and traces. By consolidating these signals into a single pane of glass, SigNoz enables engineering teams to gain deeper insights into application performance and troubleshoot issues more effectively.
 
 SigNoz also provides advanced features for tracing data. You can run aggregates on trace data and filter it across your application-specific attributes to troubleshoot performance issues.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/common/traces_custom_aggregates.webp" alt="Run aggregates on trace data"/>
-    <figcaption><i>Run aggregates on trace data</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/common/traces_custom_aggregates.webp"
+    alt="Run aggregates on trace data"
+  />
+  <figcaption>
+    <i>Run aggregates on trace data</i>
+  </figcaption>
 </figure>
-
 
 SigNoz is built to support OpenTelemetry natively. OpenTelemetry is <a href = "https://www.cncf.io/projects/opentelemetry" rel="noopener noreferrer nofollow" target="_blank" >backed</a> by Cloud Native Computing Foundation and is the second most active project after Kubernetes in the CNCF landscape. OpenTelemetry is the future of cloud-native [application instrumentation](https://signoz.io/docs/instrumentation/). Jaeger also shifted from Jaeger clients to OpenTelemetry SDKs for generating trace data.
 
 ### Key features
 
-Apart from distributed tracing, SigNoz also provides: 
+Apart from distributed tracing, SigNoz also provides:
 
 - APM: Monitor application metrics like p99 latency, error rates for your services, external API calls, and individual endpoints.
 - Metrics and Dashboards: Monitor any metrics important to you and create dashboards around any use case like external calls, API endpoints, JVM metrics.
@@ -85,13 +96,22 @@ Apart from distributed tracing, SigNoz also provides:
 
 ## Honeycomb
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/02/jaeger-alternatives-honeycomb.webp" alt="Honeycomb observability dashboard"/>
-    <figcaption><i>Honeycomb observability dashboard (Source: Honeycomb’s website)</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/02/jaeger-alternatives-honeycomb.webp"
+    alt="Honeycomb observability dashboard"
+  />
+  <figcaption>
+    <i>Honeycomb observability dashboard (Source: Honeycomb’s website)</i>
+  </figcaption>
 </figure>
 
-
-<a href = "https://www.honeycomb.io" rel="noopener noreferrer nofollow" target="_blank" >Honeycomb</a> is a full-stack, cloud-based observability tool that provides users with real-time insights into their complex systems and supports events, logs, and traces.
+<a href="https://www.honeycomb.io" rel="noopener noreferrer nofollow" target="_blank">
+  Honeycomb
+</a>
+ is a full-stack, cloud-based observability tool that provides users with real-time insights into
+their complex systems and supports events, logs, and traces.
 
 Honeycomb's tracing feature connects events to show the sequence of operations within a system clearly. It can also simulate user activity within the system, allowing it to detect patterns, correlations, or anomalies that may not be evident when analyzing individual events separately.
 
@@ -106,13 +126,26 @@ Honeycomb can also identify traces associated with poor user experiences in syst
 
 ## Tempo by Grafana (open-source)
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/02/jaeger-alternatives-tempo.webp" alt="Tracing dashboard"/>
-    <figcaption><i>Tracing dashboard (Source: Grafana Tempo docs)</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/02/jaeger-alternatives-tempo.webp"
+    alt="Tracing dashboard"
+  />
+  <figcaption>
+    <i>Tracing dashboard (Source: Grafana Tempo docs)</i>
+  </figcaption>
 </figure>
 
-
-<a href = "https://grafana.com/oss/tempo" rel="noopener noreferrer nofollow" target="_blank" >Grafana Tempo</a> is an open-source distributed tracing backend specifically designed for storing and retrieving trace data efficiently. Its high scalability allows it to handle large volumes, reducing operational complexities and costs. This is attributed to its object storage backend, which enables long-term trace storage and positions it as a good alternative to Jaeger. Tempo utilizes TraceQL, a custom query language designed specifically for analyzing traces. With TraceQL, specific spans can be easily selected for analysis.
+<a href="https://grafana.com/oss/tempo" rel="noopener noreferrer nofollow" target="_blank">
+  Grafana Tempo
+</a>
+is an open-source distributed tracing backend specifically designed for storing and retrieving trace
+data efficiently. Its high scalability allows it to handle large volumes, reducing operational
+complexities and costs. This is attributed to its object storage backend, which enables long-term
+trace storage and positions it as a good alternative to Jaeger. Tempo utilizes TraceQL, a custom
+query language designed specifically for analyzing traces. With TraceQL, specific spans can be
+easily selected for analysis.
 
 In addition, Tempo integrates seamlessly with Grafana, Mimir, Prometheus, and Loki, providing comprehensive observability and monitoring capabilities.
 
@@ -122,13 +155,24 @@ In addition, Tempo integrates seamlessly with Grafana, Mimir, Prometheus, and Lo
 
 ## Datadog
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/02/jaeger-alternatives-datadog.webp" alt="Distributed tracing flame graphs"/>
-    <figcaption><i>Distributed tracing flame graphs (Source: Datadog)</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/02/jaeger-alternatives-datadog.webp"
+    alt="Distributed tracing flame graphs"
+  />
+  <figcaption>
+    <i>Distributed tracing flame graphs (Source: Datadog)</i>
+  </figcaption>
 </figure>
 
-
-<a href = "https://www.datadog.com" rel="noopener noreferrer nofollow" target="_blank" >Datadog</a> is a leading observability platform that provides comprehensive monitoring and analytics solutions for modern cloud-scale applications. It allows you to pinpoint issues by seamlessly correlating traces with a variety of data sources, such as logs, infrastructure metrics, database queries, network calls, and frontend telemetry, all in one unified view.
+<a href="https://www.datadog.com" rel="noopener noreferrer nofollow" target="_blank">
+  Datadog
+</a>
+is a leading observability platform that provides comprehensive monitoring and analytics solutions
+for modern cloud-scale applications. It allows you to pinpoint issues by seamlessly correlating
+traces with a variety of data sources, such as logs, infrastructure metrics, database queries,
+network calls, and frontend telemetry, all in one unified view.
 
 Datadog's distributed tracing tool is particularly powerful, enabling real-time searches and analyses of traces that are error-prone, have high latency, or are valuable. It also includes a feature for creating tag-based retention filters, which help manage traces by retaining only the most important ones based on tail-based criteria.
 
@@ -142,11 +186,16 @@ Datadog's distributed tracing tool is particularly powerful, enabling real-time 
 
 ## New Relic
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/02/jaeger-alternatives-new-relic.webp" alt="Distributed tracing"/>
-    <figcaption><i>Distributed tracing</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/02/jaeger-alternatives-new-relic.webp"
+    alt="Distributed tracing"
+  />
+  <figcaption>
+    <i>Distributed tracing</i>
+  </figcaption>
 </figure>
-
 
 New Relic is an all-in-one platform designed to help you monitor your applications and services in real-time. It focuses on four key types of data: metrics, events, logs, and traces, which are referred to as "MELT.” With New Relic, you can track requests across your distributed system using its distributed tracing feature. It offers a user-friendly interface dedicated to understanding and analyzing your traces.
 
@@ -163,14 +212,26 @@ New Relic also offers support for trace sampling, a feature designed to reduce t
 
 ## Aspecto
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/02/jaeger-alternatives-aspecto.webp" alt="Trace analysis"/>
-    <figcaption><i>Trace analysis (Source: Aspecto website)</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/02/jaeger-alternatives-aspecto.webp"
+    alt="Trace analysis"
+  />
+  <figcaption>
+    <i>Trace analysis (Source: Aspecto website)</i>
+  </figcaption>
 </figure>
 
-
-
-<a href = "https://www.aspecto.io" rel="noopener noreferrer nofollow" target="_blank" >Aspecto</a> is an observability platform powered by OpenTelemetry that simplifies the process of troubleshooting and debugging distributed applications. It stands out as a flexible and feature-rich alternative to Jaeger, offering a unified interface that requires no code changes, making it easy for developers to visualize and troubleshoot transactions within their distributed services.  With its secondary dimension grouping functionality, Aspecto allows you to delve deeper into your tracing data, facilitating the identification of key system issues.
+<a href="https://www.aspecto.io" rel="noopener noreferrer nofollow" target="_blank">
+  Aspecto
+</a>
+is an observability platform powered by OpenTelemetry that simplifies the process of troubleshooting
+and debugging distributed applications. It stands out as a flexible and feature-rich alternative to
+Jaeger, offering a unified interface that requires no code changes, making it easy for developers to
+visualize and troubleshoot transactions within their distributed services. With its secondary
+dimension grouping functionality, Aspecto allows you to delve deeper into your tracing data,
+facilitating the identification of key system issues.
 
 Aspecto has a built-in sampling feature that efficiently reduces telemetry costs at scale, while its comprehensive logs and traces visualization ensures complete system visibility and streamlined troubleshooting.
 

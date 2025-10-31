@@ -1,6 +1,5 @@
 ---
 title: New Relic vs Grafana - In-depth Comparison [2025]
-slug: new-relic-vs-grafana
 date: 2025-01-02
 tags: [tools-comparison]
 authors: [daniel]
@@ -9,40 +8,44 @@ image: /img/blog/2024/03/new-relic-vs-grafana-cover.webp
 hide_table_of_contents: false
 toc_min_heading_level: 2
 toc_max_heading_level: 2
-keywords: [newrelic-vs-grafana,newrelic,grafana,opentelemetry,open-source,monitoring-tools,signoz]
+keywords:
+  [newrelic-vs-grafana, newrelic, grafana, opentelemetry, open-source, monitoring-tools, signoz]
 ---
+
 New Relic and Grafana are popular monitoring and observability tools that provide a wide range of products with similar features. In this post, I have compared New Relic and Grafana on important features like APM, log management, infrastructure monitoring, application security, etc.
 
-
-
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-cover.webp" alt=""/>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-cover.webp"
+    alt=""
+  />
 </figure>
 
-
 <Admonition type="info">
-💡 I instrumented a sample application and sent data to New Relic and Grafana to evaluate my experience. Some takeaways are subjective and based on personal preference.
+  💡 I instrumented a sample application and sent data to New Relic and Grafana to evaluate my
+  experience. Some takeaways are subjective and based on personal preference.
 </Admonition>
 
 ## New Relic vs Grafana: Overview
 
-New Relic and Grafana are both powerful tools designed for monitoring and observability, but they serve different purposes and offer unique features. Grafana is primarily known for its data visualization capabilities, allowing users to create interactive dashboards that provide insights into their data. When integrated with the <a href = "https://grafana.com/about/grafana-stack" rel="noopener noreferrer nofollow" target="_blank" >Grafana stack</a>, which includes additional components like Loki for logging, it becomes a comprehensive observability and monitoring solution. 
+New Relic and Grafana are both powerful tools designed for monitoring and observability, but they serve different purposes and offer unique features. Grafana is primarily known for its data visualization capabilities, allowing users to create interactive dashboards that provide insights into their data. When integrated with the <a href = "https://grafana.com/about/grafana-stack" rel="noopener noreferrer nofollow" target="_blank" >Grafana stack</a>, which includes additional components like Loki for logging, it becomes a comprehensive observability and monitoring solution.
 
 New Relic, on the other hand, is an all-in-one [observability and monitoring](https://signoz.io/blog/observability-vs-monitoring/) solution. It integrates a wide range of features directly within its platform.
 
 Here’s a quick overview of the overall platform features and functionality of New Relic and Grafana.
 
-| Features | Grafana | New Relic |
-| --- | --- | --- |
-| APM | ✅ | ✅ |
-| Log management | 🟡  | ✅  |
-| Infrastructure monitoring | 🟡  | ✅  |
-| Visualization | ✅  | ✅  |
-| Real user monitoring | ✅ | ✅ |
-| OpenTelemetry support | ✅ | ✅ |
-| Incident response and management | 🟡  | ✅ |
-| Application security | ❌ | ✅ |
-| Free Tier | ✅  | ✅  |
+| Features                         | Grafana | New Relic |
+| -------------------------------- | ------- | --------- |
+| APM                              | ✅      | ✅        |
+| Log management                   | 🟡      | ✅        |
+| Infrastructure monitoring        | 🟡      | ✅        |
+| Visualization                    | ✅      | ✅        |
+| Real user monitoring             | ✅      | ✅        |
+| OpenTelemetry support            | ✅      | ✅        |
+| Incident response and management | 🟡      | ✅        |
+| Application security             | ❌      | ✅        |
+| Free Tier                        | ✅      | ✅        |
 
 ✅ - Available
 
@@ -56,34 +59,48 @@ To evaluate the APM feature in Grafana and New Relic, I sent data from a sample 
 
 Grafana Cloud uses its Application Observability solution to observe and monitor the performance of applications. This solution allows for the detection of anomalies in applications and root cause analysis. It helped me identify request failures in my application.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-app-observability.webp" alt="Application observability in Grafana"/>
-    <figcaption><i>Application observability in Grafana</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-app-observability.webp"
+    alt="Application observability in Grafana"
+  />
+  <figcaption>
+    <i>Application observability in Grafana</i>
+  </figcaption>
 </figure>
-
-
 
 New Relic’s APM feature provided me with real-time monitoring of my application’s telemetry data, including metrics, logs, events, and transactions, through a combination of pre-built and custom dashboards. On the [Distributed Tracing](https://signoz.io/distributed-tracing/) page, I was able to filter traces by Trace Groups, Root entry span, Root entity, and Errors. This allowed me to focus more on specific traces with failures and latency issues.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-apm-nr.webp" alt="APM in New Relic"/>
-    <figcaption><i>APM in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-apm-nr.webp"
+    alt="APM in New Relic"
+  />
+  <figcaption>
+    <i>APM in New Relic</i>
+  </figcaption>
 </figure>
-
 
 With New Relic, you can visualize inter-service relationships and dependencies within an application using service maps, end-to-end visibility of requests using flamegraphs, generate SLA reports, manage vulnerabilities, and more. New Relic provided me with a lot of information on my application’s performance.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-flamegraph-visualization.webp" alt="Flamegraph visualization"/>
-    <figcaption><i>Flamegraph visualization</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-flamegraph-visualization.webp"
+    alt="Flamegraph visualization"
+  />
+  <figcaption>
+    <i>Flamegraph visualization</i>
+  </figcaption>
 </figure>
 
-
-Both tools have good APM capabilities. If you require deep insights into your application and its performance, New Relic is a better choice. 
+Both tools have good APM capabilities. If you require deep insights into your application and its performance, New Relic is a better choice.
 
 ## Log Management: Grafana for cost effectiveness, New Relic for better log insights
 
-Grafana uses Loki from the Grafana stack for log management. Loki is a log aggregation tool designed to store and query logs from all your applications and infrastructure. 
+Grafana uses Loki from the Grafana stack for log management. Loki is a log aggregation tool designed to store and query logs from all your applications and infrastructure.
 
 Loki indexes only the metadata (labels) of logs, compresses them into chunks and then stores them in object storage like S3 buckets. The compressed chunks, smaller index, and use of low-cost object storage, makes Loki less expensive to use.
 
@@ -93,19 +110,29 @@ Other features of Loki:
 - Ingests logs without requiring any formatting requirements.
 - You can build metrics and generate alerts from your log lines
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-loki.webp" alt="Loki visualization through Grafana"/>
-    <figcaption><i>Loki visualization through Grafana</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-loki.webp"
+    alt="Loki visualization through Grafana"
+  />
+  <figcaption>
+    <i>Loki visualization through Grafana</i>
+  </figcaption>
 </figure>
-
 
 Log management in New Relic didn’t require any setup at all, my application and system logs were automatically collected by the New Relic agent. I could immediately visualize and query them in the logs tab. Log query in New Relic is done using Lucene, an open-source search library, and the New Relic Query Language (NRQL). They both allow for instant query and analysis of log data.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-log-nr.webp" alt="Log management in New Relic"/>
-    <figcaption><i>Log management in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-log-nr.webp"
+    alt="Log management in New Relic"
+  />
+  <figcaption>
+    <i>Log management in New Relic</i>
+  </figcaption>
 </figure>
-
 
 Other New Relic log management features include:
 
@@ -120,11 +147,16 @@ If your focus is log aggregation, scalability, and cost-effectiveness, Grafana L
 
 Grafana Cloud allows for infrastructure monitoring of AWS, Kubernetes, and Grafana integrations such as Linux machines, databases, applications, and more. It provides a managed Grafana instance, integration with various data sources, powerful visualization tools, and alerting capabilities. This allowed me to focus on monitoring my infrastructure without the complexities of managing the underlying infrastructure. I was also able to create customized dashboards to monitor specific metrics from my infrastructure.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-kubernetes.webp" alt="Kubernetes monitoring in Grafana"/>
-    <figcaption><i>Kubernetes monitoring in Grafana</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-kubernetes.webp"
+    alt="Kubernetes monitoring in Grafana"
+  />
+  <figcaption>
+    <i>Kubernetes monitoring in Grafana</i>
+  </figcaption>
 </figure>
-
 
 In New Relic, you can monitor different infrastructure types by deploying the infrastructure agent. The agent automatically collected and sent data from my host infrastructure and services running on it to the New Relic platform. It provided out-of-the-box dashboard for me to visualize my infrastructure data.
 
@@ -135,11 +167,16 @@ With New Relic infrastructure monitoring, you can:
 - Manage alert settings directly from the relevant infrastructure chart.
 - You can also see log messages related to your errors and traces directly in your app's or host's UI.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-infra-monitoring.webp" alt="Infrastructure monitoring in New Relic"/>
-    <figcaption><i>Infrastructure monitoring in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-infra-monitoring.webp"
+    alt="Infrastructure monitoring in New Relic"
+  />
+  <figcaption>
+    <i>Infrastructure monitoring in New Relic</i>
+  </figcaption>
 </figure>
-
 
 When choosing between Grafana and New Relic for infrastructure monitoring, consider the costs. Both tools can be expensive but the cost can be less depending on what you want to monitor.
 
@@ -165,19 +202,29 @@ Some of the features IRM provides include:
 - Identification of actionable insights on incidents across services, teams, or geos.
 - Query of incident data
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-incident-query.webp" alt="Incident query"/>
-    <figcaption><i>Incident query</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-incident-query.webp"
+    alt="Incident query"
+  />
+  <figcaption>
+    <i>Incident query</i>
+  </figcaption>
 </figure>
 
+New Relic provides an <a href = "https://newrelic.com/platform/applied-intelligence" rel="noopener noreferrer nofollow" target="_blank" >AIOps and Applied Intelligence</a> tool for incident management. This feature integrates machine learning and advanced logic to minimize the impact of redundant alerts, allowing for a swift focus on alerts that indicate genuine issues. It can also correlate related incidents for quicker identification and resolution.
 
-New Relic provides an <a href = "https://newrelic.com/platform/applied-intelligence" rel="noopener noreferrer nofollow" target="_blank" >AIOps and Applied Intelligence</a> tool for incident management. This feature integrates machine learning and advanced logic to minimize the impact of redundant alerts, allowing for a swift focus on alerts that indicate genuine issues. It can also correlate related incidents for quicker identification and resolution. 
-
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-correlation-of-incidents.webp" alt="Correlation of related incidents"/>
-    <figcaption><i>Correlation of related incidents</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-correlation-of-incidents.webp"
+    alt="Correlation of related incidents"
+  />
+  <figcaption>
+    <i>Correlation of related incidents</i>
+  </figcaption>
 </figure>
-
 
 The platform supports real-time collaboration among teams through contextual notifications, ensuring that all relevant parties are informed and can contribute effectively. It provided me with detailed and in-depth information on root causes and the response history. This comes in handy for post-incident reports, providing valuable insights for future incident management strategies.
 
@@ -187,21 +234,31 @@ For better incident management using advanced technologies, providing more featu
 
 Grafana does not exactly have an inbuilt product or feature for application security but it does allow for integration with open-source tools like <a href = "https://github.com/mergestat/mergestat" rel="noopener noreferrer nofollow" target="_blank" >MergeStat</a> and OSV-Scanner for scanning vulnerabilities in environments. You can also configure security hardening for additional security, to prevent vulnerabilities from being exploited by an attacker.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-osv.webp" alt="OSV scan dashboard"/>
-    <figcaption><i>OSV scan dashboard</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-osv.webp"
+    alt="OSV scan dashboard"
+  />
+  <figcaption>
+    <i>OSV scan dashboard</i>
+  </figcaption>
 </figure>
 
-
-Application security in New Relic is carried out using the <a href = "https://docs.newrelic.com/docs/iast/introduction" rel="noopener noreferrer nofollow" target="_blank" >Interactive Application Security Testing</a> (IAST) feature. IAST provided 360 visibility into the risks and vulnerabilities in my application. The built-in guardrails within IAST were instrumental in mitigating these security risks. 
+Application security in New Relic is carried out using the <a href = "https://docs.newrelic.com/docs/iast/introduction" rel="noopener noreferrer nofollow" target="_blank" >Interactive Application Security Testing</a> (IAST) feature. IAST provided 360 visibility into the risks and vulnerabilities in my application. The built-in guardrails within IAST were instrumental in mitigating these security risks.
 
 IAST can be incorporated into development processes as it allows for the identification and resolution of security issues without the need for separate, time-consuming security testing phases. This approach streamlines the development workflow, ensuring that security considerations are integrated seamlessly into the development lifecycle.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/new-relic-vs-grafana-app-security.webp" alt="Application security in New Relic"/>
-    <figcaption><i>Application security in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/new-relic-vs-grafana-app-security.webp"
+    alt="Application security in New Relic"
+  />
+  <figcaption>
+    <i>Application security in New Relic</i>
+  </figcaption>
 </figure>
-
 
 If you require a platform with in-built application security feature, New Relic is the clear choice. If you have an existing security solution you want to integrate with your monitoring platform, then choose Grafana.
 
@@ -209,7 +266,7 @@ If you require a platform with in-built application security feature, New Relic 
 
 Grafana being an open-source platform is free to use. Additionally, it offers both a cloud version and an enterprise version to cater to a wide range of user needs. The Grafana Cloud edition provides a free forever plan, and the enterprise version with a 14-day free trial.
 
-New Relic’s pricing is based on two things: the amount of data ingested and user Seats. It also provides a free forever plan with 100GB of free data ingest each month. Post the 100GB, you need to pay \$0.3/GB or \$0.5/GB ingested based on your plan. 
+New Relic’s pricing is based on two things: the amount of data ingested and user Seats. It also provides a free forever plan with 100GB of free data ingest each month. Post the 100GB, you need to pay \$0.3/GB or \$0.5/GB ingested based on your plan.
 
 New Relic’s user seats can get [expensive](https://signoz.io/blog/pricing-comparison-signoz-vs-datadog-vs-newrelic-vs-grafana/#no-user-based-pricing-collaborate-seamlessly-with-signoz) as it allows only 5 full platform users in its standard plan, and the cost of full platform users can be up to \$549/user per month for enterprise plans.
 
@@ -236,7 +293,7 @@ Here are a few reasons why you can consider SigNoz as an alternative to Grafana 
 
 - **SigNoz is open-source:** SigNoz is open-source, and unlike Grafana it has a single backend to manage logs , metrics, and traces. Grafana’s open-source version requires installation of the entire Grafana stack to be able to monitor your application and infrastructure. New Relic doesn’t have an open source version. SigNoz also has a cloud based version with free usage at start.
 - **All in one platform:** SigNoz being full stack provides visibility into your logs, metrics and traces in a single pane of glass. There is no need for any other “stack” or integration with other tools for monitoring your application and infrastructure data.
-- **Built on [OpenTelemetry](https://signoz.io/blog/what-is-opentelemetry/):**  SigNoz is an OpenTelemetry native tool. OpenTelemetry is the emerging standard for collecting and managing telemetry data. Being built with OpenTelemetry from scratch, SigNoz frees you from vendor lock-in, allowing you to use any backend of your choice.
+- **Built on [OpenTelemetry](https://signoz.io/blog/what-is-opentelemetry/):** SigNoz is an OpenTelemetry native tool. OpenTelemetry is the emerging standard for collecting and managing telemetry data. Being built with OpenTelemetry from scratch, SigNoz frees you from vendor lock-in, allowing you to use any backend of your choice.
 - **Flexible log management:** SigNoz’s log management solution provides a lot of flexibility. You can transform data with our logs pipeline, you get out of the box UI for log management, an advanced logs [query builder](https://signoz.io/blog/query-builder-v5/), correlation of logs with other telemetry signals for troubleshooting and more.
 
 ## Getting Started with SigNoz

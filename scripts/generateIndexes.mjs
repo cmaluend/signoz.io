@@ -3,11 +3,13 @@ import siteMetadata from '../data/siteMetadata.js'
 import {
   allBlogs,
   allDocs,
-  allComparisons,
+  // allComparisons,
   allGuides,
   allOpentelemetries,
 } from '../.contentlayer/generated/index.mjs'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
+
+// TODO: Add FAQs, Comparisons, Case Studies handling to the search indexes
 
 function createSearchIndex(content) {
   if (
@@ -28,7 +30,7 @@ function createSearchIndex(content) {
 const searchIndexes = () => {
   createSearchIndex([
     ...allBlogs,
-    ...allComparisons,
+    // ...allComparisons,
     ...allGuides,
     ...allOpentelemetries,
     ...allDocs,

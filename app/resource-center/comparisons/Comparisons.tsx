@@ -1,75 +1,58 @@
-'use client'
+import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
+import ComparisonsClient from './ComparisonsClient'
+import readingTime from 'reading-time'
 
-import { allComparisons } from 'contentlayer/generated'
-import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
-import BlogPostCard from '../Shared/BlogPostCard'
-import SearchInput from '../Shared/Search'
-import React from 'react'
-import { filterData } from 'app/utils/common'
-import { Frown } from 'lucide-react'
+export default async function ComparisonsListing() {
+  try {
+    // Fetch all comparisons from Strapi
+    const isProduction = process.env.NODE_ENV === 'production'
+    const deployment_status = isProduction ? 'live' : 'staging'
 
-interface ComparisonsPageHeaderProps {
-  onSearch: (e) => void
-}
+    const response = (await fetchMDXContentByPath(
+      'comparisons',
+      undefined,
+      deployment_status,
+      true
+    )) as MDXContentApiResponse
 
-const ComparisonsPageHeader: React.FC<ComparisonsPageHeaderProps> = ({ onSearch }) => {
-  return (
-    <section className="mb-[72px] flex max-w-[697px] flex-col leading-[143%]">
-      <h2 className="mb-0 self-start text-sm font-medium uppercase tracking-wider text-signoz_sakura-500 dark:text-signoz_sakura-400">
-        resources
-      </h2>
-      <h1 className="my-0 mt-3 self-start text-3xl font-semibold text-indigo-500 dark:text-indigo-200">
-        Comparisons
-      </h1>
-      <p className="my-4 w-full text-lg leading-8 tracking-normal text-gray-700 dark:text-stone-300 max-md:max-w-full">
-        Stay informed about the latest tools in the observability domain with in-depth comparisons
-        of popular options to determine the best fit for your needs.
-      </p>
+    if (!response || !response.data) {
+      console.error('Invalid response from Strapi for comparisons')
+      return <ComparisonsClient comparisons={[]} />
+    }
 
-      <SearchInput placeholder={'Search for a blog...'} onSearch={onSearch} />
-    </section>
-  )
-}
+    // Transform the data to match the expected format
+    const comparisons = response.data.map((comparison) => {
+      const readingTimeData = readingTime(comparison.content || '')
 
-export default function ComparisonsListing() {
-  const posts = allCoreContent(sortPosts(allComparisons))
-  const primaryFeaturedBlogs = posts.slice(0, 2)
-  const secondaryFeaturedBlogs = posts.slice(0)
+      return {
+        title: comparison.title,
+        description: comparison.description,
+        summary: comparison.summary,
+        date: comparison.date,
+        lastmod: comparison.lastmod,
+        tags: comparison.tags?.map((tag) => tag.value) || [],
+        draft: comparison.deployment_status === 'draft',
+        slug: comparison.path?.replace(/^\//, '') || '', // Remove leading slash for slug
+        path: comparison.path,
+        image: comparison.image,
+        images: comparison.images || [],
+        authors: comparison.authors?.map((author) => author?.key) || [],
+        readingTime: readingTimeData,
+        type: 'Comparison',
+      }
+    })
 
-  const [blogs, setBlogs] = React.useState(secondaryFeaturedBlogs)
-  const [searchValue, setSearchValue] = React.useState('')
+    // Sort by date (descending)
+    const sortedComparisons = comparisons.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
 
-  const handleSearch = (e) => {
-    setSearchValue(e.target.value)
-    const filteredPosts = filterData(posts, e.target.value)
-    setBlogs(filteredPosts)
+    // Filter out drafts
+    const publishedComparisons = sortedComparisons.filter((c) => !c.draft)
+
+    return <ComparisonsClient comparisons={publishedComparisons} />
+  } catch (error) {
+    console.error('Error fetching comparisons:', error)
+    return <ComparisonsClient comparisons={[]} />
   }
-
-  return (
-    <div className="comparisons">
-      <ComparisonsPageHeader onSearch={handleSearch} />
-
-      {searchValue && searchValue.length == 0 && (
-        <div className="mt-5 w-full max-md:max-w-full">
-          <div className="mt-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2">
-            {primaryFeaturedBlogs.map((featuredBlog, index) => {
-              return <BlogPostCard blog={featuredBlog} key={index} />
-            })}
-          </div>
-        </div>
-      )}
-
-      {blogs && Array.isArray(blogs) && blogs.length <= 0 && (
-        <div className="no-blogs my-8 flex items-center gap-4 font-mono font-bold">
-          <Frown size={16} /> No Comparisons found
-        </div>
-      )}
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {blogs.map((post, index) => {
-          return <BlogPostCard blog={post} key={index} />
-        })}
-      </div>
-    </div>
-  )
 }

@@ -1,14 +1,23 @@
 ---
-title: "Sumo Logic vs. Datadog: The Definitive Comparison for 2025"
-slug: "sumo-logic-vs-datadog"
-date: "2025-10-14"
+title: 'Sumo Logic vs. Datadog: The Definitive Comparison for 2025'
+date: '2025-10-14'
 tags: [observability, comparison]
 authors: [yuvraj]
 description: "A definitive comparison of Sumo Logic and Datadog, covering features, pricing, data pipeline control, security, and a senior engineer's POC checklist."
-keywords: [Sumo Logic, Datadog, observability, APM, SIEM, data path control, trace sampling, agent overhead, metric cardinality, Datadog vs Sumo Logic]
+keywords:
+  [
+    Sumo Logic,
+    Datadog,
+    observability,
+    APM,
+    SIEM,
+    data path control,
+    trace sampling,
+    agent overhead,
+    metric cardinality,
+    Datadog vs Sumo Logic,
+  ]
 ---
-
-
 
 Datadog and Sumo Logic, both offer powerful tools to monitor applications. While they often appear in the same conversations, they were built with different core philosophies that shape their features, costs, and the day-to-day experience for engineers.
 
@@ -20,40 +29,47 @@ This article provides a definitive, deep-dive comparison of Sumo Logic vs. Datad
 
 Understanding the origins of each platform is key to grasping their current strengths.
 
-
-
 **Datadog's focus is on unified, real-time performance monitoring.** It began by providing deep visibility into infrastructure metrics and has since expanded into a comprehensive, all-in-one observability platform. It's designed for DevOps and SRE teams who need to quickly diagnose performance issues across a complex stack, from frontend user experience down to the underlying network.
 
-<Figure src="/img/comparisons/2025/10/sumologic-datadog-overview.webp" alt="Datadog's Request Flow Map Dashboard" caption="Datadog's Request Flow Map Dashboard (credits: Datadog)" />
-
-
+<Figure
+  src="/img/comparisons/2025/10/sumologic-datadog-overview.webp"
+  alt="Datadog's Request Flow Map Dashboard"
+  caption="Datadog's Request Flow Map Dashboard (credits: Datadog)"
+/>
 
 **Sumo Logic’s focus is on converged security and log analytics.** It's designed to ingest and analyze massive volumes of log data. This foundation makes it exceptionally strong for deep troubleshooting, compliance, and security investigations. Its key differentiator is the native integration of a Security Information and Event Management (SIEM) solution, creating a single source of truth for development, security, and operations teams.
 
-<Figure src="/img/comparisons/2025/10/sumo-logic-overview.webp" alt="Sumo Logic's Logs Dashboard" caption="Sumo Logic's Logs Dashboard (credits: Sumo Logic)" />
+<Figure
+  src="/img/comparisons/2025/10/sumo-logic-overview.webp"
+  alt="Sumo Logic's Logs Dashboard"
+  caption="Sumo Logic's Logs Dashboard (credits: Sumo Logic)"
+/>
 
 ## Feature Comparison
 
 While both platforms cover the three pillars of observability: logs, metrics, and traces. Their feature sets and depth vary significantly.
 
-| Feature / Capability                     | Datadog | Sumo Logic   |   
-| ---------------------------------------- | ------- | ------------ | 
-| Infrastructure Monitoring                | ✓✓      | ✓✓           |      
-| Log Management & Analytics               | ✓✓      | ✓✓           |   
-| APM (Tracing & Profiling)                | ✓✓      | ✓✓           |   
-| Real User & Synthetic Monitoring         | ✓✓      | ✓ (Limited)* |    
-| Cloud SIEM                               | ✓✓      | ✓✓           |
-| Cloud SOAR (Security Orchestration)      | ✓✓      | ✓✓           |
-| Cloud Security Posture Management (CSPM) | ✓✓      | ✗            |  
-| Built-in Incident Management             | ✓       | ✓            |   
-| Generous Free Tier                       | ✗       | ✓            |     
+| Feature / Capability                     | Datadog | Sumo Logic    |
+| ---------------------------------------- | ------- | ------------- |
+| Infrastructure Monitoring                | ✓✓      | ✓✓            |
+| Log Management & Analytics               | ✓✓      | ✓✓            |
+| APM (Tracing & Profiling)                | ✓✓      | ✓✓            |
+| Real User & Synthetic Monitoring         | ✓✓      | ✓ (Limited)\* |
+| Cloud SIEM                               | ✓✓      | ✓✓            |
+| Cloud SOAR (Security Orchestration)      | ✓✓      | ✓✓            |
+| Cloud Security Posture Management (CSPM) | ✓✓      | ✗             |
+| Built-in Incident Management             | ✓       | ✓             |
+| Generous Free Tier                       | ✗       | ✓             |
 
 ✓✓ - Feature is fully available
 ✓ - Partial or limited feature
 ✗ - Feature is not available
 
-<a href="https://help.sumologic.com/docs/apm/real-user-monitoring/" rel="nofollow noreferrer">Sumo provides native RUM</a>; synthetic tests are typically surfaced via provider integrations rather than a deep first-party suite.
-
+<a href="https://help.sumologic.com/docs/apm/real-user-monitoring/" rel="nofollow noreferrer">
+  Sumo provides native RUM
+</a>
+; synthetic tests are typically surfaced via provider integrations rather than a deep first-party
+suite.
 
 ## Under the Hood: Sumo Logic vs Datadog
 
@@ -79,9 +95,9 @@ Controlling telemetry before you pay for it is critical for managing costs at sc
 
 Both platforms allow you to archive logs to your own S3 bucket to save costs, but their retrieval mechanics differ.
 
-Datadog’s <a href="https://docs.datadoghq.com/logs/log_configuration/rehydrating/" rel="nofollow noreferrer"><strong>Log Rehydration</strong></a> reads archived objects from your bucket for the selected **time window**, then applies your query. Because the query is evaluated **after** the archive files for that time range are downloaded, **scan size and cloud data-transfer costs** depend primarily on the time window you choose, not just the query selectivity. Narrowing the time window is the best way to reduce scan size and retrieval cost. 
+Datadog’s <a href="https://docs.datadoghq.com/logs/log_configuration/rehydrating/" rel="nofollow noreferrer"><strong>Log Rehydration</strong></a> reads archived objects from your bucket for the selected **time window**, then applies your query. Because the query is evaluated **after** the archive files for that time range are downloaded, **scan size and cloud data-transfer costs** depend primarily on the time window you choose, not just the query selectivity. Narrowing the time window is the best way to reduce scan size and retrieval cost.
 
-Also, rehydration only supports specific **S3 storage classes**—**Standard**, **Standard-IA**, **One Zone-IA**, **Glacier Instant Retrieval**, and **Intelligent-Tiering** (only if the asynchronous archive tiers are disabled) as documented in <a href="https://docs.datadoghq.com/logs/log_configuration/archives" rel="nofollow noreferrer">Datadog's archive configuration guide</a>. 
+Also, rehydration only supports specific **S3 storage classes**—**Standard**, **Standard-IA**, **One Zone-IA**, **Glacier Instant Retrieval**, and **Intelligent-Tiering** (only if the asynchronous archive tiers are disabled) as documented in <a href="https://docs.datadoghq.com/logs/log_configuration/archives" rel="nofollow noreferrer">Datadog's archive configuration guide</a>.
 
 **The implication is** that if your S3 lifecycle policies automatically move logs to these colder, cheaper storage tiers to save money, you won't be able to rehydrate them in Datadog without first manually restoring them to a supported class. This adds extra steps and time during an incident or audit when you need urgent access to old logs.
 
@@ -93,12 +109,12 @@ The term "on-demand ingestion" means you can selectively re-ingest data from a s
 
 The resource footprint of the collector agent is a key planning consideration, especially on busy hosts.
 
-**Datadog Agent**: The APM path is CPU-bound and scales with spans per second. When CPU is constrained, the Agent buffers unprocessed payloads in memory, which can increase memory usage and risk drops. For sizing, Datadog publishes guidance by throughput—for example, ~70 MB at ~58k spans/s and ~130 MB at ~130k spans/s (Agent 7.39 benchmarks according to <a href="https://docs.datadoghq.com/tracing/troubleshooting/agent_apm_resource_usage/" rel="nofollow noreferrer">Datadog's agent resource guide</a>). 
+**Datadog Agent**: The APM path is CPU-bound and scales with spans per second. When CPU is constrained, the Agent buffers unprocessed payloads in memory, which can increase memory usage and risk drops. For sizing, Datadog publishes guidance by throughput—for example, ~70 MB at ~58k spans/s and ~130 MB at ~130k spans/s (Agent 7.39 benchmarks according to <a href="https://docs.datadoghq.com/tracing/troubleshooting/agent_apm_resource_usage/" rel="nofollow noreferrer">Datadog's agent resource guide</a>).
 
 **Sumo Logic Collector**: This is a Java process with a default heap of 128 MB; planning for 256–512 MB is common depending on sources and volume. It’s designed to handle up to ~15,000 events/sec per collector before you scale out.
 
 > **Which collector is this?**  
-   **Installed Collector** is Sumo’s **Java-based** collector (the one with a default **128 MB heap**, with guidance to plan **256–512 MB** depending on sources and volume). <a href="https://help.sumologic.com/docs/send-data/choose-collector-source/#installed-collectors-installed-agent" rel="nofollow noreferrer"><strong>Sumo Logic Distribution for OpenTelemetry</strong> is a separate OTel-based collector</a> with different packaging and management; choose it if you want OTel semantics and remote management at scale.
+>  **Installed Collector** is Sumo’s **Java-based** collector (the one with a default **128 MB heap**, with guidance to plan **256–512 MB** depending on sources and volume). <a href="https://help.sumologic.com/docs/send-data/choose-collector-source/#installed-collectors-installed-agent" rel="nofollow noreferrer"><strong>Sumo Logic Distribution for OpenTelemetry</strong> is a separate OTel-based collector</a> with different packaging and management; choose it if you want OTel semantics and remote management at scale.
 
 ### The "Life During an Incident" Experience
 
@@ -134,13 +150,13 @@ The day-to-day experience of using each platform is quite different.
 
 **Datadog** uses a modular, per-product model with several billing dimensions. At a minimum, you’ll size hosts for Infrastructure and/or APM, then layer on usage-based items like logs, RUM sessions, and custom metrics.
 
-### Core Datadog SKUs & Units — *list pricing as of Oct 2025*
+### Core Datadog SKUs & Units — _list pricing as of Oct 2025_
 
-* **Infrastructure Pro**: $15 per host/month.
-* **APM**: $31 per APM host/month, which also includes a monthly bundle of **1M indexed spans** and **150 GB ingested spans** per APM host.
-* **Logs**: Two levers—ingest and indexing. Ingest is **\$0.10/GB**; indexing is priced per 1M events and scales with retention (e.g., **7 days \$1.27**, **15 days \$1.70**, **30 days \$2.50** per 1M events). Flex Logs adds a cheaper storage tier with separate query compute.
-* **Custom metrics**: Billed per 100 custom metrics.
-* **RUM/Product Analytics**: Billed per 1,000 sessions. For example, **RUM – Measure** is **\$0.15 per 1K sessions** according to <a href="https://www.datadoghq.com/pricing/list/" rel="nofollow noreferrer">Datadog's list pricing</a>.
+- **Infrastructure Pro**: $15 per host/month.
+- **APM**: $31 per APM host/month, which also includes a monthly bundle of **1M indexed spans** and **150 GB ingested spans** per APM host.
+- **Logs**: Two levers—ingest and indexing. Ingest is **\$0.10/GB**; indexing is priced per 1M events and scales with retention (e.g., **7 days \$1.27**, **15 days \$1.70**, **30 days \$2.50** per 1M events). Flex Logs adds a cheaper storage tier with separate query compute.
+- **Custom metrics**: Billed per 100 custom metrics.
+- **RUM/Product Analytics**: Billed per 1,000 sessions. For example, **RUM – Measure** is **\$0.15 per 1K sessions** according to <a href="https://www.datadoghq.com/pricing/list/" rel="nofollow noreferrer">Datadog's list pricing</a>.
 
 For a deeper dive into datadog pricing, check out our article on [Datadog Pricing Main Caveats Explained](https://signoz.io/blog/datadog-pricing/).
 
@@ -161,7 +177,7 @@ Logs are often the biggest variable. Costs can be managed by trimming data at in
 
 Finally, costs for products like RUM and Synthetics are event and session-based, so it's wise to forecast traffic peaks. For custom metrics, costs can be controlled by reducing cardinality and using aggregations.
 
-With **Sumo Logic**, the main *driver of your bill is scan intensity*. The more you query, especially with wide time ranges or numerous dashboards, the more scan credits you will consume. This can be managed by right-sizing time ranges and using targeted filters.
+With **Sumo Logic**, the main _driver of your bill is scan intensity_. The more you query, especially with wide time ranges or numerous dashboards, the more scan credits you will consume. This can be managed by right-sizing time ranges and using targeted filters.
 
 Storage and retention are also key factors. You choose the retention period for each data source, and older data kept in "hot" storage costs more than data in cheaper tiers or S3.
 
@@ -184,11 +200,11 @@ If you are weighing Sumo Logic and Datadog, add **SigNoz Cloud** to your shortli
 **Why teams evaluating Sumo and Datadog choose SigNoz Cloud**
 
 - **One UI for incident work**  
-    Correlate a slow trace with related logs and service metrics in a click. No context switching, faster root cause.
+   Correlate a slow trace with related logs and service metrics in a click. No context switching, faster root cause.
 - **OpenTelemetry first**  
-    Keep the same OTel Collector you already run. Point it to SigNoz Cloud and ship OTLP without re-instrumenting.
+   Keep the same OTel Collector you already run. Point it to SigNoz Cloud and ship OTLP without re-instrumenting.
 - **Starts hosted, stays flexible**  
-    Begin on Cloud for speed. If policy changes, move to BYOC or self-host without changing your instrumentation.
+   Begin on Cloud for speed. If policy changes, move to BYOC or self-host without changing your instrumentation.
 - **Clear, predictable pricing:** Starts at **\$49/month**; then pay for what you use (**\$0.30/GB** for logs and traces, **\$0.10 per million** metric samples). Unlimited teammates. [See pricing](https://signoz.io/pricing/).
 
 ### Get Started with SigNoz

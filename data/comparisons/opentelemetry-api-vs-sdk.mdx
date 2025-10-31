@@ -1,26 +1,24 @@
 ---
-
 title: OpenTelemetry API vs SDK - Key Differences Explained
-slug: opentelemetry-api-vs-sdk
+
 date: 2024-10-23
 tags: [Opentelemetry]
 authors: [sushant_gaurav]
 description: Explore the key differences between OpenTelemetr   y API and SDK, learn when to use each, and discover how to enhance your observability strategy.
 keywords: [OpenTelemetry, API, SDK, observability, instrumentation, telemetry, monitoring]
-
 ---
 
 OpenTelemetry is revolutionizing observability in modern software systems by providing a standardized method for capturing [distributed tracing](https://signoz.io/blog/distributed-tracing/), metrics, and logs. As observability becomes more important in managing complex, distributed applications, understanding the differences between OpenTelemetry's API and SDK will help you select the best tool for your project. This article discusses the important differences that can help you plan your implementation strategy.
 
 ### Quick Guide: API vs SDK
 
-| Aspect | OpenTelemetry API | OpenTelemetry SDK |
-| --- | --- | --- |
-| Purpose | Provides an interface to generate telemetry data (e.g., traces, metrics, logs). | Implements the collection, processing, and exporting of telemetry data. |
-| Audience | Application developers looking to instrument their applications. | DevOps, SREs, and developers configuring telemetry collection and exporting. |
-| Stability | More stable, with less frequent updates. | Subject to changes, with updates to optimize telemetry processing. |
-| Implementation | No actual data collection or export logic. | Provides the actual logic for collecting and exporting data. |
-| Dependency | Lightweight, minimal dependencies. | Typically heavier, includes actual exporters and processors. |
+| Aspect         | OpenTelemetry API                                                               | OpenTelemetry SDK                                                            |
+| -------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Purpose        | Provides an interface to generate telemetry data (e.g., traces, metrics, logs). | Implements the collection, processing, and exporting of telemetry data.      |
+| Audience       | Application developers looking to instrument their applications.                | DevOps, SREs, and developers configuring telemetry collection and exporting. |
+| Stability      | More stable, with less frequent updates.                                        | Subject to changes, with updates to optimize telemetry processing.           |
+| Implementation | No actual data collection or export logic.                                      | Provides the actual logic for collecting and exporting data.                 |
+| Dependency     | Lightweight, minimal dependencies.                                              | Typically heavier, includes actual exporters and processors.                 |
 
 ## What is the OpenTelemetry API?
 
@@ -32,7 +30,11 @@ The key components of the API are:
 - Meters: It is used to track application metrics (such as latency and failures).
 - Loggers: It is for creating structured log entries.
 
-<Figure src="/img/comparisons/2024/10/opentelemetry-api-vs-sdk-image.webp" alt="Credits: OpenTelemetry Docs" caption="Credits: OpenTelemetry Docs" /> 
+<Figure
+  src="/img/comparisons/2024/10/opentelemetry-api-vs-sdk-image.webp"
+  alt="Credits: OpenTelemetry Docs"
+  caption="Credits: OpenTelemetry Docs"
+/>
 
 The OpenTelemetry API plays a crucial role in application development by:
 
@@ -55,23 +57,23 @@ Here’s a simple example of how you might use the OpenTelemetry API for tracing
 
 ```jsx
 // Import the OpenTelemetry API
-const { trace } = require('@opentelemetry/api');
+const { trace } = require('@opentelemetry/api')
 
 // Get a tracer instance
-const tracer = trace.getTracer('example-tracer');
+const tracer = trace.getTracer('example-tracer')
 
 // Start a span
-const span = tracer.startSpan('operation-name');
+const span = tracer.startSpan('operation-name')
 
 // Perform some operations
-doWork();
+doWork()
 
 // End the span when work is done
-span.end();
+span.end()
 
 function doWork() {
-    // Simulate work
-    for (let i = 0; i < 1000000; i++) {}
+  // Simulate work
+  for (let i = 0; i < 1000000; i++) {}
 }
 ```
 
@@ -110,42 +112,41 @@ Let us now take a look at some of the key components of SDK:
 Here’s a simple code snippet demonstrating how to configure the OpenTelemetry SDK for trace exporting:
 
 ```jsx
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
-const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base');
-const { Resource } = require('@opentelemetry/resources');
-const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node')
+const { SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base')
+const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-base')
+const { Resource } = require('@opentelemetry/resources')
+const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions')
 
 // Set up a resource to provide service name metadata
 const resource = new Resource({
   [SemanticResourceAttributes.SERVICE_NAME]: 'example-service',
-});
+})
 
 // Create a tracer provider and associate it with the resource
 const provider = new NodeTracerProvider({
   resource: resource,
-});
+})
 
 // Set up an exporter (ConsoleSpanExporter for debugging purposes)
-const exporter = new ConsoleSpanExporter();
+const exporter = new ConsoleSpanExporter()
 
 // Add a span processor (SimpleSpanProcessor for direct exporting of spans)
-provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
+provider.addSpanProcessor(new SimpleSpanProcessor(exporter))
 
 // Register the provider to begin tracing
-provider.register();
+provider.register()
 
 // Example tracer usage
-const tracer = provider.getTracer('example-tracer');
+const tracer = provider.getTracer('example-tracer')
 
 // Start a span and simulate work
-const span = tracer.startSpan('example-operation');
-span.setAttribute('key', 'value');  // Add attributes to the span
+const span = tracer.startSpan('example-operation')
+span.setAttribute('key', 'value') // Add attributes to the span
 setTimeout(() => {
-  span.end();  // End the span
-  console.log('Trace data sent to the console!');
-}, 1000);
-
+  span.end() // End the span
+  console.log('Trace data sent to the console!')
+}, 1000)
 ```
 
 In this example, we use the OpenTelemetry SDK to create a tracer provider and configure it to export trace data to Jaeger. The SDK handles the actual trace processing and exporting.
@@ -155,78 +156,77 @@ In this example, we use the OpenTelemetry SDK to create a tracer provider and co
 Understanding the differences between the OpenTelemetry API and SDK is essential for proper observability implementation. Here are the main distinctions:
 
 1. Abstraction Level:
-    - API: Provides abstract APIs for capturing telemetry data.
-    - SDK: Implements these interfaces, including capabilities for processing and exporting telemetry data.
+   - API: Provides abstract APIs for capturing telemetry data.
+   - SDK: Implements these interfaces, including capabilities for processing and exporting telemetry data.
 2. Dependency Management:
-    - API: Lightweight and minimal dependencies. It serves as the instrumentation layer without relying on large libraries.
-    - SDK: Includes entire implementations and other dependencies for telemetry data processing and exporting.
+   - API: Lightweight and minimal dependencies. It serves as the instrumentation layer without relying on large libraries.
+   - SDK: Includes entire implementations and other dependencies for telemetry data processing and exporting.
 3. Functionality:
-    - API: Defines "what" telemetry data is gathered (e.g., beginning spans, recording metrics).
-    - SDK: Implements "how" the telemetry data is handled, exported, and sampled.
+   - API: Defines "what" telemetry data is gathered (e.g., beginning spans, recording metrics).
+   - SDK: Implements "how" the telemetry data is handled, exported, and sampled.
 4. Use Case:
-    - API: Suitable for library or framework developers looking to add instrumentation without requiring a specific SDK.
-    - SDK: Suitable for applications requiring complete telemetry features, such as data processing and exporting.
+   - API: Suitable for library or framework developers looking to add instrumentation without requiring a specific SDK.
+   - SDK: Suitable for applications requiring complete telemetry features, such as data processing and exporting.
 
 Comparison Table of [OpenTelemetry API vs SDK](https://signoz.io/comparisons/opentelemetry-api-vs-sdk/#code-snippet-configuring-opentelemetry-sdk)
 
-| Feature | OpenTelemetry API | OpenTelemetry SDK |
-| --- | --- | --- |
-| Abstraction Level | Abstract interfaces and definitions | Concrete implementations |
-| Dependency Management | Lightweight, minimal dependencies | Full implementation, larger footprint |
-| Flexibility | Highly portable | Environment-specific |
-| Functionality | Defines possible operations | Implements how operations are performed |
-| Use Case | Ideal for libraries and frameworks | Suited for applications with full telemetry |
+| Feature               | OpenTelemetry API                   | OpenTelemetry SDK                           |
+| --------------------- | ----------------------------------- | ------------------------------------------- |
+| Abstraction Level     | Abstract interfaces and definitions | Concrete implementations                    |
+| Dependency Management | Lightweight, minimal dependencies   | Full implementation, larger footprint       |
+| Flexibility           | Highly portable                     | Environment-specific                        |
+| Functionality         | Defines possible operations         | Implements how operations are performed     |
+| Use Case              | Ideal for libraries and frameworks  | Suited for applications with full telemetry |
 
 ## How to Choose Between OpenTelemetry API and SDK
 
 The nature of your project and your observability requirements will determine whether you use the OpenTelemetry API or the SDK. Let’s compare them through a table so that it can be easier to decide:
 
-| Factor | OpenTelemetry API | OpenTelemetry SDK |
-| --- | --- | --- |
-| Project Type | Use the API to instrument code and ensure interoperability with various SDKs or backends. | Use the SDK for complete telemetry processing and exporting. |
-| Instrumentation Needs | Suitable for lightweight instrumentation only. | Offers full trace gathering, sampling, and export options. |
-| Performance and Resource Constraints | Minimizes your application's footprint, ideal for resource-constrained environments. | Requires more resources (memory, compute), but provides additional capabilities. |
-| Compatibility Requirements | Maintains flexibility and portability across different observability backends. | Optimized exporters for seamless integration with specific backends (e.g., Jaeger, SigNoz). |
+| Factor                               | OpenTelemetry API                                                                         | OpenTelemetry SDK                                                                           |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Project Type                         | Use the API to instrument code and ensure interoperability with various SDKs or backends. | Use the SDK for complete telemetry processing and exporting.                                |
+| Instrumentation Needs                | Suitable for lightweight instrumentation only.                                            | Offers full trace gathering, sampling, and export options.                                  |
+| Performance and Resource Constraints | Minimizes your application's footprint, ideal for resource-constrained environments.      | Requires more resources (memory, compute), but provides additional capabilities.            |
+| Compatibility Requirements           | Maintains flexibility and portability across different observability backends.            | Optimized exporters for seamless integration with specific backends (e.g., Jaeger, SigNoz). |
 
 ## Implementing OpenTelemetry in Your Project
 
 To effectively implement OpenTelemetry, you can follow these steps:
 
 1. Integrating the API for Basic Instrumentation:
-    - Add the OpenTelemetry API dependency to your project based on the language you're using (e.g., `@opentelemetry/api` for Node.js). For example, using npm:
-    
-    ```bash
-    npm install @opentelemetry/api
-    ```
-    
-    - Use tracers, meters, and loggers to instrument key areas of your code. For example, instrument-critical paths like HTTP request handling or database queries capture meaningful telemetry data.
-    - Keep instrumentation code independent of the SDK. This ensures that your application remains portable and can be used with different [OpenTelemetry backends](https://signoz.io/blog/opentelemetry-backend/).
-    - Example:
-    
-    ```jsx
-    const { trace } = require('@opentelemetry/api');
-    
-    const tracer = trace.getTracer('example-tracer');
-    
-    const span = tracer.startSpan('operation-name');
-        // Add your logic here
-    span.end();
-    ```
-    
+   - Add the OpenTelemetry API dependency to your project based on the language you're using (e.g., `@opentelemetry/api` for Node.js). For example, using npm:
+
+   ```bash
+   npm install @opentelemetry/api
+   ```
+
+   - Use tracers, meters, and loggers to instrument key areas of your code. For example, instrument-critical paths like HTTP request handling or database queries capture meaningful telemetry data.
+   - Keep instrumentation code independent of the SDK. This ensures that your application remains portable and can be used with different [OpenTelemetry backends](https://signoz.io/blog/opentelemetry-backend/).
+   - Example:
+
+   ```jsx
+   const { trace } = require('@opentelemetry/api')
+
+   const tracer = trace.getTracer('example-tracer')
+
+   const span = tracer.startSpan('operation-name')
+   // Add your logic here
+   span.end()
+   ```
+
 2. To set up the SDK for complete telemetry capabilities, include the OpenTelemetry SDK in your project to manage the entire telemetry pipeline.
-    - Configure resource providers, samplers, and exporters to meet your observability requirements. Set up exporters to deliver data to the appropriate backend (such as Jaeger or SigNoz).
-    - Create data processing pipelines to control how telemetry data is handled, sampled, and exported.
-    - Example:
-    
-    ```jsx
-    const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-    const { ConsoleSpanExporter, SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base');
-    
-    const provider = new NodeTracerProvider();
-    provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
-    provider.register();
-    ```
-    
+   - Configure resource providers, samplers, and exporters to meet your observability requirements. Set up exporters to deliver data to the appropriate backend (such as Jaeger or SigNoz).
+   - Create data processing pipelines to control how telemetry data is handled, sampled, and exported.
+   - Example:
+
+   ```jsx
+   const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node')
+   const { ConsoleSpanExporter, SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base')
+
+   const provider = new NodeTracerProvider()
+   provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()))
+   provider.register()
+   ```
 
 ### Best Practices for Using API and SDK Together
 

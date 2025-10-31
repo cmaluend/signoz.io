@@ -2,14 +2,14 @@ import { MetadataRoute } from 'next'
 import {
   allBlogs,
   allAuthors,
-  allComparisons,
+  // allComparisons,
   allGuides,
   allOpentelemetries,
   allDocs,
 } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 
-// TODO: Add FAQs handling to the sitemap
+// TODO: Add FAQs, Comparisons, Case Studies handling to the sitemap
 
 const mapChangeFrequency = (
   frequency: string
@@ -49,14 +49,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.5,
     }))
 
-  const comparisonRoutes = allComparisons
-    .filter((post) => !post.draft)
-    .map((post) => ({
-      url: `${siteUrl}/${post.path}/`,
-      lastModified: post.lastmod || post.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.5,
-    }))
+  // const comparisonRoutes = allComparisons
+  //   .filter((post) => !post.draft)
+  //   .map((post) => ({
+  //     url: `${siteUrl}/${post.path}/`,
+  //     lastModified: post.lastmod || post.date,
+  //     changeFrequency: mapChangeFrequency('weekly'),
+  //     priority: 0.5,
+  //   }))
 
   const opentelemetryRoutes = allOpentelemetries
     .filter((post) => !post.draft)
@@ -102,7 +102,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...routes,
     ...blogRoutes,
-    ...comparisonRoutes,
+    // ...comparisonRoutes,
     ...opentelemetryRoutes,
     ...docRoutes,
     ...guideRoutes,

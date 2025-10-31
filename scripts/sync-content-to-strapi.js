@@ -47,6 +47,37 @@ const COLLECTION_SCHEMAS = {
       },
     },
   },
+  comparisons: {
+    apiPath: 'api::comparison.comparison',
+    endpoint: 'comparisons',
+    fields: ['title', 'description', 'image', 'path', 'content', 'deployment_status'],
+    relations: {
+      authors: {
+        endpoint: 'authors',
+        matchField: 'key', // Match against author.key
+        frontmatterField: 'authors', // Array of author keys in frontmatter
+      },
+      tags: {
+        endpoint: 'tags',
+        matchField: 'key', // Match against tag.key
+        frontmatterField: 'tags', // Array of tag values in frontmatter
+        filterKey: true, // Also check if tag.key contains 'faq' or 'faqs'
+        matchValue: true, // Match against tag.value (case insensitive)
+      },
+      related_comparisons: {
+        endpoint: 'comparisons',
+        matchField: 'path', // Match against comparison.path
+        frontmatterField: 'related_comparisons', // Array of comparison paths in frontmatter
+      },
+      keywords: {
+        endpoint: 'keywords',
+        matchField: 'key', // Match against keyword.key
+        frontmatterField: 'keywords', // Array of keyword values in frontmatter
+        filterKey: true, // Also check if keyword.key contains 'comparison' or 'comparisons'
+        matchValue: true, // Match against keyword.value (case insensitive)
+      },
+    },
+  },
   authors: {
     apiPath: 'api::author.author',
     endpoint: 'authors',
@@ -154,9 +185,7 @@ async function resolveRelations(folderName, frontmatter) {
         // Special case for tags: check key contains 'faq'/'faqs' AND value matches
         matched = entities.find((entity) => {
           const keyMatch =
-            entity?.key &&
-            (entity?.key.toLowerCase().includes('faq') ||
-              entity?.key.toLowerCase().includes('faqs'))
+            entity?.key && entity?.key.toLowerCase().includes(folderName.toLowerCase())
 
           const valueMatch = entity?.value && entity?.value.toLowerCase() === value.toLowerCase()
 

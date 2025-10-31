@@ -1,16 +1,22 @@
 ---
-title: "Top 9 Lightstep (ServiceNow) Alternatives in 2025 (And How to Migrate)"
-slug: "lightstep-alternatives"
-date: "2025-10-01"
+title: 'Top 9 Lightstep (ServiceNow) Alternatives in 2025 (And How to Migrate)'
+date: '2025-10-01'
 tags: [observability, opentelemetry]
-authors: ["yuvraj"]
+authors: ['yuvraj']
 description: "With Lightstep's end-of-life notice, find the best alternatives for a smooth migration. Explore open-source and OTel-native options like SigNoz."
-keywords: [lightstep alternative, servicenow cloud observability, lightstep end of life, opentelemetry, signoz]
+keywords:
+  [
+    lightstep alternative,
+    servicenow cloud observability,
+    lightstep end of life,
+    opentelemetry,
+    signoz,
+  ]
 ---
 
 ServiceNow recently announced the [end-of-life (EOL) for Lightstep](https://docs.lightstep.com/changelog/eol-notice#heres-what-you-need-to-know), now known as Cloud Observability. Support will officially end on **March 1, 2026**, or at the end of your contract, and ServiceNow has confirmed there will be no direct replacement or migration path.
 
-This news can be disruptive for engineering teams who rely on Lightstep for critical observability. The announcement highlights a significant risk in relying on proprietary, closed-source tools for essential infrastructure. 
+This news can be disruptive for engineering teams who rely on Lightstep for critical observability. The announcement highlights a significant risk in relying on proprietary, closed-source tools for essential infrastructure.
 
 At SigNoz we believe critical infra shouldn’t hinge on a vendor’s roadmap. Observability is too critical a piece to leave to such risks. With open source, you always have an escape hatch.
 
@@ -20,9 +26,9 @@ If you're now searching for a stable, future-proof alternative to Lightstep, you
 
 Lightstep was a powerful observability platform, highly regarded as an early leader in distributed tracing. Many engineering teams chose it for its:
 
-* **Strong OpenTelemetry Support:** Lightstep was an early and significant contributor to OpenTelemetry (OTel), building its platform to provide first-class OpenTelemetry support. This meant users could instrument their applications with open standards, avoiding agent lock-in.
-* **Unified Observability:** It provided unified dashboards to visualize logs, metrics, and traces in one place, which helped teams correlate different telemetry signals during an investigation.
-* **Advanced Tracing Features:** It offered features like service diagrams, root cause analysis, and "Change Intelligence" to correlate performance deviations with deployments.
+- **Strong OpenTelemetry Support:** Lightstep was an early and significant contributor to OpenTelemetry (OTel), building its platform to provide first-class OpenTelemetry support. This meant users could instrument their applications with open standards, avoiding agent lock-in.
+- **Unified Observability:** It provided unified dashboards to visualize logs, metrics, and traces in one place, which helped teams correlate different telemetry signals during an investigation.
+- **Advanced Tracing Features:** It offered features like service diagrams, root cause analysis, and "Change Intelligence" to correlate performance deviations with deployments.
 
 A good Lightstep alternative should ideally match or exceed these capabilities, providing a unified view of telemetry while being built on open standards.
 
@@ -40,18 +46,17 @@ Here are the top alternatives to Lightstep, evaluated based on their support for
   caption="SigNoz dashboard"
 />
 
-
 **Key Features & Strengths:**
 
-* **Truly Unified Observability:** SigNoz uses a single backend (Columnar database) for logs, metrics, and traces, so you can pivot from a trace to related logs without switching tools.
-* **OpenTelemetry-Native:** SigNoz is built from the ground up to support OpenTelemetry. There are no proprietary agents, and it fully supports OTel semantic conventions, ensuring a smooth migration from Lightstep.
-* **Cost-Effective and Transparent Pricing:** The open-source version is free to self-host. SigNoz Cloud offers a simple, usage-based pricing model without per-user or per-host fees, which is often more predictable and affordable than competitors.
-* **Powerful Querying and Analytics:** You can run advanced analytics on your telemetry data, such as finding the p99 latency for all services with a specific tag.
-* **Control Over Your Data:** With both cloud and self-hosted options, you can choose where your data resides, which is crucial for compliance and privacy.
+- **Truly Unified Observability:** SigNoz uses a single backend (Columnar database) for logs, metrics, and traces, so you can pivot from a trace to related logs without switching tools.
+- **OpenTelemetry-Native:** SigNoz is built from the ground up to support OpenTelemetry. There are no proprietary agents, and it fully supports OTel semantic conventions, ensuring a smooth migration from Lightstep.
+- **Cost-Effective and Transparent Pricing:** The open-source version is free to self-host. SigNoz Cloud offers a simple, usage-based pricing model without per-user or per-host fees, which is often more predictable and affordable than competitors.
+- **Powerful Querying and Analytics:** You can run advanced analytics on your telemetry data, such as finding the p99 latency for all services with a specific tag.
+- **Control Over Your Data:** With both cloud and self-hosted options, you can choose where your data resides, which is crucial for compliance and privacy.
 
 **Considerations & Trade-offs:**
 
-* Compared to Datadog, its ecosystem of pre-built integrations is still growing. However, its OTel-native nature means it can ingest data from any system that supports OTLP.
+- Compared to Datadog, its ecosystem of pre-built integrations is still growing. However, its OTel-native nature means it can ingest data from any system that supports OTLP.
 
 **Verdict:**
 
@@ -69,14 +74,14 @@ Datadog is a market-leading, all-in-one SaaS observability platform that covers 
 
 **Key Features & Strengths:**
 
-* **Comprehensive Feature Set:** Datadog offers an incredibly broad range of features consolidated into a single platform, reducing tool sprawl.
-* **Extensive Integrations:** It has hundreds of integrations that make setup easy for a wide variety of technologies.
-* **Polished UI:** The dashboards are highly customizable and the platform includes AI-powered features like Watchdog for anomaly detection.
+- **Comprehensive Feature Set:** Datadog offers an incredibly broad range of features consolidated into a single platform, reducing tool sprawl.
+- **Extensive Integrations:** It has hundreds of integrations that make setup easy for a wide variety of technologies.
+- **Polished UI:** The dashboards are highly customizable and the platform includes AI-powered features like Watchdog for anomaly detection.
 
 **Considerations & Trade-offs:**
 
-* **High and Unpredictable Cost:** Datadog's multi-vector pricing (per-host, per-GB, per-user, custom metrics) is notoriously complex and often leads to bill shock. OpenTelemetry metrics can be charged as expensive "custom metrics."
-* **Vendor Lock-in:** The platform heavily relies on its proprietary agent, which can make it difficult and costly to migrate away from.
+- **High and Unpredictable Cost:** Datadog's multi-vector pricing (per-host, per-GB, per-user, custom metrics) is notoriously complex and often leads to bill shock. OpenTelemetry metrics can be charged as expensive "custom metrics."
+- **Vendor Lock-in:** The platform heavily relies on its proprietary agent, which can make it difficult and costly to migrate away from.
 
 For a detailed breakdown of Datadog's pricing complexities and hidden costs, check out this comprehensive guide: [Datadog Pricing Main Caveats Explained](https://signoz.io/blog/datadog-pricing/).
 
@@ -96,14 +101,14 @@ New Relic is an observability pioneer that has evolved into a full-stack platfor
 
 **Key Features & Strengths:**
 
-* **Strong APM Capabilities:** New Relic provides deep, code-level insights and powerful transaction tracing.
-* **Generous Free Tier:** Its free tier (100 GB of data ingest per month) provides an easy entry point for small teams.
-* **OpenTelemetry Support:** New Relic offers excellent support for OpenTelemetry, allowing you to send data via OTLP without using their proprietary agents. However, it's important to understand that the platform is **OTel-compatible, not OTel-native**. It ingests and translates OpenTelemetry data into its [internal proprietary format.](https://docs.newrelic.com/docs/opentelemetry/best-practices/opentelemetry-best-practices-metrics/)
+- **Strong APM Capabilities:** New Relic provides deep, code-level insights and powerful transaction tracing.
+- **Generous Free Tier:** Its free tier (100 GB of data ingest per month) provides an easy entry point for small teams.
+- **OpenTelemetry Support:** New Relic offers excellent support for OpenTelemetry, allowing you to send data via OTLP without using their proprietary agents. However, it's important to understand that the platform is **OTel-compatible, not OTel-native**. It ingests and translates OpenTelemetry data into its [internal proprietary format.](https://docs.newrelic.com/docs/opentelemetry/best-practices/opentelemetry-best-practices-metrics/)
 
 **Considerations & Trade-offs:**
 
-* **Cost at Scale:** Despite a simplified model, costs can escalate significantly with high data volumes or a large number of users.
-* **UI Complexity:** The user interface can be cluttered and has a steep learning curve for new users.
+- **Cost at Scale:** Despite a simplified model, costs can escalate significantly with high data volumes or a large number of users.
+- **UI Complexity:** The user interface can be cluttered and has a steep learning curve for new users.
 
 **The verdict:**
 
@@ -121,13 +126,13 @@ Honeycomb is a SaaS platform designed for analyzing high-cardinality, high-dimen
 
 **Key Features & Strengths:**
 
-* **Excellent for High-Cardinality Data:** Honeycomb excels at letting you slice and dice data by any attribute, which is invaluable for debugging novel production issues.
-* **Developer-Centric Workflow:** Features like "BubbleUp" automatically highlight outlier attributes, speeding up root cause analysis.
-* **OpenTelemetry-Native:** It's a strong proponent of OTel and offers simple, event-based pricing.
+- **Excellent for High-Cardinality Data:** Honeycomb excels at letting you slice and dice data by any attribute, which is invaluable for debugging novel production issues.
+- **Developer-Centric Workflow:** Features like "BubbleUp" automatically highlight outlier attributes, speeding up root cause analysis.
+- **OpenTelemetry-Native:** It's a strong proponent of OTel and offers simple, event-based pricing.
 
 **Considerations & Trade-offs:**
 
-* **Not a Full-Stack Solution:** Honeycomb is hyper-focused on tracing and events. Its capabilities for traditional infrastructure monitoring and unstructured log management are less mature. You will likely need other tools to get a complete picture.
+- **Not a Full-Stack Solution:** Honeycomb is hyper-focused on tracing and events. Its capabilities for traditional infrastructure monitoring and unstructured log management are less mature. You will likely need other tools to get a complete picture.
 
 **The verdict:**
 
@@ -145,14 +150,14 @@ The Grafana stack is a popular open-source, composable observability solution co
 
 **Key Features & Strengths:**
 
-* **Best-in-Class Visualization:** Grafana provides beautiful, highly customizable dashboards that can pull data from countless sources.
-* **Open and Composable:** Being fully open-source, it offers maximum flexibility and no vendor lock-in. It's a cornerstone of the CNCF ecosystem.
-* **Strong Community:** It has a vibrant open-source community and is the de-facto standard for visualizing Prometheus metrics.
+- **Best-in-Class Visualization:** Grafana provides beautiful, highly customizable dashboards that can pull data from countless sources.
+- **Open and Composable:** Being fully open-source, it offers maximum flexibility and no vendor lock-in. It's a cornerstone of the CNCF ecosystem.
+- **Strong Community:** It has a vibrant open-source community and is the de-facto standard for visualizing Prometheus metrics.
 
 **Considerations & Trade-offs:**
 
-* **Operational Complexity:** The biggest challenge is managing four separate, distributed systems (Loki, Grafana, Tempo, Mimir). This requires significant operational expertise and can be resource-intensive.
-* **Siloed Data:** While Grafana can visualize data from different sources, the backends are separate. This makes it harder to perform deep correlations between logs, metrics, and traces compared to a unified system like SigNoz.
+- **Operational Complexity:** The biggest challenge is managing four separate, distributed systems (Loki, Grafana, Tempo, Mimir). This requires significant operational expertise and can be resource-intensive.
+- **Siloed Data:** While Grafana can visualize data from different sources, the backends are separate. This makes it harder to perform deep correlations between logs, metrics, and traces compared to a unified system like SigNoz.
 
 **The verdict:**
 
@@ -170,12 +175,12 @@ Jaeger is a graduated CNCF open-source project and a well-known standard for end
 
 **Key Features & Strengths:**
 
-* **Powerful Open-Source Tracing:** Jaeger is a robust, scalable, and free solution dedicated to distributed tracing. It provides rich visualization tools for trace timelines and service dependency graphs.
-* **CNCF Standard:** As a CNCF project, it's tightly aligned with the cloud-native ecosystem and OpenTelemetry.
+- **Powerful Open-Source Tracing:** Jaeger is a robust, scalable, and free solution dedicated to distributed tracing. It provides rich visualization tools for trace timelines and service dependency graphs.
+- **CNCF Standard:** As a CNCF project, it's tightly aligned with the cloud-native ecosystem and OpenTelemetry.
 
 **Considerations & Trade-offs:**
 
-* **Tracing Only:** Jaeger's main limitation is its exclusive focus on tracing. It does not handle logs or metrics. To get full observability, you must integrate and manage it with other tools like Prometheus for metrics and an ELK stack for logs.
+- **Tracing Only:** Jaeger's main limitation is its exclusive focus on tracing. It does not handle logs or metrics. To get full observability, you must integrate and manage it with other tools like Prometheus for metrics and an ELK stack for logs.
 
 **The verdict:**
 
@@ -197,7 +202,7 @@ Elastic Observability is a unified solution built on the well-known Elastic Stac
 - **Unified Experience:** It provides a single, unified experience for logs, metrics, and traces within the Kibana interface, allowing for seamless correlation between different signals.
 - **Open-Core Foundation:** The solution is built on an open-source foundation, which provides a low-friction entry point and avoids immediate vendor lock-in. It is often seen as a more cost-effective alternative to Splunk, particularly for self-hosted deployments.
 
-****Considerations & Trade-offs:****
+\***\*Considerations & Trade-offs:\*\***
 
 - **Operational Complexity:** The primary trade-off is the complexity of managing a large-scale Elasticsearch cluster, which requires significant expertise in tuning and scaling.
 - **Cloud Costs:** While Elastic Cloud removes the operational burden of self-hosting, its costs can be confusing and unexpectedly high for large workloads.
@@ -282,7 +287,7 @@ exporters:
   otlp/lightstep:
     endpoint: ingest.lightstep.com:443
     headers:
-      "lightstep-access-token": "${LIGHTSTEP_ACCESS_TOKEN}"
+      'lightstep-access-token': '${LIGHTSTEP_ACCESS_TOKEN}'
 
 service:
   pipelines:
@@ -290,7 +295,7 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlp/lightstep]
-````
+```
 
 **After (SigNoz Config):**
 
@@ -301,9 +306,9 @@ exporters:
   otlp/signoz:
     # Replace <REGION> with your SigNoz cloud region
     # ex: us, in, eu
-    endpoint: "ingest.<REGION>.signoz.cloud:443"
+    endpoint: 'ingest.<REGION>.signoz.cloud:443'
     headers:
-      "signoz-ingestion-key": "${SIGNOZ_INGESTION_KEY}"
+      'signoz-ingestion-key': '${SIGNOZ_INGESTION_KEY}'
 
 service:
   pipelines:
@@ -331,7 +336,7 @@ Also note that historical data cannot be migrated from Lightstep to SigNoz. You 
 
 ## Other Ways to Get Started with SigNoz
 
-You can choose between various deployment options in SigNoz apart from SigNoz cloud (shown above). 
+You can choose between various deployment options in SigNoz apart from SigNoz cloud (shown above).
 
 Those who have data privacy concerns and can't send their data outside their infrastructure can sign up for either [enterprise self-hosted or BYOC offering](https://signoz.io/contact-us/).
 

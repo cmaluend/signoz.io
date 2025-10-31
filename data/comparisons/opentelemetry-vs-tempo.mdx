@@ -1,13 +1,21 @@
 ---
-
 title: OpenTelemetry vs Tempo - Key Differences Explained
-slug: opentelemetry-vs-tempo
+
 date: 2025-01-22
 tags: [OpenTelemetry]
 authors: [nilesh_sinha]
 description: Discover the key differences between OpenTelemetry and Tempo for distributed tracing. Learn how to leverage these tools for optimal observability in modern software architectures.
-keywords: [OpenTelemetry, Tempo, distributed tracing, observability, microservices, Grafana, telemetry data, trace storage]
-
+keywords:
+  [
+    OpenTelemetry,
+    Tempo,
+    distributed tracing,
+    observability,
+    microservices,
+    Grafana,
+    telemetry data,
+    trace storage,
+  ]
 ---
 
 OpenTelemetry and Grafana Tempo serve different but complementary roles in application observability.
@@ -35,23 +43,24 @@ Alternatively, Grafana Tempo is a distributed tracing backend developed by Grafa
 - **Trace Visualization**: Tempo integrates with Grafana to visualize traces, giving users a detailed view of how data flows through their applications, enabling quick diagnosis of bottlenecks or failures.
 
 <KeyPointCallout>
-In short, OpenTelemetry provides a comprehensive framework for collecting observability data, while Grafana Tempo specializes in handling and visualizing trace data efficiently. 
+  In short, OpenTelemetry provides a comprehensive framework for collecting observability data,
+  while Grafana Tempo specializes in handling and visualizing trace data efficiently.
 </KeyPointCallout>
 
 Here's a table that highlights the key features and differences between OpenTelemetry and Grafana Tempo:
 
-| Feature/Functionality | OpenTelemetry | Grafana Tempo |
-| --- | --- | --- |
-| Type of Tool | Observability framework | Distributed tracing backend |
-| Data Collected | Traces, metrics, and logs | Trace data only |
-| Data Storage | Not a storage solution; exports data to backends | Efficient trace storage, optimized for cost |
-| Querying | Requires a compatible backend (e.g., Jaeger, Prometheus) | Direct querying of trace data based on IDs |
-| Integration with Visualization | Integrates with various backends for metrics and traces | Seamless integration with Grafana for trace visualization |
-| Multi-language Support | Yes (Java, Python, Go, JavaScript, etc.) | Primarily supports any system sending trace data |
-| Vendor-Agnostic | Yes, exports to any supported backend | Yes, but primarily used with Grafana |
-| Auto-instrumentation | Yes, available for multiple languages | Not applicable |
-| Custom Instrumentation | Yes, allows for manual instrumentation | Not applicable |
-| Use Cases | Comprehensive observability across applications | Focused on distributed tracing in large-scale systems |
+| Feature/Functionality          | OpenTelemetry                                            | Grafana Tempo                                             |
+| ------------------------------ | -------------------------------------------------------- | --------------------------------------------------------- |
+| Type of Tool                   | Observability framework                                  | Distributed tracing backend                               |
+| Data Collected                 | Traces, metrics, and logs                                | Trace data only                                           |
+| Data Storage                   | Not a storage solution; exports data to backends         | Efficient trace storage, optimized for cost               |
+| Querying                       | Requires a compatible backend (e.g., Jaeger, Prometheus) | Direct querying of trace data based on IDs                |
+| Integration with Visualization | Integrates with various backends for metrics and traces  | Seamless integration with Grafana for trace visualization |
+| Multi-language Support         | Yes (Java, Python, Go, JavaScript, etc.)                 | Primarily supports any system sending trace data          |
+| Vendor-Agnostic                | Yes, exports to any supported backend                    | Yes, but primarily used with Grafana                      |
+| Auto-instrumentation           | Yes, available for multiple languages                    | Not applicable                                            |
+| Custom Instrumentation         | Yes, allows for manual instrumentation                   | Not applicable                                            |
+| Use Cases                      | Comprehensive observability across applications          | Focused on distributed tracing in large-scale systems     |
 
 Together, they offer a robust solution for monitoring distributed systems. With OpenTelemetry's support for multiple telemetry types and Tempo's focus on scalable trace storage, you can achieve full-stack observability with a cost-efficient backend for traces.
 
@@ -107,7 +116,7 @@ public class OrderService {
     public static void main(String[] args) {
         // Start a span for the overall "PlaceOrder" operation
         Span orderSpan = orderTracer.spanBuilder("PlaceOrder").startSpan();
-        
+
         try {
             // Step 1: Process the order
             processOrder();
@@ -128,7 +137,7 @@ public class OrderService {
         try {
             System.out.println("Processing order...");
             // Simulating order processing delay
-            Thread.sleep(200); 
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -147,7 +156,7 @@ class PaymentService {
         try {
             System.out.println("Processing payment...");
             // Simulating payment processing delay
-            Thread.sleep(300); 
+            Thread.sleep(300);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -167,7 +176,7 @@ class InventoryService {
         try {
             System.out.println("Updating inventory...");
             // Simulating inventory update delay
-            Thread.sleep(150); 
+            Thread.sleep(150);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
@@ -187,9 +196,9 @@ class InventoryService {
 When integrated with a tracing backend like Jaeger or Grafana Tempo, you would see the following trace structure:
 
 - Span 1: `PlaceOrder` (Total Time: 650ms)
-    - Span 1.1: `ProcessOrder` (200ms)
-    - Span 1.2: `ProcessPayment` (300ms)
-    - Span 1.3: `UpdateInventory` (150ms)
+  - Span 1.1: `ProcessOrder` (200ms)
+  - Span 1.2: `ProcessPayment` (300ms)
+  - Span 1.3: `UpdateInventory` (150ms)
 
 This trace allows you to visualize the entire flow of the request and see how long each step took. If there is a delay or issue in the `PaymentService`, for instance, you can directly pinpoint that the payment processing is taking longer than expected.
 
@@ -252,68 +261,66 @@ When deploying the OpenTelemetry Collector, consider the following best practice
 2. Batching and Filtering: Use batching and filtering processors to reduce the volume of data, minimize network traffic, and optimize resource usage.
 3. Resource Allocation: Ensure that you allocate sufficient CPU and memory to your Collector instances, especially when dealing with large volumes of telemetry data.
 4. Security: Set up TLS encryption and authentication where needed to secure the transmission of sensitive telemetry data.
-    
-    Configuration for TLS with OpenTelemetry Collector
-    
-    ```yaml
-    receivers:
-      otlp:
-        protocols:
-          grpc:
-            tls:
-    	        # Path to the Certificate Authority (CA) certificate
-              ca_file: "/path/to/ca.crt"  
-              # Path to the server's public certificate
-              cert_file: "/path/to/server.crt"
-              # Path to the server's private key
-              key_file: "/path/to/server.key"
-          http:
-            tls:
-              ca_file: "/path/to/ca.crt" 
-              cert_file: "/path/to/server.crt" 
-              key_file: "/path/to/server.key" 
-    
-    exporters:
-      otlp:
-    	  # Secure endpoint for SigNoz
-        endpoint: "https://<signoz-endpoint>:4317"
-        tls:
-    	    # CA certificate for validating SigNoz's certificate
-          ca_file: "/path/to/ca.crt"   
-          # Client certificate for mutual TLS authentication              
-          cert_file: "/path/to/client.crt" 
-          # Client private key for mutual TLS            
-          key_file: "/path/to/client.key"            
-    
-    service:
-      pipelines:
-        traces:
-          receivers: [otlp]
-          exporters: [otlp]
-    ```
-    
-    - Receivers:
-        - otlp: This defines the OTLP receiver that can accept telemetry data over gRPC and HTTP protocols. The `tls` configuration specifies the settings for secure communication.
-        
-        > gRPC (Google Remote Procedure Call) is a high-performance, open-source framework that enables remote communication between services using protocol buffers (Protobuf) for data serialization. It allows client and server applications to communicate seamlessly, supporting multiple programming languages
-        > 
-        - protocols: Specifies the protocols supported by the receiver.
-        - grpc: A protocol for high-performance remote procedure calls.
-        - tls: This section configures TLS for secure communication.
-            - ca_file: Path to the Certificate Authority (CA) certificate used to verify the server's identity.
-            - cert_file: Path to the server’s public certificate, which is shared with clients.
-            - key_file: Path to the server’s private key, which is used to establish a secure connection.
-        - http: Similar to gRPC, but for HTTP communication.
-    - Exporters:
-        - otlp: This defines the OTLP exporter, which sends telemetry data to a specified endpoint (in this case, SigNoz).
-            - endpoint: The URL of the SigNoz instance where the telemetry data will be sent. It uses `https` to indicate a secure connection.
-            - tls: Configures TLS for secure communication with SigNoz.
-                - ca_file: Path to the CA certificate used to verify the identity of SigNoz.
-                - cert_file: Path to the client’s public certificate for mutual authentication.
-                - key_file: Path to the client’s private key required for mutual authentication.
-    - Service:
-        - pipelines: This section defines the data flow through the Collector.
-            - traces: Specifies the pipeline for trace data. It includes receivers that collect the data and exporters that send it to the configured endpoint.
+
+   Configuration for TLS with OpenTelemetry Collector
+
+   ```yaml
+   receivers:
+     otlp:
+       protocols:
+         grpc:
+           tls:
+   	        # Path to the Certificate Authority (CA) certificate
+             ca_file: "/path/to/ca.crt"
+             # Path to the server's public certificate
+             cert_file: "/path/to/server.crt"
+             # Path to the server's private key
+             key_file: "/path/to/server.key"
+         http:
+           tls:
+             ca_file: "/path/to/ca.crt"
+             cert_file: "/path/to/server.crt"
+             key_file: "/path/to/server.key"
+
+   exporters:
+     otlp:
+   	  # Secure endpoint for SigNoz
+       endpoint: "https://<signoz-endpoint>:4317"
+       tls:
+   	    # CA certificate for validating SigNoz's certificate
+         ca_file: "/path/to/ca.crt"
+         # Client certificate for mutual TLS authentication
+         cert_file: "/path/to/client.crt"
+         # Client private key for mutual TLS
+         key_file: "/path/to/client.key"
+
+   service:
+     pipelines:
+       traces:
+         receivers: [otlp]
+         exporters: [otlp]
+   ```
+
+   - Receivers:
+     - otlp: This defines the OTLP receiver that can accept telemetry data over gRPC and HTTP protocols. The `tls` configuration specifies the settings for secure communication.
+     > gRPC (Google Remote Procedure Call) is a high-performance, open-source framework that enables remote communication between services using protocol buffers (Protobuf) for data serialization. It allows client and server applications to communicate seamlessly, supporting multiple programming languages
+     - protocols: Specifies the protocols supported by the receiver.
+     - grpc: A protocol for high-performance remote procedure calls.
+     - tls: This section configures TLS for secure communication.
+       - ca_file: Path to the Certificate Authority (CA) certificate used to verify the server's identity.
+       - cert_file: Path to the server’s public certificate, which is shared with clients.
+       - key_file: Path to the server’s private key, which is used to establish a secure connection.
+     - http: Similar to gRPC, but for HTTP communication.
+   - Exporters:
+     - otlp: This defines the OTLP exporter, which sends telemetry data to a specified endpoint (in this case, SigNoz).
+       - endpoint: The URL of the SigNoz instance where the telemetry data will be sent. It uses `https` to indicate a secure connection.
+       - tls: Configures TLS for secure communication with SigNoz.
+         - ca_file: Path to the CA certificate used to verify the identity of SigNoz.
+         - cert_file: Path to the client’s public certificate for mutual authentication.
+         - key_file: Path to the client’s private key required for mutual authentication.
+   - Service:
+     - pipelines: This section defines the data flow through the Collector.
+       - traces: Specifies the pipeline for trace data. It includes receivers that collect the data and exporters that send it to the configured endpoint.
 
 ## Grafana Tempo: Exploring the Tracing Backend
 
@@ -356,7 +363,7 @@ Example: Configuring Grafana Tempo
 ```yaml
 server:
 # HTTP port for the Tempo server
-  http_listen_port: 3100  
+  http_listen_port: 3100
 
 distributor:
   receivers:
@@ -364,39 +371,39 @@ distributor:
       protocols:
         grpc:
 	        # GRPC endpoint for OpenTelemetry
-          endpoint: 0.0.0.0:4317  
+          endpoint: 0.0.0.0:4317
 
 ingester:
   lifecycler:
     ring:
       kvstore:
 	      # Simple setup using in-memory KV store
-        store: inmemory  
+        store: inmemory
 
 storage:
   trace:
 	  # Using AWS S3 for object storage
-    backend: s3  
+    backend: s3
     s3:
       bucket: my-tempo-bucket
       endpoint: s3.amazonaws.com
       access_key: "<AWS_ACCESS_KEY>"
       secret_key: "<AWS_SECRET_KEY>"
 	    # AWS region where the bucket is located
-      region: "us-west-2"  
+      region: "us-west-2"
 
 compactor:
   compaction:
 	  # Enable trace compaction to optimize storage
-    enabled: true  
+    enabled: true
 
 query_frontend:
 	# Enable query result caching
-  cache_results: true  
+  cache_results: true
 
 querier:
 	# Set query timeout limi
-  query_timeout: 2m 
+  query_timeout: 2m
 ```
 
 - server: Defines the server settings, such as the port on which Tempo will listen.
@@ -408,7 +415,7 @@ querier:
 
 ### Tempo's Query and Visualization Features
 
-Tempo's query capabilities are tightly integrated with Grafana, providing a powerful interface for trace analysis. 
+Tempo's query capabilities are tightly integrated with Grafana, providing a powerful interface for trace analysis.
 
 Overview of Tempo's Query Language and Capabilities
 
@@ -460,7 +467,7 @@ By leveraging these optimizations, Tempo ensures efficient trace storage and ret
 
 ## OpenTelemetry vs Tempo: Comparative Analysis
 
-While OpenTelemetry and Tempo serve different purposes, they can complement each other effectively in an observability stack. 
+While OpenTelemetry and Tempo serve different purposes, they can complement each other effectively in an observability stack.
 
 ### Scope Comparison: OpenTelemetry as a Framework vs Tempo as a Backend
 
@@ -480,26 +487,26 @@ While OpenTelemetry and Tempo serve different purposes, they can complement each
 ### Use Case Scenarios: When to Use OpenTelemetry, Tempo, or Both Together
 
 - When to Use OpenTelemetry:
-    - In polyglot (multi-language) environments needing vendor-neutral telemetry collection.
-    - When you need to collect traces, metrics, and logs from different services.
-    - If you want to integrate with multiple backends or plan to switch observability platforms.
+  - In polyglot (multi-language) environments needing vendor-neutral telemetry collection.
+  - When you need to collect traces, metrics, and logs from different services.
+  - If you want to integrate with multiple backends or plan to switch observability platforms.
 - When to Use Tempo:
-    - If you’re primarily focused on trace data storage and are already using Grafana for monitoring and visualization.
-    - When you need a cost-effective solution to store large volumes of traces for the long term.
+  - If you’re primarily focused on trace data storage and are already using Grafana for monitoring and visualization.
+  - When you need a cost-effective solution to store large volumes of traces for the long term.
 - When to Use Both:
-    - If you need a comprehensive tracing solution: use OpenTelemetry to collect and instrument traces and export them to Tempo for long-term storage and querying. This combination provides both flexibility in data collection (OpenTelemetry) and scalability in trace storage (Tempo).
+  - If you need a comprehensive tracing solution: use OpenTelemetry to collect and instrument traces and export them to Tempo for long-term storage and querying. This combination provides both flexibility in data collection (OpenTelemetry) and scalability in trace storage (Tempo).
 
 Here's a table summarizing the key differences between OpenTelemetry and Tempo:
 
-| Category | OpenTelemetry | Tempo |
-| --- | --- | --- |
-| Scope | Framework for collecting telemetry data (traces, metrics, logs) | Backend for storing and querying trace data |
-| Focus | Data collection and instrumentation across services | Trace storage and retrieval for distributed systems |
-| Data Handling | Collection and export of telemetry data to different backends | Storage and indexing of trace data for efficient querying |
-| Ecosystem Integration | Vendor-agnostic; integrates with multiple backends (Jaeger, Prometheus, etc.) | Grafana-centric; optimized for the Grafana stack |
-| Supported Telemetry | Traces, metrics, and logs | Traces only |
-| Instrumentation | Instrumentation via API, SDK, and Collector | No instrumentation, focuses solely on trace data storage |
-| Integration Use Case | Best for polyglot environments needing broad telemetry support | Best for Grafana users needing scalable, cost-effective trace storage |
+| Category              | OpenTelemetry                                                                 | Tempo                                                                 |
+| --------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Scope                 | Framework for collecting telemetry data (traces, metrics, logs)               | Backend for storing and querying trace data                           |
+| Focus                 | Data collection and instrumentation across services                           | Trace storage and retrieval for distributed systems                   |
+| Data Handling         | Collection and export of telemetry data to different backends                 | Storage and indexing of trace data for efficient querying             |
+| Ecosystem Integration | Vendor-agnostic; integrates with multiple backends (Jaeger, Prometheus, etc.) | Grafana-centric; optimized for the Grafana stack                      |
+| Supported Telemetry   | Traces, metrics, and logs                                                     | Traces only                                                           |
+| Instrumentation       | Instrumentation via API, SDK, and Collector                                   | No instrumentation, focuses solely on trace data storage              |
+| Integration Use Case  | Best for polyglot environments needing broad telemetry support                | Best for Grafana users needing scalable, cost-effective trace storage |
 
 ## Implementing OpenTelemetry with Tempo
 
@@ -556,7 +563,7 @@ processors:
 exporters:
   otlp:
 	  # Replace with your Tempo URL
-    endpoint: "http://tempo-backend:4317" 
+    endpoint: "http://tempo-backend:4317"
 
 service:
   pipelines:
@@ -583,29 +590,27 @@ To avoid overwhelming your tracing backend and optimize performance, implement s
 - AlwaysOn Sampling: Captures all traces (not recommended for high-throughput apps).
 - AlwaysOff Sampling: Captures no traces (used for debugging purposes).
 - Probability Sampling: Capture a percentage of traces (useful for reducing trace volume).
-    
-    ```yaml
-    processors:
-      batch:
-        timeout: 5s
-      probabilistic_sampler:
-        sampling_percentage: 10.0 # Capture 10% of traces
-    ```
-    
+  ```yaml
+  processors:
+    batch:
+      timeout: 5s
+    probabilistic_sampler:
+      sampling_percentage: 10.0 # Capture 10% of traces
+  ```
 - Reduce unnecessary spans: Only instrument critical parts of your code to avoid clutter in trace data.
 - Limit trace retention: Set up TTLs for trace data in Tempo to control storage costs.
 
 ### 4. Troubleshooting Common Integration Issues and Performance Bottlenecks
 
 - Traces not showing up in Tempo:
-    - Check if the Collector is running and configured correctly.
-    - Ensure that the OTLP receiver and exporter endpoints are correctly set.
+  - Check if the Collector is running and configured correctly.
+  - Ensure that the OTLP receiver and exporter endpoints are correctly set.
 - High latency or missing spans:
-    - Review batch processor settings. Increasing the batch timeout can reduce missed traces.
-    - Check your network and ensure that the Tempo backend can handle the load.
+  - Review batch processor settings. Increasing the batch timeout can reduce missed traces.
+  - Check your network and ensure that the Tempo backend can handle the load.
 - Overwhelming data volume:
-    - Use probabilistic sampling to control the number of traces exported.
-    - Ensure that trace retention settings in Tempo are optimized to avoid storage overload.
+  - Use probabilistic sampling to control the number of traces exported.
+  - Ensure that trace retention settings in Tempo are optimized to avoid storage overload.
 
 ## Enhancing Observability with SigNoz
 
@@ -640,13 +645,13 @@ To get started with SigNoz, follow these steps:
 
 1. Install SigNoz: You can install [SigNoz](https://signoz.io/docs/install/) on your local machine or in a cloud environment.
 2. Configure [OpenTelemetry SDK](https://signoz.io/comparisons/opentelemetry-api-vs-sdk/) in your application to send traces and metrics to SigNoz:
-    
-    ```yaml
-    exporters:
-      otlp:
-        endpoint: "http://<your-signoz-endpoint>:4317"
-    ```
-    
+
+   ```yaml
+   exporters:
+     otlp:
+       endpoint: 'http://<your-signoz-endpoint>:4317'
+   ```
+
 3. Monitor Your Application: Once you instrument your app, you can visualize traces, logs, and metrics in the SigNoz UI.
 
 ## Future Trends in Distributed Tracing

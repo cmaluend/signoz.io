@@ -1,6 +1,6 @@
 ---
 title: Graylog vs Loki - Choosing the Right Log Management Tool
-slug: graylog-vs-loki
+
 date: 2025-01-09
 tags: [graylog, loki, faq]
 authors: [nilesh_sinha]
@@ -344,7 +344,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://community.graylog.org/t/excessive-elasticsearch-index-size/4343" rel="noopener noreferrer nofollow" target="_blank">Excessive ElasticSearch Index Size</a>
 
   Example: A banking application collects 50,000 messages/second per node, including user login events, transaction logs, and fraud detection alerts. Graylog's Elasticsearch backend ensures 2-5 seconds query response for 1M logs, enabling auditors to perform quick searches.
-
   - Suggestion: Use Graylog for scenarios demanding rapid and complex searches, such as financial audits or security event investigations.
 
 - Loki: Typically, Loki's log ingestion is lighter and more optimized for cloud-native environments. However, since it doesn't index logs as heavily as Graylog, performing large text searches might be slower.
@@ -354,7 +353,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://community.grafana.com/t/planning-system-requirements-and-storage/57072" rel="noopener noreferrer nofollow" target="_blank">Planning system requirements and storage</a>
 
   Example: A Kubernetes cluster generates 100,000 lines/second, including pod logs labeled by namespace and service. Loki ingests these logs with lightweight Promtail agents, providing 0.5-2 seconds query response for label-based queries.
-
   - Suggestion: Opt for Loki in environments with high log volumes but less need for full-text search, like cloud-native observability or monitoring containerized services.
 
 ### 2. Resource Requirements:
@@ -366,7 +364,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://opster.com/guides/elasticsearch/capacity-planning/elasticsearch-shards-limit/" rel="noopener noreferrer nofollow" target="_blank">Understanding and Managing Elasticsearch Shards Limit</a>
 
   Example: An e-commerce platform handling 1TB/day of logs needs a cluster with 3 Elasticsearch nodes, each configured with 16 CPUs and 64GB RAM, and 1-2 Graylog servers to handle indexing and queries.
-
   - Suggestion: Allocate resources proportionally to log volume. For cost-efficiency, set index rotation policies to archive older data to cheaper storage.
 
 - Loki: More resource-efficient, especially during ingestion. Loki offloads log data to object storage (like S3), making it more memory-friendly when dealing with large log volumes, as it avoids the heavy disk I/O operations required by Elasticsearch.
@@ -376,7 +373,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ [Logs Performance Benchmark](https://signoz.io/blog/logs-performance-benchmark/)
 
   Example: A streaming service handling 1TB/day of logs uses object storage (e.g., S3) to offload disk I/O. The system runs on a smaller cluster with fewer ingester and distributor nodes, saving on compute costs.
-
   - Suggestion: Leverage object storage for large-scale [log retention](https://signoz.io/guides/log-retention/) and reduce on-premises hardware dependencies.
 
 ### 3. Scalability in High-Volume Environments:
@@ -388,7 +384,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/size-your-shards.html" rel="noopener noreferrer nofollow" target="_blank">Size your shards</a>
 
   Example: Scaling an enterprise system from 1TB/day to 5TB/day requires adding 9 Elasticsearch nodes (up from 3) to handle indexing and query loads, plus additional Graylog servers for ingestion.
-
   - Suggestion: Plan for high scaling costs and complexity. Use index optimization techniques like reducing shard count and replication factor to manage resource usage.
 
 - Loki: Designed for horizontal scalability in distributed systems, Loki is more efficient in handling massive log volumes, especially in Kubernetes or cloud-native environments. Its label-based indexing makes scaling easier and cheaper.
@@ -398,7 +393,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://grafana.com/docs/loki/latest/get-started/overview/" rel="noopener noreferrer nofollow" target="_blank">Loki overview</a>
 
   Example: A Kubernetes-based application scales from 5TB/day to 10TB/day by adding distributors and ingesters without overhauling the architecture. Loki's label-based indexing ensures efficient scaling.
-
   - Suggestion: Keep labels concise and avoid [high cardinality](https://signoz.io/blog/high-cardinality-data/) (e.g., avoid using unique request IDs as labels) to maintain query performance at scale.
 
 ### 4. Optimization Techniques:
@@ -410,7 +404,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://search-guard.com/blog/reduce-elasticsearch-search-latency-optimize-search-performance/" rel="noopener noreferrer nofollow" target="_blank">Reduce Elasticsearch Search Latency and Optimize Search Performance</a>
 
   Example: A cybersecurity system ingests 500K events/hour and uses 2 shards per index with a 7-day retention policy. Cached queries reduce response times for repeated searches.
-
   - Suggestion: Optimize shard allocation and caching for frequently queried datasets to improve performance without overloading resources.
 
 - Loki: To optimize performance, Loki recommends minimizing cardinality by properly labeling logs. Multi-tenancy support allows for better management in environments with multiple teams. Additionally, adjusting chunk sizes helps with efficient storage and retrieval of log data.
@@ -420,7 +413,6 @@ When considering performance and resource utilization, both Graylog and Loki exc
   _Source:_ <a href="https://shaorui0.github.io/2024/10/29/loki_storage_optimization/" rel="noopener noreferrer nofollow" target="_blank">Loki Storage Optimization</a>
 
   Example: A DevOps team monitors 10K services using fewer than 50 unique label combinations, such as `{app="service1", env="prod"}`. Adjusted chunk sizes minimize storage costs while retaining fast access.
-
   - Suggestion: Use meaningful but limited labels (e.g., app, environment, log level) to reduce label cardinality and enhance performance.
 
 ## Setup and Maintenance

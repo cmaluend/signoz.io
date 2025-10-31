@@ -1,13 +1,20 @@
 ---
-
 title: OpenTelemetry vs Micrometer - Choosing the Right Metrics Tool
-slug: opentelemetry-vs-micrometer
+
 date: 2024-10-22
 tags: [OpenTelemetry]
 authors: [nilesh_sinha]
 description: Compare OpenTelemetry and Micrometer for application metrics. Learn their features, performance, and integration to choose the best tool for your needs.
-keywords: [opentelemetry, micrometer, metrics, observability, spring boot, performance monitoring, application telemetry]
-
+keywords:
+  [
+    opentelemetry,
+    micrometer,
+    metrics,
+    observability,
+    spring boot,
+    performance monitoring,
+    application telemetry,
+  ]
 ---
 
 As applications grow in complexity, the need for robust observability solutions becomes paramount. Two popular tools in this space — OpenTelemetry and Micrometer — offer powerful capabilities for collecting and analyzing application metrics. But which one is right for your project? This article compares OpenTelemetry and Micrometer, examining their features, performance, and use cases to help you make an informed decision.
@@ -16,11 +23,11 @@ As applications grow in complexity, the need for robust observability solutions 
 
 OpenTelemetry is a Cloud Native Computing Foundation (CNCF) project designed to create a standardized way to collect telemetry data (i.e., traces, metrics, and logs) from various applications and programming languages. It unifies different observability signals under a single framework, making it easier to gain a complete view of application performance and identify issues across distributed systems.
 
-In contrast, Micrometer is a vendor-neutral application metrics facade (tools, libraries, or frameworks that are designed to work with a variety of monitoring, logging, or observability systems without being locked into a specific vendor's ecosystem) for the JVM, primarily used to instrument dimensional metrics (metrics with tags) in Java applications. 
+In contrast, Micrometer is a vendor-neutral application metrics facade (tools, libraries, or frameworks that are designed to work with a variety of monitoring, logging, or observability systems without being locked into a specific vendor's ecosystem) for the JVM, primarily used to instrument dimensional metrics (metrics with tags) in Java applications.
 
 > Dimensional metrics refer to a flexible approach to metrics collection where each metric is associated with multiple attributes, or "dimensions," that provide additional context about the data. This allows you to track and analyze metrics based on different aspects or dimensions, like environment, region, or API endpoint, offering deeper insights.
 
-It provides a consistent abstraction for capturing metrics and is the default metrics library in Spring Boot, making it easy to collect application-level data and export it to popular monitoring systems like Prometheus, Datadog, and more. 
+It provides a consistent abstraction for capturing metrics and is the default metrics library in Spring Boot, making it easy to collect application-level data and export it to popular monitoring systems like Prometheus, Datadog, and more.
 
 Here, we have highlighted the prominent uses of both OpenTelemetry as well as Micrometer.
 
@@ -37,7 +44,6 @@ Here, we have highlighted the prominent uses of both OpenTelemetry as well as Mi
 - Supports integration with major monitoring backends, such as Prometheus, Grafana, and others, making it easy to visualize and [analyze metrics](https://signoz.io/blog/metrics-explorer/).
 
 > You can think of Micrometer as a specialized tool focused solely on metrics collection for Java-based applications, while OpenTelemetry is a broader observability framework that goes beyond just metrics and supports traces, metrics, and logs for applications written in various programming languages.
-> 
 
 ### Historical Context and Development
 
@@ -60,7 +66,7 @@ Community Support and Adoption Rates for Both Tools
 
 ## Comparing OpenTelemetry and Micrometer Performance
 
-If your primary goal is just metrics and your stack is Java-based, Micrometer is your go-to. For a full observability solution across heterogeneous applications, OpenTelemetry offers more capabilities with a minor trade-off in complexity. 
+If your primary goal is just metrics and your stack is Java-based, Micrometer is your go-to. For a full observability solution across heterogeneous applications, OpenTelemetry offers more capabilities with a minor trade-off in complexity.
 
 Let’s justify how we can make use of one of these as per the requirements:
 
@@ -118,64 +124,57 @@ The OpenTelemetry Spring Boot Starter simplifies the integration of OpenTelemetr
 
 Setup Process:
 
-1. Add Dependencies:
-Add the following dependencies to your `pom.xml` for Maven:
-    
-    ```xml
-    <dependency>
-        <groupId>io.opentelemetry.instrumentation</groupId>
-        <artifactId>opentelemetry-spring-boot-starter</artifactId>
-        <version>1.25.0</version> <!-- Replace with the latest version -->
-    </dependency>
-    ```
-    
-2. Add Exporter Dependencies:
-For exporting traces or metrics, add the corresponding exporter, like `otlp` for OpenTelemetry Protocol.
-    
-    The OpenTelemetry Protocol (OTLP) is a standardized protocol used for transmitting telemetry data, including traces, metrics, and logs, from applications to observability backends. Here are key points about OTLP:
-    
-    - Unified Protocol: OTLP combines different types of telemetry data into a single protocol, simplifying the process of sending data from applications.
-    - Transport Mechanisms: Supports both HTTP and gRPC as transport protocols, allowing flexibility in how data is sent to observability platforms.
-    - Data Format: Uses Protocol Buffers (protobufs) for efficient serialization of telemetry data, resulting in smaller message sizes and faster transmission.
-    - Interoperability: Enables seamless integration between different observability tools and frameworks, ensuring that data can be easily shared and understood across various systems.
-    
-    ```xml
-    <dependency>
-        <groupId>io.opentelemetry.exporter</groupId>
-        <artifactId>opentelemetry-exporter-otlp</artifactId>
-        <version>1.25.0</version>
-    </dependency>
-    ```
-    
-3. Configuration:
-In `application.properties` or `application.yml`, configure the [OpenTelemetry exporter](https://signoz.io/guides/opentelemetry-collector-vs-exporter/):
-    
-    ```
-    # application.properties
-    otel.traces.exporter=otlp
-    otel.metrics.exporter=none
-    otel.exporter.otlp.endpoint=http://localhost:4317
-    ```
-    
-4. Example:
-    
+1.  Add Dependencies:
+    Add the following dependencies to your `pom.xml` for Maven:
+        ```xml
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+            <version>1.25.0</version> <!-- Replace with the latest version -->
+        </dependency>
+        ```
+2.  Add Exporter Dependencies:
+    For exporting traces or metrics, add the corresponding exporter, like `otlp` for OpenTelemetry Protocol.
+        The OpenTelemetry Protocol (OTLP) is a standardized protocol used for transmitting telemetry data, including traces, metrics, and logs, from applications to observability backends. Here are key points about OTLP:
+
+        - Unified Protocol: OTLP combines different types of telemetry data into a single protocol, simplifying the process of sending data from applications.
+        - Transport Mechanisms: Supports both HTTP and gRPC as transport protocols, allowing flexibility in how data is sent to observability platforms.
+        - Data Format: Uses Protocol Buffers (protobufs) for efficient serialization of telemetry data, resulting in smaller message sizes and faster transmission.
+        - Interoperability: Enables seamless integration between different observability tools and frameworks, ensuring that data can be easily shared and understood across various systems.
+
+        ```xml
+        <dependency>
+            <groupId>io.opentelemetry.exporter</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>1.25.0</version>
+        </dependency>
+        ```
+3.  Configuration:
+    In `application.properties` or `application.yml`, configure the [OpenTelemetry exporter](https://signoz.io/guides/opentelemetry-collector-vs-exporter/):
+        ```
+        # application.properties
+        otel.traces.exporter=otlp
+        otel.metrics.exporter=none
+        otel.exporter.otlp.endpoint=http://localhost:4317
+        ```
+4.  Example:
+
     ```java
     import io.opentelemetry.api.OpenTelemetry;
     import org.springframework.boot.SpringApplication;
     import org.springframework.boot.autoconfigure.SpringBootApplication;
-    
+
     @SpringBootApplication
     public class MyApp {
         public static void main(String[] args) {
             SpringApplication.run(MyApp.class, args);
-    
+
             // OpenTelemetry instance
             OpenTelemetry openTelemetry = OpenTelemetry.get();
             // You can now use OpenTelemetry for tracing and metrics.
         }
     }
     ```
-    
 
 Expected Output:
 
@@ -189,53 +188,48 @@ Micrometer is natively integrated into Spring Boot, allowing you to collect dime
 
 Setup Process:
 
-1. Add Dependency:
-If you’re using Maven, add the Micrometer dependency to your `pom.xml`:
-    
-    ```xml
-    <dependency>
-        <groupId>io.micrometer</groupId>
-        <artifactId>micrometer-core</artifactId>
-        <version>1.10.0</version> <!-- Replace with the latest version -->
-    </dependency>
-    ```
-    
-2. Enable Metrics Endpoint:
-In `application.properties`, enable the metrics endpoint and specify the Prometheus format:
-    
-    ```
-    # application.properties
-    management.metrics.export.prometheus.enabled=true
-    management.endpoints.web.exposure.include=*
-    ```
-    
-3. Example:
-    
+1.  Add Dependency:
+    If you’re using Maven, add the Micrometer dependency to your `pom.xml`:
+        ```xml
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.10.0</version> <!-- Replace with the latest version -->
+        </dependency>
+        ```
+2.  Enable Metrics Endpoint:
+    In `application.properties`, enable the metrics endpoint and specify the Prometheus format:
+        ```
+        # application.properties
+        management.metrics.export.prometheus.enabled=true
+        management.endpoints.web.exposure.include=*
+        ```
+3.  Example:
+
     ```java
     import io.micrometer.core.instrument.MeterRegistry;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.web.bind.annotation.GetMapping;
     import org.springframework.web.bind.annotation.RestController;
-    
+
     @RestController
     public class MyController {
         private final MeterRegistry meterRegistry;
-    
+
         @Autowired
         public MyController(MeterRegistry meterRegistry) {
     		    // Injecting MeterRegistry
-            this.meterRegistry = meterRegistry; 
+            this.meterRegistry = meterRegistry;
         }
-    
+
         @GetMapping("/api/data")
         public String getData() {
     		    // Incrementing call counter
-            meterRegistry.counter("api.calls").increment(); 
+            meterRegistry.counter("api.calls").increment();
             return "Data returned successfully!";
         }
     }
     ```
-    
 
 Expected Output:
 
@@ -248,33 +242,33 @@ When the endpoint `/api/data` is accessed, it increments the `api.calls` counter
 Transitioning from Micrometer to OpenTelemetry involves switching dependencies and replacing Micrometer’s metric APIs with OpenTelemetry’s APIs.
 
 1. Replace Dependencies:
-    
-    Remove the `micrometer-registry-*` dependencies from your `pom.xml` and add OpenTelemetry dependencies:
-    
-    ```xml
-    <dependency>
-        <groupId>io.opentelemetry</groupId>
-        <artifactId>opentelemetry-api</artifactId>
-        <version>1.22.0</version> <!-- Replace with the latest version -->
-    </dependency>
-    ```
-    
+
+   Remove the `micrometer-registry-*` dependencies from your `pom.xml` and add OpenTelemetry dependencies:
+
+   ```xml
+   <dependency>
+       <groupId>io.opentelemetry</groupId>
+       <artifactId>opentelemetry-api</artifactId>
+       <version>1.22.0</version> <!-- Replace with the latest version -->
+   </dependency>
+   ```
+
 2. Replace Metric APIs:
-    
-    For example, replace:
-    
-    ```java
-    Counter requestCounter = metrics.counter("requests");
-    requestCounter.increment();
-    ```
-    
-    With OpenTelemetry’s Counter API:
-    
-    ```java
-    LongCounter requestCounter = openTelemetry.getMeter("example").counterBuilder("requests").build();
-    requestCounter.add(1);
-    ```
-    
+
+   For example, replace:
+
+   ```java
+   Counter requestCounter = metrics.counter("requests");
+   requestCounter.increment();
+   ```
+
+   With OpenTelemetry’s Counter API:
+
+   ```java
+   LongCounter requestCounter = openTelemetry.getMeter("example").counterBuilder("requests").build();
+   requestCounter.add(1);
+   ```
+
 3. Update your code to use OpenTelemetry's tracing and metrics APIs.
 
 Example:
@@ -315,11 +309,11 @@ When `performTask` is called, it creates a new trace span and increments the `ta
 ### 4. Performance Implications for Spring-Based Microservices
 
 - Micrometer:
-    - Low Overhead: Lightweight and optimized for metrics collection in Spring Boot.
-    - Minimal Performance Impact: Metrics collection with Micrometer is efficient, using dimensional tagging and asynchronous data export.
+  - Low Overhead: Lightweight and optimized for metrics collection in Spring Boot.
+  - Minimal Performance Impact: Metrics collection with Micrometer is efficient, using dimensional tagging and asynchronous data export.
 - OpenTelemetry:
-    - Slightly Higher Overhead: Due to the combined handling of traces, metrics, and logs.
-    - Scalability Impact: Requires more resources for large-scale applications due to richer data capture (e.g., distributed traces).
+  - Slightly Higher Overhead: Due to the combined handling of traces, metrics, and logs.
+  - Scalability Impact: Requires more resources for large-scale applications due to richer data capture (e.g., distributed traces).
 
 Recommendation:
 

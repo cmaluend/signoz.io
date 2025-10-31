@@ -1,13 +1,20 @@
 ---
-
 title: OpenTelemetry vs Elastic APM - Which Monitoring Tool to Choose?
-slug: opentelemetry-vs-elastic-apm
+
 date: 2024-11-20
 tags: [OpenTelemetry]
 authors: [nilesh_sinha]
 description: Compare OpenTelemetry and Elastic APM to make the right choice for your monitoring needs. Learn about features, integration options, and key decision factors.
-keywords: [opentelemetry vs elastic apm, application monitoring, observability tools, apm comparison, monitoring solutions, elastic observability, otlp support]
-
+keywords:
+  [
+    opentelemetry vs elastic apm,
+    application monitoring,
+    observability tools,
+    apm comparison,
+    monitoring solutions,
+    elastic observability,
+    otlp support,
+  ]
 ---
 
 OpenTelemetry and Elastic APM serve different but complementary roles in application observability.
@@ -72,14 +79,14 @@ Distributed Tracing
 
 OpenTelemetry and Elastic APM offer distinct features and support options that cater to different observability needs and integration preferences. The table below highlights the key differences between the capabilities of these two tools:
 
-| Feature | OpenTelemetry | Elastic APM |
-| --- | --- | --- |
-| Instrumentation Support | Manual & Automatic | Primarily Automatic |
-| Language Coverage | Java, Python, .NET, Node.js, Ruby, etc. | Java, Python, Go, Node.js, Ruby |
-| Data Collection Method | Uses the OpenTelemetry Collector to gather, process, and export telemetry data | Relies on Elastic APM agents that send data directly to an APM Server |
-| Telemetry Data | Comprehensive: supports traces, metrics, and logs | Primarily traces and logs, with limited support for metrics |
+| Feature                  | OpenTelemetry                                                                                 | Elastic APM                                                                                                  |
+| ------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Instrumentation Support  | Manual & Automatic                                                                            | Primarily Automatic                                                                                          |
+| Language Coverage        | Java, Python, .NET, Node.js, Ruby, etc.                                                       | Java, Python, Go, Node.js, Ruby                                                                              |
+| Data Collection Method   | Uses the OpenTelemetry Collector to gather, process, and export telemetry data                | Relies on Elastic APM agents that send data directly to an APM Server                                        |
+| Telemetry Data           | Comprehensive: supports traces, metrics, and logs                                             | Primarily traces and logs, with limited support for metrics                                                  |
 | Integration Capabilities | Broad integration with observability tools like Jaeger, Prometheus, Grafana Tempo, and Zipkin | Deep integration within the Elastic Stack, leveraging Elasticsearch for storage and Kibana for visualization |
-| Performance Overhead | Configurable (sampling, batching) | Optimized (agent efficiency, sampling) |
+| Performance Overhead     | Configurable (sampling, batching)                                                             | Optimized (agent efficiency, sampling)                                                                       |
 
 Instrumentation Support and Language Coverage
 
@@ -92,7 +99,6 @@ Data Collection Methods and Telemetry types
 - Elastic APM primarily focuses on traces and logs but also gathers some system metrics (like CPU, memory). Elastic APM agents automatically collect these data types, making setup easier for teams with limited instrumentation experience.
 
 > Elastic APM doesn’t require manual instrumentation to track basic traces, but you can add custom spans where needed using the APM agent.
-> 
 
 Integration Capabilities with Other Tools
 
@@ -110,12 +116,12 @@ When choosing between OpenTelemetry and Elastic APM, it’s crucial to weigh eac
 
 Here’s a comparison table that will help you to understand the practical aspects of selecting either OpenTelemetry or Elastic APM based on their organization’s specific needs and resources.
 
-| Decision Factor | OpenTelemetry | Elastic APM |
-| --- | --- | --- |
-| Vendor Lock-in | None, supports multiple backends | High if fully invested in Elastic Stack |
-| Ecosystem Support | CNCF-backed, open-source, large community | Elastic-backed, well-documented |
-| Learning Curve | High, customizable but complex | Lower, easy setup with auto-instrumentation |
-| Cost Implications | Variable, depending on chosen backend | Elastic Cloud or self-hosted (scales with data) |
+| Decision Factor   | OpenTelemetry                             | Elastic APM                                     |
+| ----------------- | ----------------------------------------- | ----------------------------------------------- |
+| Vendor Lock-in    | None, supports multiple backends          | High if fully invested in Elastic Stack         |
+| Ecosystem Support | CNCF-backed, open-source, large community | Elastic-backed, well-documented                 |
+| Learning Curve    | High, customizable but complex            | Lower, easy setup with auto-instrumentation     |
+| Cost Implications | Variable, depending on chosen backend     | Elastic Cloud or self-hosted (scales with data) |
 
 ### Vendor Lock-in Considerations and Flexibility
 
@@ -143,7 +149,7 @@ Integrating OpenTelemetry with Elastic APM provides users the flexibility of Ope
 
 ### Using OpenTelemetry with Elastic APM
 
-OpenTelemetry can be seamlessly integrated with Elastic APM through the OpenTelemetry Collector and Elastic's native OTLP support. Organizations can configure OpenTelemetry-instrumented applications to send their telemetry data (traces, metrics, and logs) to an OpenTelemetry Collector, which then forwards this data to Elastic APM Server using the OTLP exporter. 
+OpenTelemetry can be seamlessly integrated with Elastic APM through the OpenTelemetry Collector and Elastic's native OTLP support. Organizations can configure OpenTelemetry-instrumented applications to send their telemetry data (traces, metrics, and logs) to an OpenTelemetry Collector, which then forwards this data to Elastic APM Server using the OTLP exporter.
 
 Since Elasticsearch 7.13, the APM Server has built-in support for ingesting OTLP data, allowing organizations to leverage OpenTelemetry's vendor-neutral instrumentation while still benefiting from Elastic's powerful storage, analysis, and visualization capabilities in Kibana. This hybrid approach enables teams to maintain flexibility in their instrumentation strategy while utilizing Elastic's robust observability platform, effectively getting the best of both worlds - OpenTelemetry's standardized data collection and Elastic's comprehensive analysis tools.
 

@@ -1,13 +1,19 @@
 ---
-
 title: Platform Engineering vs DevOps - Key Differences Explained
-slug: platform-engineering-vs-DevOps
+
 date: 2024-08-14
 tags: [devops, infra]
 authors: [bhavya_sachdeva]
 description: Discover the key differences between platform engineering and DevOps, their roles in modern software development, and how they complement each other.
-keywords: [platform engineering, DevOps, software development, CI/CD, infrastructure as code, developer productivity]
-
+keywords:
+  [
+    platform engineering,
+    DevOps,
+    software development,
+    CI/CD,
+    infrastructure as code,
+    developer productivity,
+  ]
 ---
 
 In the ever-evolving landscape of software development, two approaches have gained significant traction: DevOps and platform engineering. While both aim to improve the software delivery process, they have distinct focuses and methodologies. This article explores the key differences between platform engineering and DevOps, their roles in modern software development, and how they complement each other to drive innovation and efficiency.
@@ -18,9 +24,13 @@ In the ever-evolving landscape of software development, two approaches have gain
 
 Before we discuss DevOps, let's look at the typical steps involved in creating software, like building a website for an NGO. This includes planning, analysis, design, implementation, testing, integration, and maintenance. This process becomes more complex when dealing with larger software products. The Two Departments In most organizations, two main departments handle software delivery: - Development Team: Focuses on writing code and creating new features. - Operations Team: Handles deployment, traffic, and security maintenance.
 
-There's often a gap between these two teams, leading to delays in product releases. So to bridge the gap between development and operation teams there is a term that came to the picture “DevOps”. DevOps is not just about learning tools; it's a cultural practice that emphasizes teamwork, communication, and collaboration between the development and operations teams. The goal is to enhance security, speed up processes, ensure quality, and automate as much as possible to reduce manual work and bugs in production. 
+There's often a gap between these two teams, leading to delays in product releases. So to bridge the gap between development and operation teams there is a term that came to the picture “DevOps”. DevOps is not just about learning tools; it's a cultural practice that emphasizes teamwork, communication, and collaboration between the development and operations teams. The goal is to enhance security, speed up processes, ensure quality, and automate as much as possible to reduce manual work and bugs in production.
 
-<Figure src="/img/comparisons/2024/08/platform-engineering-vs-DevOps-Screenshot_2024-08-06_at_10.42.49_AM.webp" alt="Developers and Operations" caption="Developers and Operations" />
+<Figure
+  src="/img/comparisons/2024/08/platform-engineering-vs-DevOps-Screenshot_2024-08-06_at_10.42.49_AM.webp"
+  alt="Developers and Operations"
+  caption="Developers and Operations"
+/>
 
 DevOps came into existence in order to solve above problem. Let’s discuss about DevOps.
 
@@ -52,9 +62,13 @@ Imagine a software organization with multiple DevOps teams, each specializing in
 
 Let’s take an example where the Core Web Application Team (Team A) utilizes Kubernetes for orchestration, Ansible for infrastructure provisioning, and Jenkins for continuous integration and deployment. The Mobile Application Team (Team B) employs Docker Swarm for orchestration, Puppet for infrastructure provisioning, and Buildbot for continuous integration and deployment. Meanwhile, the Data Science Team (Team C) leverages Apache Airflow for orchestration, Terraform for infrastructure provisioning, and Prometheus for monitoring and logging.
 
-<Figure src="/img/comparisons/2024/08/platform-engineering-vs-DevOps-Screenshot_2024-08-06_at_11.27.13_AM.webp" alt="Limitations of DevOps" caption="Limitations of DevOps" />
+<Figure
+  src="/img/comparisons/2024/08/platform-engineering-vs-DevOps-Screenshot_2024-08-06_at_11.27.13_AM.webp"
+  alt="Limitations of DevOps"
+  caption="Limitations of DevOps"
+/>
 
-There are challenges raised by using different tools in the same organization. Like, Integrating various tools across teams can be tough, leading to inconsistent practices and making it hard to enforce standards. The mix of tools also demands more training, raising the learning curve and complicating knowledge sharing. Managing these tools increases operational costs and can cause delays, especially when developers, who are also handling operational tasks, face bottlenecks. The "You Build It, You Run It" approach adds to the pressure, stretching developers too thin and potentially impacting the quality of their work. 
+There are challenges raised by using different tools in the same organization. Like, Integrating various tools across teams can be tough, leading to inconsistent practices and making it hard to enforce standards. The mix of tools also demands more training, raising the learning curve and complicating knowledge sharing. Managing these tools increases operational costs and can cause delays, especially when developers, who are also handling operational tasks, face bottlenecks. The "You Build It, You Run It" approach adds to the pressure, stretching developers too thin and potentially impacting the quality of their work.
 
 As DevOps continues to struggle with the increasing complexity of software systems and diverse technological ecosystems, the necessity for an evolved strategy is clear. So there is a need for a “Platform” raise where we can combine these tools. The term "platform" typically refers to a combination of tools, services, and technologies designed to enable developers to build, deploy, and manage applications more efficiently and effectively. So, Platform engineering emerges as this necessary evolution, specifically designed to address the challenges that DevOps alone cannot solve.
 
@@ -70,7 +84,11 @@ Key components of platform engineering include:
 
 Platform engineering addresses the growing complexity of modern software development by providing a structured, efficient environment for developers to work in.
 
-<Figure src="/img/comparisons/2024/08/platform-engineering-vs-DevOps-Screenshot_2024-08-07_at_12.39.32_AM.webp" alt="Platform Engineering" caption="Platform Engineering" />
+<Figure
+  src="/img/comparisons/2024/08/platform-engineering-vs-DevOps-Screenshot_2024-08-07_at_12.39.32_AM.webp"
+  alt="Platform Engineering"
+  caption="Platform Engineering"
+/>
 
 ### The Role of Platform Engineers
 
@@ -81,7 +99,7 @@ Platform engineers play a crucial role in optimizing the software development li
 - Optimize workflows to reduce cognitive load for development teams.
 - Balance standardization with flexibility to meet diverse team needs.
 
-By focusing on these areas, platform engineers enable development teams to focus on creating business value rather than managing complex infrastructure and tooling. 
+By focusing on these areas, platform engineers enable development teams to focus on creating business value rather than managing complex infrastructure and tooling.
 
 ## Platform Engineering vs DevOps: Key Differences Explained
 
@@ -138,7 +156,7 @@ Measure the success of your platform engineering initiatives through metrics suc
 
 ## Monitoring and Observability in Platform Engineering and DevOps
 
-Effective monitoring is crucial for both DevOps and platform engineering practices. It enables teams to detect and  and resolve issues quickly with performance optimization. It also helps to make data-driven decisions about infrastructure and application design.
+Effective monitoring is crucial for both DevOps and platform engineering practices. It enables teams to detect and and resolve issues quickly with performance optimization. It also helps to make data-driven decisions about infrastructure and application design.
 
 SigNoz, an open-source application performance monitoring (APM) and observability tool can enhance monitoring capabilities for modern software architectures. It provides, end-to-end [distributed tracing](https://signoz.io/blog/distributed-tracing/), detailed performance metrics and also real-time alerts and notifications
 

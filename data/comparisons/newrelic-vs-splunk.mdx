@@ -1,6 +1,5 @@
 ---
 title: New Relic vs Splunk - Which Monitoring Tool should you choose? [2025 Guide]
-slug: newrelic-vs-splunk
 date: 2025-01-02
 tags: [tools-comparison]
 authors: [daniel]
@@ -9,44 +8,46 @@ image: /img/blog/2024/03/newrelic-vs-splunk-cover.webp
 hide_table_of_contents: false
 toc_min_heading_level: 2
 toc_max_heading_level: 2
-keywords: [newrelic-vs-splunk,splunk,newrelic,opentelemetry,open-source,monitoring-tools,signoz]
+keywords:
+  [newrelic-vs-splunk, splunk, newrelic, opentelemetry, open-source, monitoring-tools, signoz]
 ---
 
 New Relic and Splunk are popular monitoring and observability tools that provide a wide range of products with similar features. In this post, I have compared New Relic and Splunk on important features like APM, log management, search capability, application security, etc.
 
 <Admonition type="info">
-💡 I instrumented a sample application and sent data to New Relic and Splunk to evaluate my experience. Some takeaways are subjective and based on personal preference.
+  💡 I instrumented a sample application and sent data to New Relic and Splunk to evaluate my
+  experience. Some takeaways are subjective and based on personal preference.
 </Admonition>
 
-
-
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-cover.webp" alt=""/>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-cover.webp"
+    alt=""
+  />
 </figure>
-
-
 
 ## New Relic vs Splunk: Overview
 
-New Relic and Splunk are monitoring and observability tools with similar features. However, both tools differ in terms of their application and use cases. 
+New Relic and Splunk are monitoring and observability tools with similar features. However, both tools differ in terms of their application and use cases.
 
 New Relic is easier to get started and is cheaper to use compared to Splunk. Splunk on the other hand has more strength in log management and application security.
 
 Here’s a quick overview of the overall platform features and functionality of New Relic and Splunk.
 
-| Feature | New Relic | Splunk |
-| --- | --- | --- |
-| Getting Started | ✅  | 🟡 |
-| APM | ✅  | ✅  |
-| Log Management | ✅ | ✅ ✅  |
-| Cloud SIEM | ❌ | ✅  |
-| Application Security | 🟡 | ✅  |
-| Infrastructure Monitoring | ✅ | ✅  |
-| OpenTelemetry Support | 🟡 | ✅  |
-| Real User Monitoring | ✅  | ✅  |
-| Synthetic Monitoring | ✅  | ✅  |
-| UI/UX | ✅ | 🟡 |
-| Free Tier | ✅ (Free forever) | 🟡 (15 days free trial) |
+| Feature                   | New Relic         | Splunk                  |
+| ------------------------- | ----------------- | ----------------------- |
+| Getting Started           | ✅                | 🟡                      |
+| APM                       | ✅                | ✅                      |
+| Log Management            | ✅                | ✅ ✅                   |
+| Cloud SIEM                | ❌                | ✅                      |
+| Application Security      | 🟡                | ✅                      |
+| Infrastructure Monitoring | ✅                | ✅                      |
+| OpenTelemetry Support     | 🟡                | ✅                      |
+| Real User Monitoring      | ✅                | ✅                      |
+| Synthetic Monitoring      | ✅                | ✅                      |
+| UI/UX                     | ✅                | 🟡                      |
+| Free Tier                 | ✅ (Free forever) | 🟡 (15 days free trial) |
 
 ✅ - Available
 
@@ -66,33 +67,46 @@ Overall, New Relic is easier to get started with.
 
 I instrumented a sample Python application and sent data to both New Relic and Splunk for APM. The steps taken in New Relic were straightforward and simpler compared to Splunk. New Relic required the installation of the New Relic agent as well as the agent specific to my application, which, in my case, was the Python agent. Splunk had more setup steps.
 
-With New Relic, you can effectively monitor your application's trace data through its pre-built dashboards. Within the Distributed Tracing page, you can filter traces by Trace Groups, Root entry span, Root entity, and Errors. This allowed me to focus more on specific traces with failures and latency issues. 
+With New Relic, you can effectively monitor your application's trace data through its pre-built dashboards. Within the Distributed Tracing page, you can filter traces by Trace Groups, Root entry span, Root entity, and Errors. This allowed me to focus more on specific traces with failures and latency issues.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-apm.webp" alt="APM in New Relic"/>
-    <figcaption><i>APM in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-apm.webp"
+    alt="APM in New Relic"
+  />
+  <figcaption>
+    <i>APM in New Relic</i>
+  </figcaption>
 </figure>
-
-
 
 The visualization options it offers helped me better understand and analyze my trace data. This includes flame graphs, service maps, tables, and charts. The flamegraphs, most especially, provided end-to-end visibility into the time spent on each function or service call, which I find useful for troubleshooting.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-flamegraph.webp" alt="Visualization using flamegraphs in New Relic"/>
-    <figcaption><i>Visualization using flamegraphs</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-flamegraph.webp"
+    alt="Visualization using flamegraphs in New Relic"
+  />
+  <figcaption>
+    <i>Visualization using flamegraphs</i>
+  </figcaption>
 </figure>
-
-
 
 With Splunk, you can efficiently collect and analyze all your trace data to get insights into your application’s performance. Additionally, it supports tag-based grouping of traces and provides visualization options such as service maps and flame graphs for better analysis.
 
-Splunk employs AI-driven directed troubleshooting to quickly identify and highlight the root causes of issues within microservices, even in high-volume environments, offering a centralized view of trends in latency and errors, ranked by error rate or latency. 
+Splunk employs AI-driven directed troubleshooting to quickly identify and highlight the root causes of issues within microservices, even in high-volume environments, offering a centralized view of trends in latency and errors, ranked by error rate or latency.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-trace.webp" alt="Trace visualization in Splunk"/>
-    <figcaption><i>Trace visualization in Splunk</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-trace.webp"
+    alt="Trace visualization in Splunk"
+  />
+  <figcaption>
+    <i>Trace visualization in Splunk</i>
+  </figcaption>
 </figure>
-
 
 Some other Splunk APM features include:
 
@@ -106,12 +120,16 @@ For a seamless APM experience, New Relic’s APM feature is a good option. If yo
 
 New Relic doesn’t require an extra setup for log management. It automatically collected the logs from my application and displayed them in the Logs tab. These logs can be queried through the use of Lucene, an open-source search library, and the New Relic Query Language (NRQL). If you're familiar with SQL queries, using NRQL should be straightforward due to its SQL-like syntax.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-logs.webp" alt="Log management in New Relic"/>
-    <figcaption><i>Log management in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-logs.webp"
+    alt="Log management in New Relic"
+  />
+  <figcaption>
+    <i>Log management in New Relic</i>
+  </figcaption>
 </figure>
-
-
 
 Some other log management features New Relic provides include:
 
@@ -123,11 +141,16 @@ Splunk is well known for its log management capabilities, it can manage large vo
 
 Log management in Splunk can be carried out using the <a href = "https://www.splunk.com/en_us/products/log-observer-connect.html" rel="noopener noreferrer nofollow" target="_blank" >Log Observer Connect</a> feature. This allows for the correlation of logs with real-time metrics and traces, and log-based analysis to better understand patterns in your data.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-log-observer.webp" alt="Log observer in Splunk"/>
-    <figcaption><i>Log observer in Splunk</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-log-observer.webp"
+    alt="Log observer in Splunk"
+  />
+  <figcaption>
+    <i>Log observer in Splunk</i>
+  </figcaption>
 </figure>
-
 
 For enterprise-level log management capabilities, Splunk is an excellent choice. If you have less log management requirements, you can consider New Relic.
 
@@ -137,14 +160,18 @@ For enterprise-level log management capabilities, Splunk is an excellent choice.
 
 Application security in New Relic is carried out using the <a href = "https://docs.newrelic.com/docs/iast/introduction/" rel="noopener noreferrer nofollow" target="_blank" >Interactive Application Security Testing</a> (IAST) feature. IAST was able to identify and fix vulnerabilities in my application environment. It displayed the types of risk being introduced into the environment and categorized them based on the level of severity. Currently, IAST supports only Java, Node.js, and Go.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-security.webp" alt="Application security in New Relic"/>
-    <figcaption><i>Application security in New Relic</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-security.webp"
+    alt="Application security in New Relic"
+  />
+  <figcaption>
+    <i>Application security in New Relic</i>
+  </figcaption>
 </figure>
 
-
-
-Splunk on the other hand has different security products and apps that protect applications and the overall system from attacks. 
+Splunk on the other hand has different security products and apps that protect applications and the overall system from attacks.
 
 Here’s what some of Splunk’s security products can do:
 
@@ -152,12 +179,16 @@ Here’s what some of Splunk’s security products can do:
 - The Splunk Enterprise Security tool allows users to understand their organization's security posture. It also identifies potential security risks by analyzing diverse data sources and recognizing suspicious patterns indicative of attacks.
 - The Splunk attack analyzer helps to discover and investigate cyber-attacks and threats. It also provides information on how they can be rectified.
 
-<figure data-zoomable align='center'>
-    <img className="box-shadowed-image" src="/img/blog/2024/03/newrelic-vs-splunk-security-monitoring.webp" alt="Security monitoring in Splunk"/>
-    <figcaption><i>Security monitoring in Splunk</i></figcaption>
+<figure data-zoomable align="center">
+  <img
+    className="box-shadowed-image"
+    src="/img/blog/2024/03/newrelic-vs-splunk-security-monitoring.webp"
+    alt="Security monitoring in Splunk"
+  />
+  <figcaption>
+    <i>Security monitoring in Splunk</i>
+  </figcaption>
 </figure>
-
-
 
 If you want to focus on the security of your applications alone, New Relic is a better choice. If you want a comprehensive security tool that focuses on both your applications and the overall system, then go for Splunk.
 
@@ -176,8 +207,8 @@ New Relic and Splunk are costly to use. The following points might help you deci
 ### New Relic
 
 - Pricing is based on two things:
-    - Amount of data ingested
-    - User Seats
+  - Amount of data ingested
+  - User Seats
 - New Relic provides a free forever plan with 100GB of free data ingest each month.
 - Post 100GB, you need to pay \$0.3/GB or \$0.5/GB ingested based on your plan.
 - User seats can get [expensive](https://signoz.io/blog/pricing-comparison-signoz-vs-datadog-vs-newrelic-vs-grafana/#no-user-based-pricing-collaborate-seamlessly-with-signoz). New Relic allows only 5 full platform users in its standard plan, and the cost of full platform users can be up to \$549/user per month for enterprise plans.
@@ -221,7 +252,6 @@ Here’s how SigNoz fits the case for a New Relic and Splunk alternative with it
 - SigNoz’s log management is equipped with a powerful search and filter query builder.
 - It provides exception monitoring to track exceptions and errors in your application.
 
-
 ## Getting Started with SigNoz
 
 <GetStartedSigNoz />
@@ -229,7 +259,6 @@ Here’s how SigNoz fits the case for a New Relic and Splunk alternative with it
 ---
 
 **Further Reading:**
-
 
 **[DataDog vs New Relic - The Real Winner](https://signoz.io/blog/datadog-vs-newrelic/)**
 

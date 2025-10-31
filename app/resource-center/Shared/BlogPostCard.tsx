@@ -1,5 +1,5 @@
 import siteMetadata from '@/data/siteMetadata'
-import { Blog, Comparison, Guide, Opentelemetry } from 'contentlayer/generated'
+import { Blog, Guide, Opentelemetry } from 'contentlayer/generated'
 import Authors from '../../../constants/authors.json'
 import { Clock4 } from 'lucide-react'
 import Link from 'next/link'
@@ -9,7 +9,7 @@ import { formatDate } from 'pliny/utils/formatDate'
 export default function BlogPostCard({
   blog,
 }: {
-  blog: CoreContent<Blog | Comparison | Opentelemetry | Guide>
+  blog: CoreContent<Blog | Opentelemetry | Guide>
 }) {
   const { path, date, title, authors } = blog
 
@@ -61,7 +61,7 @@ export default function BlogPostCard({
             </div>
             <div className="flex items-center gap-1.5 whitespace-nowrap font-mono dark:text-stone-300">
               <Clock4 size={16} />
-              <div className="text-xs font-mono dark:text-white">{blog.readingTime.text}</div>
+              <div className="font-mono text-xs dark:text-white">{blog.readingTime.text}</div>
             </div>
           </div>
         </div>
