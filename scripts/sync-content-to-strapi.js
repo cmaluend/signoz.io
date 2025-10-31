@@ -257,15 +257,29 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
   console.log(`  🔍 Resolving relations...`)
   const relations = await resolveRelations(folderName, frontmatter)
 
-  // Add relations to data
-  Object.assign(data, relations)
+  // Remove raw frontmatter relation fields
+  if (schema.relations) {
+    console.log(`  🧹 [DEBUG] Cleaning up relation fields from frontmatter...`)
+    for (const [relationName, relationConfig] of Object.entries(schema.relations)) {
+      const fieldName = relationConfig.frontmatterField
+      if (data[fieldName]) {
+        console.log(
+          `    🗑️ [DEBUG] Removing raw frontmatter field: ${fieldName} = ${JSON.stringify(data[fieldName])}`
+        )
+        delete data[fieldName]
+      }
+    }
+  }
 
-  // Remove relation fields from frontmatter (they're now IDs)
-  // if (schema.relations) {
-  //   for (const relationConfig of Object.values(schema.relations)) {
-  //     delete data[relationConfig.frontmatterField];
-  //   }
-  // }
+  if (Object.keys(relations).length > 0) {
+    console.log(
+      `  ➕ [DEBUG] Adding resolved relations to data:`,
+      Object.keys(relations).join(', ')
+    )
+    Object.assign(data, relations)
+  } else {
+    console.log(`  ℹ️ [DEBUG] No relations were successfully resolved, none will be added`)
+  }
 
   // Check for missing required fields
   const missingFields = schema.fields.filter(
