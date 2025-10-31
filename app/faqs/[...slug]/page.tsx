@@ -104,19 +104,6 @@ export async function generateMetadata({
   params: { slug: string[] }
 }): Promise<Metadata> {
   try {
-    // Handle root case
-    if (!params.slug || params.slug.length === 0) {
-      return {
-        title: 'FAQs - SigNoz',
-        description: 'Frequently Asked Questions about SigNoz',
-        openGraph: {
-          title: 'FAQs - SigNoz',
-          description: 'Frequently Asked Questions about SigNoz',
-          type: 'website',
-        },
-      }
-    }
-
     // Convert slug array to path
     const path = params.slug.join('/')
 

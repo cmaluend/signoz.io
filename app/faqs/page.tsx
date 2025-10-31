@@ -22,12 +22,12 @@ export default async function FAQsPage() {
 
     // Transform the data to match the client component's expected format
     const faqs = response.data.map((faq) => ({
-      title: faq.attributes.title,
-      description: faq.attributes.description,
-      path: faq.attributes.path,
-      date: faq.attributes.date,
-      tags: faq.attributes.tags?.data?.map((tag) => tag.attributes.name) || [],
-      draft: faq.attributes.deployment_status === 'draft',
+      title: faq.title,
+      description: faq.description,
+      path: faq.path,
+      date: faq.date,
+      tags: faq.tags?.map((tag) => tag.value) || [],
+      draft: faq.deployment_status === 'draft',
     }))
 
     // Sort by date (since API sorts but we want to ensure client side too)
