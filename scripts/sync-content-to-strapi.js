@@ -152,9 +152,10 @@ async function fetchAllEntities(endpoint) {
 // Helper: Resolve relation IDs
 async function resolveRelations(folderName, frontmatter) {
   const schema = COLLECTION_SCHEMAS[folderName]
-  if (!schema.relations) return {}
+  if (!schema.relations) return { relations: {}, warnings: [] }
 
   const relations = {}
+  const warnings = []
 
   for (const [relationName, relationConfig] of Object.entries(schema.relations)) {
     const frontmatterValues = frontmatter[relationConfig.frontmatterField]
@@ -224,6 +225,10 @@ async function resolveRelations(folderName, frontmatter) {
       console.warn(
         `  ⚠️ ${relationName}: ${unmatchedValues.length} unmatched value(s): ${unmatchedValues.join(', ')}`
       )
+      warnings.push({
+        relationName,
+        unmatchedValues,
+      })
     }
 
     // Only add relation if at least one valid documentId was found
@@ -235,7 +240,7 @@ async function resolveRelations(folderName, frontmatter) {
     }
   }
 
-  return relations
+  return { relations, warnings }
 }
 
 // Helper: Map MDX data to Strapi schema
@@ -255,7 +260,7 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
 
   // Resolve relations
   console.log(`  🔍 Resolving relations...`)
-  const relations = await resolveRelations(folderName, frontmatter)
+  const { relations, warnings } = await resolveRelations(folderName, frontmatter)
 
   // Remove raw frontmatter relation fields
   if (schema.relations) {
@@ -290,7 +295,7 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
     console.warn(`  ⚠️ Missing fields: ${missingFields.join(', ')}`)
   }
 
-  return data
+  return { data, warnings }
 }
 
 // Helper: Check if file exists in Strapi by path
@@ -450,6 +455,7 @@ async function syncToStrapi() {
     deleted: [],
     skipped: [],
     errors: [],
+    relationWarnings: [], // Track unmatched relations
   }
 
   for (const filePath of CHANGED_FILES) {
@@ -487,7 +493,7 @@ async function syncToStrapi() {
         if (existingEntry) {
           await deleteEntry(folderName, existingEntry.id)
           console.log(`✅ Deleted successfully`)
-          results.deleted.push(filePath)
+          results.deleted.push({ file: filePath, path: pathField })
         } else {
           console.log(`⚠️ Entry not found in CMS, skipping deletion`)
           results.skipped.push(filePath)
@@ -498,8 +504,22 @@ async function syncToStrapi() {
         console.log(`  📖 [DEBUG] Frontmatter keys:`, Object.keys(frontmatter).join(', '))
 
         console.log(`  🗺️ [DEBUG] Mapping to Strapi schema...`)
-        const strapiData = await mapToStrapiSchema(folderName, frontmatter, content, pathField)
+        const { data: strapiData, warnings } = await mapToStrapiSchema(
+          folderName,
+          frontmatter,
+          content,
+          pathField
+        )
         console.log(`  🗺️ [DEBUG] Mapped data keys:`, Object.keys(strapiData).join(', '))
+
+        // Track relation warnings
+        if (warnings && warnings.length > 0) {
+          results.relationWarnings.push({
+            file: filePath,
+            path: pathField,
+            warnings,
+          })
+        }
 
         console.log(`  🔎 [DEBUG] Checking if entry exists in CMS...`)
         const existingEntry = await findEntryByPath(folderName, pathField)
@@ -519,12 +539,12 @@ async function syncToStrapi() {
 
           await updateEntry(folderName, existingEntry.documentId, strapiData)
           console.log(`✅ Updated successfully`)
-          results.updated.push(filePath)
+          results.updated.push({ file: filePath, path: pathField })
         } else {
           console.log(`➕ Creating in CMS: ${pathField}`)
           await createEntry(folderName, strapiData)
           console.log(`✅ Created successfully`)
-          results.created.push(filePath)
+          results.created.push({ file: filePath, path: pathField })
         }
       }
     } catch (error) {
@@ -569,6 +589,7 @@ async function syncToStrapi() {
   console.log(`🗑️ Deleted: ${results.deleted.length}`)
   console.log(`⏭️ Skipped: ${results.skipped.length}`)
   console.log(`❌ Errors: ${results.errors.length}`)
+  console.log(`⚠️ Relation Warnings: ${results.relationWarnings.length}`)
   console.log('='.repeat(60) + '\n')
 
   if (results.errors.length > 0) {
@@ -576,7 +597,66 @@ async function syncToStrapi() {
     results.errors.forEach(({ file, error }) => {
       console.error(`  • ${file}: ${error}`)
     })
+
+    // Extract relation types even on error for PR comment
+    const usedSchemas = new Set()
+    const allRelationNames = new Set()
+
+    ;[...results.created, ...results.updated].forEach((item) => {
+      const folderName = getFolderName(item.file)
+      if (folderName && COLLECTION_SCHEMAS[folderName]) {
+        usedSchemas.add(folderName)
+        const schema = COLLECTION_SCHEMAS[folderName]
+        if (schema.relations) {
+          Object.keys(schema.relations).forEach((relationName) => {
+            allRelationNames.add(relationName)
+          })
+        }
+      }
+    })
+
+    results.relationTypes = Array.from(allRelationNames)
+    results.deploymentStatus = DEPLOYMENT_STATUS
+
+    // Save results to file even on error for PR comment
+    try {
+      fs.writeFileSync('sync-results.json', JSON.stringify(results, null, 2))
+      console.log('📝 Results saved to sync-results.json')
+    } catch (writeError) {
+      console.error('Failed to save results:', writeError.message)
+    }
+
     process.exit(1)
+  }
+
+  // Extract all unique relation names from schemas used
+  const usedSchemas = new Set()
+  const allRelationNames = new Set()
+
+  // Get schemas from processed files
+  ;[...results.created, ...results.updated].forEach((item) => {
+    const folderName = getFolderName(item.file)
+    if (folderName && COLLECTION_SCHEMAS[folderName]) {
+      usedSchemas.add(folderName)
+      const schema = COLLECTION_SCHEMAS[folderName]
+      if (schema.relations) {
+        Object.keys(schema.relations).forEach((relationName) => {
+          allRelationNames.add(relationName)
+        })
+      }
+    }
+  })
+
+  // Add relation info to results
+  results.relationTypes = Array.from(allRelationNames)
+  results.deploymentStatus = DEPLOYMENT_STATUS
+
+  // Save results to file for PR comment script
+  try {
+    fs.writeFileSync('sync-results.json', JSON.stringify(results, null, 2))
+    console.log('📝 Results saved to sync-results.json')
+  } catch (writeError) {
+    console.error('Failed to save results:', writeError.message)
   }
 
   return results
