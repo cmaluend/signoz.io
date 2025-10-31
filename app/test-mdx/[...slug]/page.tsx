@@ -123,22 +123,25 @@ export async function generateMetadata({
       const { data: content } = await fetchMDXContentByPath('case-studies', path, deployment_status)
 
       return {
-        title: content.title,
-        description: content?.description || `Read about ${content.title}`,
+        title: (content as MDXContent)?.title,
+        description:
+          (content as MDXContent)?.description || `Read about ${(content as MDXContent)?.title}`,
         // keywords: content?.keywords, // TODO: Add keyword support later
         authors: [{ name: 'SigNoz Team' }],
         openGraph: {
-          title: content.title,
-          description: content?.description || `Read about ${content.title}`,
+          title: (content as MDXContent)?.title,
+          description:
+            (content as MDXContent)?.description || `Read about ${(content as MDXContent)?.title}`,
           type: 'article',
-          publishedTime: content?.publishedAt,
-          modifiedTime: content?.updatedAt,
+          publishedTime: (content as MDXContent)?.publishedAt,
+          modifiedTime: (content as MDXContent)?.updatedAt,
           url: `/${path}`,
         },
         twitter: {
           card: 'summary_large_image',
-          title: content.title,
-          description: content?.description || `Read about ${content.title}`,
+          title: (content as MDXContent)?.title,
+          description:
+            (content as MDXContent)?.description || `Read about ${(content as MDXContent)?.title}`,
         },
       }
     } catch (error) {
@@ -188,7 +191,7 @@ export default async function TestMDXPage({ params }: { params: { slug?: string[
       console.error(`Invalid response for path: ${path}`)
       notFound()
     }
-    content = response.data
+    content = response.data as MDXContent
   } catch (error) {
     notFound()
   }

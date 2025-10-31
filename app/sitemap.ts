@@ -1,6 +1,15 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allAuthors, allComparisons, allGuides, allOpentelemetries, allDocs, allFAQs } from 'contentlayer/generated'
+import {
+  allBlogs,
+  allAuthors,
+  allComparisons,
+  allGuides,
+  allOpentelemetries,
+  allDocs,
+} from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
+
+// TODO: Add FAQs handling to the sitemap
 
 const mapChangeFrequency = (
   frequency: string
@@ -68,10 +77,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }))
 
-  const faqRoutes = allFAQs.map((faq) => ({
-    url: `${siteUrl}/${faq.path}/`,
-    lastModified: faq.lastmod || faq.date,
-  }))
+  // FAQs are now fetched from Strapi dynamically, not included in static sitemap
 
   const routes = [
     '',
@@ -93,5 +99,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: mapChangeFrequency('weekly'),
   }))
 
-  return [...routes, ...blogRoutes, ...comparisonRoutes, ...opentelemetryRoutes, ...docRoutes, ...guideRoutes, ...faqRoutes]
+  return [
+    ...routes,
+    ...blogRoutes,
+    ...comparisonRoutes,
+    ...opentelemetryRoutes,
+    ...docRoutes,
+    ...guideRoutes,
+  ]
 }

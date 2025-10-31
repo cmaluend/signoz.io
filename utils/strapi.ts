@@ -271,27 +271,60 @@ let pathsCache: string[] | null = null
 let pathsCacheTimestamp: number = 0
 const PATHS_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
-// Fetch MDX content by path - has path nesting
+// Fetch MDX content by path or all content for a collection
 export const fetchMDXContentByPath = async (
   collectionName: string,
-  path: string,
-  deployment_status: string
-): Promise<MDXContentByIdApiResponse> => {
+  path?: string,
+  deployment_status?: string,
+  fetchAll: boolean = false
+): Promise<MDXContentByIdApiResponse | MDXContentApiResponse> => {
   try {
-    // Ensure path starts with a slash and has no trailing slashes
-    const normalizedPath = `/${path.replace(/^\/+|\/+$/g, '')}`
-    console.log('Normalized path for Strapi query:', normalizedPath)
+    const queryObject: any = {
+      populate: {
+        tags: {
+          populate: '*',
+        },
+        authors: {
+          populate: '*',
+        },
+        related_faqs: {
+          populate: '*',
+        },
+      },
+    }
 
-    const queryObject = {
-      filters: {
+    // Add filters only if not fetching all
+    if (!fetchAll) {
+      if (!path) {
+        throw new Error('Path is required when fetchAll is false')
+      }
+      // Ensure path starts with a slash and has no trailing slashes
+      const normalizedPath = `/${path.replace(/^\/+|\/+$/g, '')}`
+      console.log('Normalized path for Strapi query:', normalizedPath)
+
+      queryObject.filters = {
         path: {
           $eq: normalizedPath,
         },
-        deployment_status: {
+      }
+
+      if (deployment_status) {
+        queryObject.filters.deployment_status = {
           $eq: deployment_status,
-        },
-      },
-      populate: '*',
+        }
+      }
+    } else {
+      // When fetching all, add sorting
+      queryObject.sort = ['date:desc']
+
+      // Optionally filter by deployment status for list views
+      if (deployment_status) {
+        queryObject.filters = {
+          deployment_status: {
+            $eq: deployment_status,
+          },
+        }
+      }
     }
 
     const queryParams = qs.stringify(queryObject, {
@@ -306,17 +339,15 @@ export const fetchMDXContentByPath = async (
 
     const response = await fetch(`${API_URL}/api/${collectionName}${queryParams}`, {
       next: {
-        // revalidate: 3600, // Same as export const revalidate = 3600; in the page
-        // we need no-store, only one should be specified
-        tags: [`${collectionName}-${path}`],
+        tags: fetchAll ? [`${collectionName}-list`] : [`${collectionName}-${path}`],
       },
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store', // Avoid caching
+        'Cache-Control': 'no-store',
         Pragma: 'no-cache',
         Expires: '0',
       },
-      cache: 'no-store', // For fetch requests
+      cache: 'no-store',
     })
 
     if (!response.ok) {
@@ -329,15 +360,22 @@ export const fetchMDXContentByPath = async (
 
     const data: MDXContentApiResponse = await response.json()
 
-    console.log('Data:', data)
-    console.log('Data.data:', data.data)
-    console.log('Data.data.length:', data.data.length)
-    console.log('Query URL:', `${API_URL}/api/${collectionName}${queryParams}`)
-    console.log('Authors in response:', data.data[0]?.attributes?.authors)
-    console.log('Related FAQs in response:', data.data[0]?.attributes?.related_faqs)
+    if (!fetchAll) {
+      console.log('Data:', data)
+      console.log('Data.data:', data.data)
+      console.log('Data.data.length:', data.data.length)
+      console.log('Query URL:', `${API_URL}/api/${collectionName}${queryParams}`)
+      console.log('Authors in response:', data.data[0]?.attributes?.authors)
+      console.log('Related FAQs in response:', data.data[0]?.attributes?.related_faqs)
+    }
 
     if (!data.data || data.data.length === 0) {
       throw new Error('Content not found')
+    }
+
+    // Return all data for list views, only first item for single content
+    if (fetchAll) {
+      return data
     }
 
     return {
@@ -345,7 +383,7 @@ export const fetchMDXContentByPath = async (
       meta: {},
     }
   } catch (error) {
-    console.error(`Error fetching MDX content by path ${path}:`, error)
+    console.error(`Error fetching MDX content for ${collectionName}:`, error)
     throw error
   }
 }

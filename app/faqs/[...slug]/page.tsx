@@ -127,27 +127,34 @@ export async function generateMetadata({
       const { data: content } = await fetchMDXContentByPath('faqs', path, deployment_status)
 
       // Extract author names from the content
-      const authorNames = content.authors?.map((author) => author?.name) || ['SigNoz Team']
+      const authorNames = (content as MDXContent)?.authors?.map((author) => author?.name) || [
+        'SigNoz Team',
+      ]
 
       return {
-        title: content.title,
-        description: content?.description || `${content.title} - SigNoz FAQ`,
+        title: (content as MDXContent).title,
+        description:
+          (content as MDXContent)?.description || `${(content as MDXContent)?.title} - SigNoz FAQ`,
         authors: authorNames.map((name) => ({ name })),
         openGraph: {
-          title: content.title,
-          description: content?.description || `${content.title} - SigNoz FAQ`,
+          title: (content as MDXContent)?.title,
+          description:
+            (content as MDXContent)?.description ||
+            `${(content as MDXContent)?.title} - SigNoz FAQ`,
           siteName: siteMetadata.title,
           locale: 'en_US',
           type: 'article',
-          publishedTime: content?.date,
-          modifiedTime: content?.updatedAt,
-          url: content?.path || './',
+          publishedTime: (content as MDXContent)?.date,
+          modifiedTime: (content as MDXContent)?.updatedAt,
+          url: (content as MDXContent)?.path || './',
           authors: authorNames,
         },
         twitter: {
           card: 'summary_large_image',
-          title: content.title,
-          description: content?.description || `${content.title} - SigNoz FAQ`,
+          title: (content as MDXContent)?.title,
+          description:
+            (content as MDXContent)?.description ||
+            `${(content as MDXContent)?.title} - SigNoz FAQ`,
         },
       }
     } catch (error) {
@@ -199,7 +206,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       console.error(`Invalid response for path: ${path}`)
       notFound()
     }
-    content = response.data
+    content = response.data as MDXContent
   } catch (error) {
     console.error('Error fetching FAQ content:', error)
     notFound()

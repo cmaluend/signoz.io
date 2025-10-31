@@ -117,14 +117,15 @@ export async function generateMetadata({
     const path = params.slug.join('/')
 
     try {
-      const { data: content } = await fetchMDXContentByPath('case-studies', path, 'live')
+      const response = await fetchMDXContentByPath('case-studies', path, 'live')
+      const content = Array.isArray(response.data) ? response.data[0] : response.data
 
       return {
-        title: content.title,
-        description: content?.description || content.title,
+        title: content?.title,
+        description: content?.description || content?.title,
         openGraph: {
-          title: content.title,
-          description: content?.description || content.title,
+          title: content?.title,
+          description: content?.description || content?.title,
           siteName: siteMetadata.title,
           locale: 'en_US',
           type: 'article',
@@ -132,8 +133,8 @@ export async function generateMetadata({
         },
         twitter: {
           card: 'summary_large_image',
-          title: content.title,
-          description: content?.description || content.title,
+          title: content?.title,
+          description: content?.description || content?.title,
         },
       }
     } catch (error) {
@@ -181,7 +182,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       console.error(`Invalid response for path: ${path}`)
       notFound()
     }
-    content = response.data
+    content = Array.isArray(response.data) ? response.data[0] : response.data
   } catch (error) {
     console.error('Error fetching case study content:', error)
     notFound()
@@ -212,9 +213,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
   // Prepare content for CaseStudyLayout
   const mainContent: CoreContent<CaseStudy> = {
-    title: content.title,
+    title: content?.title,
     slug: path,
-    path: content.path || `/case-study/${path}`,
+    path: content?.path || `/case-study/${path}`,
     type: 'CaseStudy',
     readingTime: readingTimeData,
     filePath: `/case-study/${path}`,
