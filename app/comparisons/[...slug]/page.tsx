@@ -116,7 +116,7 @@ export async function generateMetadata({
     const path = params.slug.join('/')
 
     try {
-      const isProduction = process.env.NODE_ENV === 'production'
+      const isProduction = process.env.VERCEL_ENV === 'production'
       const deployment_status = isProduction ? 'live' : 'staging'
       const response = await fetchMDXContentByPath('comparisons', path, deployment_status)
       const content = response.data as MDXContent
@@ -199,7 +199,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       throw new Error('Strapi API URL is not configured')
     }
 
-    const isProduction = process.env.NODE_ENV === 'production'
+    const isProduction = process.env.VERCEL_ENV === 'production'
     const deployment_status = isProduction ? 'live' : 'staging'
 
     const response = await fetchMDXContentByPath('comparisons', path, deployment_status)

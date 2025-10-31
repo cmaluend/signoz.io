@@ -5,7 +5,7 @@ import readingTime from 'reading-time'
 export default async function ComparisonsListing() {
   try {
     // Fetch all comparisons from Strapi
-    const isProduction = process.env.NODE_ENV === 'production'
+    const isProduction = process.env.VERCEL_ENV === 'production'
     const deployment_status = isProduction ? 'live' : 'staging'
 
     const response = (await fetchMDXContentByPath(
