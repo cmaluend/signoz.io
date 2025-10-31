@@ -325,7 +325,7 @@ async function createEntry(folderName, data) {
     if (Object.keys(errorDetails).length > 0) {
       console.error(`  Details:`, JSON.stringify(errorDetails, null, 2))
     }
-    throw new Error(`Failed to create entry: ${errorMsg}`)
+    throw error
   }
 }
 
@@ -351,7 +351,7 @@ async function updateEntry(folderName, documentId, data) {
     if (Object.keys(errorDetails).length > 0) {
       console.error(`  Details:`, JSON.stringify(errorDetails, null, 2))
     }
-    throw new Error(`Failed to update entry: ${errorMsg}`)
+    throw error
   }
 }
 
@@ -436,11 +436,17 @@ async function syncToStrapi() {
           console.log(`✅ Updated successfully`)
           results.updated.push(filePath)
         } catch (error) {
+          console.log(`❌ [Debug] Error: ${JSON.stringify(error, null, 2)}`)
           if (error.status === 404) {
             console.log(`➕ Entry not found, trying to create in CMS: ${pathField}`)
-            await createEntry(folderName, strapiData)
-            console.log(`✅ Created successfully`)
-            results.created.push(filePath)
+            try {
+              await createEntry(folderName, strapiData)
+              console.log(`✅ Created successfully`)
+              results.created.push(filePath)
+            } catch (createError) {
+              console.error(`❌ Error creating entry after update failed: ${createError.message}`)
+              throw createError
+            }
           } else {
             console.error(`❌ Error creating entry after update failed: ${error.message}`)
             throw error
