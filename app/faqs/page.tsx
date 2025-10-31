@@ -3,9 +3,11 @@
 // TODO: remove contentlayer from here as well
 
 import Button from '@/components/ui/Button'
-import { allFAQs } from 'contentlayer/generated'
+// import { allFAQs } from 'contentlayer/generated'
 import Link from 'next/link'
 import React, { useState } from 'react'
+
+const allFAQs: unknown[] = []
 
 export default function FAQsPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
