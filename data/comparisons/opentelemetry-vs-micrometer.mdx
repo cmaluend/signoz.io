@@ -2,7 +2,7 @@
 title: OpenTelemetry vs Micrometer - Choosing the Right Metrics Tool
 
 date: 2024-10-22
-tags: [OpenTelemetry]
+tags: [OpenTelemetry] #
 authors: [nilesh_sinha]
 description: Compare OpenTelemetry and Micrometer for application metrics. Learn their features, performance, and integration to choose the best tool for your needs.
 keywords:
@@ -126,16 +126,16 @@ Setup Process:
 
 1.  Add Dependencies:
     Add the following dependencies to your `pom.xml` for Maven:
-        ```xml
-        <dependency>
-            <groupId>io.opentelemetry.instrumentation</groupId>
-            <artifactId>opentelemetry-spring-boot-starter</artifactId>
-            <version>1.25.0</version> <!-- Replace with the latest version -->
-        </dependency>
-        ```
+    `xml
+    <dependency>
+        <groupId>io.opentelemetry.instrumentation</groupId>
+        <artifactId>opentelemetry-spring-boot-starter</artifactId>
+        <version>1.25.0</version> <!-- Replace with the latest version -->
+    </dependency>
+    `
 2.  Add Exporter Dependencies:
     For exporting traces or metrics, add the corresponding exporter, like `otlp` for OpenTelemetry Protocol.
-        The OpenTelemetry Protocol (OTLP) is a standardized protocol used for transmitting telemetry data, including traces, metrics, and logs, from applications to observability backends. Here are key points about OTLP:
+    The OpenTelemetry Protocol (OTLP) is a standardized protocol used for transmitting telemetry data, including traces, metrics, and logs, from applications to observability backends. Here are key points about OTLP:
 
         - Unified Protocol: OTLP combines different types of telemetry data into a single protocol, simplifying the process of sending data from applications.
         - Transport Mechanisms: Supports both HTTP and gRPC as transport protocols, allowing flexibility in how data is sent to observability platforms.
@@ -149,14 +149,14 @@ Setup Process:
             <version>1.25.0</version>
         </dependency>
         ```
+
 3.  Configuration:
     In `application.properties` or `application.yml`, configure the [OpenTelemetry exporter](https://signoz.io/guides/opentelemetry-collector-vs-exporter/):
-        ```
-        # application.properties
-        otel.traces.exporter=otlp
-        otel.metrics.exporter=none
-        otel.exporter.otlp.endpoint=http://localhost:4317
-        ```
+    `     # application.properties
+    otel.traces.exporter=otlp
+    otel.metrics.exporter=none
+    otel.exporter.otlp.endpoint=http://localhost:4317
+    `
 4.  Example:
 
     ```java
@@ -190,20 +190,19 @@ Setup Process:
 
 1.  Add Dependency:
     If you’re using Maven, add the Micrometer dependency to your `pom.xml`:
-        ```xml
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-core</artifactId>
-            <version>1.10.0</version> <!-- Replace with the latest version -->
-        </dependency>
-        ```
+    `xml
+    <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>1.10.0</version> <!-- Replace with the latest version -->
+    </dependency>
+    `
 2.  Enable Metrics Endpoint:
     In `application.properties`, enable the metrics endpoint and specify the Prometheus format:
-        ```
-        # application.properties
-        management.metrics.export.prometheus.enabled=true
-        management.endpoints.web.exposure.include=*
-        ```
+    `     # application.properties
+    management.metrics.export.prometheus.enabled=true
+    management.endpoints.web.exposure.include=*
+    `
 3.  Example:
 
     ```java

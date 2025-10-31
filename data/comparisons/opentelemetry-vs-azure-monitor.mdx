@@ -3,7 +3,7 @@ title: OpenTelemetry vs Azure Monitor - Choosing the Right Tool
 
 date: 2025-01-22
 tags: [opentelemetry, tools-comparison]
-authors: [manjunath_irukulla]
+authors: [manjunath_irukulla] #
 description: Explore the key differences between OpenTelemetry and Azure Monitor to make an informed decision for your observability strategy.
 keywords:
   [
@@ -149,13 +149,14 @@ Before you begin, ensure you have the following:
    - Retrieve the Connection String:
      - Go to the Azure portal, and navigate to your Application Insights resource.
      - Copy the connection string from the Overview tab.
-     <Figure
-       src="/img/comparisons/2024/10/opentelemetry-vs-azure-monitor-migrate-from-instrumentation-keys-to-connection-strings.webp"
-       alt="Application Insights resource - Connection String (credits - Microsoft Azure)"
-       caption="Application Insights resource - Connection String (credits - Microsoft Azure)"
-     />
+       <Figure
+         src="/img/comparisons/2024/10/opentelemetry-vs-azure-monitor-migrate-from-instrumentation-keys-to-connection-strings.webp"
+         alt="Application Insights resource - Connection String (credits - Microsoft Azure)"
+         caption="Application Insights resource - Connection String (credits - Microsoft Azure)"
+       />
    - Set the Connection String:
      - Environment Variable: Set the environment variable:
+
      ```abap
      APPLICATIONINSIGHTS_CONNECTION_STRING=<Your connection string>
      ```

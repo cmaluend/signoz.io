@@ -3,7 +3,7 @@ title: Understanding OpenTelemetry - Trace ID vs. Span ID
 
 date: 2024-11-14
 tags: [OpenTelemetry]
-authors: [vivek_goswami]
+authors: [vivek_goswami] #
 description: Explore the key differences between Trace ID and Span ID in OpenTelemetry. Learn how these concepts improve distributed tracing and system observability.
 keywords:
   [
@@ -138,19 +138,19 @@ Span attributes and events are key elements in distributed tracing, providing de
   - Include Relevant Metadata: When adding attributes to spans, focus on data that provides meaningful context. For instance, include attributes like service names, request paths, and user identifiers. This helps trace data be more useful for debugging and performance monitoring.
   - Consistency is Key: Use standardized naming conventions for attributes and events across services. This ensures that traces are consistent, making it easier to analyze them collectively.
   - Use Clear Naming: Use names that clearly describe the purpose or action of the attribute or event. For example, use `http.method` for the HTTP request method or `request_received` for the event marking the receipt of a request.
-  Examples of useful attributes:
+    Examples of useful attributes:
   - `http.method: "POST"`
   - `http.url: "/api/orders"`
   - `user.id: "1234"`
-  Examples of useful events:
+    Examples of useful events:
   - `request_received`: Marked when the request is first received.
   - `order_processed`: Indicates when the order is fully processed.
   - `response_sent`: Captures when the response is sent to the client.
 - Balancing Detail and Performance in Span Creation
   - Avoid Overloading with Details: While it's important to capture enough information to diagnose problems, too many attributes or events can increase the overhead of tracing. Focus on the most relevant and impactful data that will aid in troubleshooting without affecting performance.
   - Optimize for Performance: Keep spans lightweight for routine operations, such as basic CRUD operations. However, include more detailed information to improve observability for complex transactions or error scenarios.
-  Example:
-  In a Node.js application, a span tracking an HTTP request might include:
+    Example:
+    In a Node.js application, a span tracking an HTTP request might include:
   - Attributes like:
     - `http.method: "POST"`
     - `http.url: "/api/orders"`
@@ -194,12 +194,15 @@ OpenTelemetry is an open-source framework designed for observability, enabling t
 
 1. Set Up [OpenTelemetry SDK](https://signoz.io/comparisons/opentelemetry-api-vs-sdk/):
    - Start by installing the OpenTelemetry SDK for the relevant language. For instance, in JavaScript:
+
      ```bash
      npm install @opentelemetry/api @opentelemetry/sdk-trace-base @opentelemetry/exporter-trace-otlp-http
 
      ```
+
 2. Initialize the Tracer:
    - Create and configure the tracer to capture traces. Example in JavaScript:
+
      ```jsx
      const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-base')
      const { SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-base')
@@ -209,8 +212,10 @@ OpenTelemetry is an open-source framework designed for observability, enabling t
      provider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter()))
      provider.register()
      ```
+
 3. Create Traces and Spans:
    - Create a trace by starting a root span. Each span represents a specific operation in the trace.
+
      ```jsx
      const { trace } = require('@opentelemetry/api')
      const tracer = trace.getTracer('example-tracer')
@@ -219,6 +224,7 @@ OpenTelemetry is an open-source framework designed for observability, enabling t
      // Perform some operations here
      span.end()
      ```
+
 4. Add Attributes to Spans:
    - Add custom attributes to spans for additional context.
      ```jsx

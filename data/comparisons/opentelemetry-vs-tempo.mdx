@@ -3,7 +3,7 @@ title: OpenTelemetry vs Tempo - Key Differences Explained
 
 date: 2025-01-22
 tags: [OpenTelemetry]
-authors: [nilesh_sinha]
+authors: [nilesh_sinha] #
 description: Discover the key differences between OpenTelemetry and Tempo for distributed tracing. Learn how to leverage these tools for optimal observability in modern software architectures.
 keywords:
   [
@@ -303,7 +303,7 @@ When deploying the OpenTelemetry Collector, consider the following best practice
 
    - Receivers:
      - otlp: This defines the OTLP receiver that can accept telemetry data over gRPC and HTTP protocols. The `tls` configuration specifies the settings for secure communication.
-     > gRPC (Google Remote Procedure Call) is a high-performance, open-source framework that enables remote communication between services using protocol buffers (Protobuf) for data serialization. It allows client and server applications to communicate seamlessly, supporting multiple programming languages
+       > gRPC (Google Remote Procedure Call) is a high-performance, open-source framework that enables remote communication between services using protocol buffers (Protobuf) for data serialization. It allows client and server applications to communicate seamlessly, supporting multiple programming languages
      - protocols: Specifies the protocols supported by the receiver.
      - grpc: A protocol for high-performance remote procedure calls.
      - tls: This section configures TLS for secure communication.

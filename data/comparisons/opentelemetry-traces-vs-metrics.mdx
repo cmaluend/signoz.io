@@ -3,7 +3,7 @@ title: OpenTelemetry - Comparing Traces vs Metrics for Monitoring
 
 date: 2024-11-20
 tags: [OpenTelemetry]
-authors: [ayush_srivastava]
+authors: [ayush_srivastava] #
 description: Explore the differences between OpenTelemetry traces and metrics for effective system monitoring. Learn when to use each and how they complement each other.
 keywords:
   [
@@ -136,6 +136,7 @@ The Meter Provider and Meter are foundational elements in OpenTelemetry’s metr
 - The Meter Provider is responsible for managing Meters, which are used to create and define metric instruments.
 - A Meter is your entry point for creating metrics in your application. In a web application, you could use a Meter to define a counter to track the total number of HTTP requests.
   Example: In this snippet, a meter is created with the module name, allowing you to define metrics like counters and gauges within this meter.
+
   ```python
   from opentelemetry import metrics
 
@@ -233,6 +234,7 @@ Implementing OpenTelemetry involves integrating its components into your applica
   Start by installing the [OpenTelemetry SDK](https://signoz.io/comparisons/opentelemetry-api-vs-sdk/) and necessary instrumentation libraries for your programming language.
 - Instrument Your Code:
   For traces, create and manage spans to track the flow of requests across services. Use metrics instruments like counters, gauges, and histograms to collect data. Example in Python:
+
   ```python
   from opentelemetry import trace, metrics
   from opentelemetry.sdk.trace import TracerProvider
@@ -251,7 +253,9 @@ Implementing OpenTelemetry involves integrating its components into your applica
       counter = meter.create_counter("my_counter")
       counter.add(1)
   ```
+
   The tracer tracks spans (units of work) in your application, while the meter captures metrics like counters to monitor key performance indicators.
+
 - Configure the OpenTelemetry Collector
   The OpenTelemetry Collector allows you to receive, process, and export traces and metrics to various backends (e.g., Prometheus, Jaeger).
   - Installation:

@@ -3,7 +3,7 @@ title: OpenTelemetry vs. X-Ray - Choosing the Right Tracing Tool
 
 date: 2025-01-22
 tags: [opentelemetry, tools-comparison]
-authors: [sushant_gaurav]
+authors: [sushant_gaurav] #
 description: Compare OpenTelemetry and AWS X-Ray for distributed tracing. Learn their strengths, use cases, and how to choose the right tool for your needs.
 keywords:
   [opentelemetry vs xray, distributed tracing, observability, AWS, cloud-native, monitoring, SigNoz]
@@ -89,6 +89,7 @@ OpenTelemetry excels in cloud-native systems by offering critical capabilities t
 - **Microservices Support**: OpenTelemetry is intended to manage the complexity of distributed, microservices-based systems. Its versatility enables smooth tracking of service interactions.
 - **Cloud Service Compatibility**: OpenTelemetry is interoperable with popular cloud services from various providers, making it suitable for hybrid cloud configurations.
 - **Custom Instrumentation**: OpenTelemetry supports custom instrumentation, allowing you to tailor tracing capabilities to meet your individual needs. Here's an example of instrumenting an HTTP server.
+
   ```python
   from opentelemetry import trace
   from opentelemetry.instrumentation.flask import FlaskInstrumentor
@@ -120,6 +121,7 @@ If your application primarily uses the AWS services, X-Ray offers various advant
 - **Seamless Lambda Integration**: X-Ray integrates seamlessly with AWS Lambda and serverless architectures, enabling real-time tracing of serverless function invocations.
 - **AWS SDK Instrumentation**: The built-in capability for tracing AWS SDK calls streamlines the instrumentation process by eliminating the requirement for manual trace management.
 - **CloudWatch Integration**: X-Ray allows you to easily correlate traces with CloudWatch logs and metrics, providing complete observability throughout your AWS stack. Here's an example of enabling X-Ray tracing in a Lambda function:
+
   ```python
   import boto3
 
@@ -132,6 +134,7 @@ If your application primarily uses the AWS services, X-Ray offers various advant
       )
       return 'Lambda function executed successfully!'
   ```
+
 - **Reduced Operational Overhead**: X-Ray's broad AWS connection can greatly reduce the operational strain by automating many parts of trace management and visualization.
 
 ## Comparing OpenTelemetry and X-Ray Performance
@@ -150,6 +153,7 @@ To implement OpenTelemetry tracing in your application, follow these steps:
 1. Set Up the [OpenTelemetry Collector](https://signoz.io/blog/opentelemetry-collector-complete-guide/):
    - Deploy the collector as a sidecar, daemon, or standalone service.
    - Configure receivers, processors, and exporters. Let's look at a basic configuration example for the collector:
+
      ```yaml
      receivers:
        otlp:
@@ -173,11 +177,13 @@ To implement OpenTelemetry tracing in your application, follow these steps:
            processors: [batch]
            exporters: [debug, jaeger]
      ```
+
 2. Instrument Your Application:
    - Set up the [OpenTelemetry SDK](https://signoz.io/comparisons/opentelemetry-api-vs-sdk/) for your programming language.
    - Enable automated instrumentation of compatible frameworks and libraries.
    - Enable manual instrumentation for custom code paths.
    - Example:
+
      ```python
      from opentelemetry import trace
 
@@ -190,6 +196,7 @@ To implement OpenTelemetry tracing in your application, follow these steps:
              return "Data fetched!"
 
      ```
+
 3. Configure Exporters:
    - Choose and set up exporters for your preferred backends (e.g., Jaeger, Zipkin, or cloud-native solutions).
 

@@ -3,7 +3,7 @@ title: OpenTelemetry - Understanding Traces vs. Spans
 
 date: 2024-11-07
 tags: [OpenTelemetry]
-authors: [soumya_gupta]
+authors: [soumya_gupta] #
 description: Explore the differences between traces and spans in OpenTelemetry, their relationship, and how they enhance distributed system observability.
 keywords: [opentelemetry, traces, spans, distributed tracing, observability, sigNoz, monitoring]
 ---
@@ -65,7 +65,7 @@ To fully grasp the concept of traces, let's break down their key components:
      - Adding items to your cart has a Span ID (`span1`).
      - Checking out has a different Span ID (`span2`).
      - Processing the payment has yet another Span ID (`span3`).
-     By linking each [Span ID](https://signoz.io/blog/distributed-tracing-span/) to the same Trace ID, systems like Loki can group related spans, providing a full view of your order journey.
+       By linking each [Span ID](https://signoz.io/blog/distributed-tracing-span/) to the same Trace ID, systems like Loki can group related spans, providing a full view of your order journey.
    - Trace Flags: These flags contain additional metadata about your trace, like whether it was sampled for performance analysis or if an error occurred. For example, if your payment fails, Trace Flags might highlight an error in the payment span (`span3`), making it easy for developers to pinpoint and troubleshoot the issue.
 
    Using this approach, a developer can filter logs by the correlation ID (such as `correlation-id: 12345-abcde`) to see all log entries related to your specific order. This way, if a step in your order process encounters an error, Loki can quickly surface the problem by connecting each span back to the Trace ID.

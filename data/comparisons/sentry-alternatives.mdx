@@ -3,7 +3,7 @@ title: Top 10 Sentry Alternatives for Error Tracking in 2025
 
 date: 2025-01-09
 tags: [sentry, observability]
-authors: [soumya_gupta]
+authors: [soumya_gupta] #
 description: Discover the best Sentry alternatives for error tracking in 2025. Compare features, pricing, and performance of top tools to enhance your application monitoring.
 keywords:
   [sentry alternatives, error tracking, application monitoring, open-source APM, software debugging]
@@ -1052,32 +1052,30 @@ Jaeger and Sentry both provide monitoring and observability tools, but they serv
 - **Data Architecture**
   Jaeger's architecture consists of several key components: - **Client Libraries:** Instrument the application code, create spans, and send them to the Jaeger Agent. - **Agent:** A network daemon that collects spans and forwards them to the Collector. - **Collector:** Processes the spans and stores them in a backend storage system like Cassandra or Elasticsearch. - **Query:** Retrieves traces from storage and presents them via the [Jaeger UI](https://signoz.io/guides/how-to-implement-jaeger/). - **UI:** A web interface to search, analyze, and visualize trace data.
 
+  {' '}
 
-    {' '}
+  <Figure
+    src="/img/comparisons/2025/01/sentry-alternatives-image%2015.webp"
+    alt="Data architecture: Jaeger (credits: Jaeger docs)"
+    caption="Data architecture: Jaeger (credits: Jaeger docs)"
+  />
+  - **Data Collection and Traffic Handling**
 
-    <Figure
-      src="/img/comparisons/2025/01/sentry-alternatives-image%2015.webp"
-      alt="Data architecture: Jaeger (credits: Jaeger docs)"
-      caption="Data architecture: Jaeger (credits: Jaeger docs)"
-    />
+    Jaeger uses collectors with an in-memory queue to manage short-term traffic spikes, but sustained spikes may cause data loss if storage can't keep up.
 
-    - **Data Collection and Traffic Handling**
+    Sentry focuses on error tracking and performance monitoring, capturing events and organizing them into issues, without the same emphasis on traffic management as Jaeger.
 
-        Jaeger uses collectors with an in-memory queue to manage short-term traffic spikes, but sustained spikes may cause data loss if storage can't keep up.
+  - **Sampling and Data Capture**
 
-        Sentry focuses on error tracking and performance monitoring, capturing events and organizing them into issues, without the same emphasis on traffic management as Jaeger.
+    Jaeger employs a configurable sampling algorithm, with 0.1% of requests sampled by default, balancing data capture with system performance.
 
-    - **Sampling and Data Capture**
+    Sentry captures real-time errors and performance issues during user interactions but does not mention sampling explicitly.
 
-        Jaeger employs a configurable sampling algorithm, with 0.1% of requests sampled by default, balancing data capture with system performance.
+  - **Scalability and Flexibility**
 
-        Sentry captures real-time errors and performance issues during user interactions but does not mention sampling explicitly.
+    Jaeger's architecture is built to scale efficiently, especially for large volumes of trace data in microservices environments.
 
-    - **Scalability and Flexibility**
-
-        Jaeger's architecture is built to scale efficiently, especially for large volumes of trace data in microservices environments.
-
-        Sentry is designed for error tracking and performance monitoring, with less emphasis on handling massive trace volumes compared to Jaeger.
+    Sentry is designed for error tracking and performance monitoring, with less emphasis on handling massive trace volumes compared to Jaeger.
 
 #### Customizations and integrations
 
