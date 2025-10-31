@@ -559,8 +559,8 @@ export const FAQ = defineDocumentType(() => ({
           name: doc.title,
           acceptedAnswer: {
             '@type': 'Answer',
-            text: doc.description
-          }
+            text: doc.description,
+          },
         },
         url: `${siteMetadata.siteUrl}/faqs/${doc.slug}`,
       }),
@@ -570,7 +570,7 @@ export const FAQ = defineDocumentType(() => ({
 
 export default makeSource({
   contentDirPath: 'data',
-  documentTypes: [Blog, Authors, Comparison, Guide, Opentelemetry, Doc, Newsroom, CaseStudy, FAQ],
+  documentTypes: [Blog, Authors, Comparison, Guide, Opentelemetry, Doc, Newsroom, CaseStudy],
   mdx: {
     cwd: process.cwd(),
     remarkPlugins: [
