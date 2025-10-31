@@ -2,7 +2,7 @@
 title: OpenTelemetry vs Micrometer - Choosing the Right Metrics Tool
 
 date: 2024-10-22
-tags: [OpenTelemetry] #
+tags: [OpenTelemetry]
 authors: [nilesh_sinha]
 description: Compare OpenTelemetry and Micrometer for application metrics. Learn their features, performance, and integration to choose the best tool for your needs.
 keywords:
@@ -152,11 +152,10 @@ Setup Process:
 
 3.  Configuration:
     In `application.properties` or `application.yml`, configure the [OpenTelemetry exporter](https://signoz.io/guides/opentelemetry-collector-vs-exporter/):
-    `     # application.properties
-    otel.traces.exporter=otlp
-    otel.metrics.exporter=none
-    otel.exporter.otlp.endpoint=http://localhost:4317
-    `
+    `    # application.properties
+otel.traces.exporter=otlp
+otel.metrics.exporter=none
+otel.exporter.otlp.endpoint=http://localhost:4317`
 4.  Example:
 
     ```java
@@ -199,10 +198,9 @@ Setup Process:
     `
 2.  Enable Metrics Endpoint:
     In `application.properties`, enable the metrics endpoint and specify the Prometheus format:
-    `     # application.properties
-    management.metrics.export.prometheus.enabled=true
-    management.endpoints.web.exposure.include=*
-    `
+    `    # application.properties
+management.metrics.export.prometheus.enabled=true
+management.endpoints.web.exposure.include=*`
 3.  Example:
 
     ```java

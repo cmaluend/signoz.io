@@ -3,7 +3,7 @@ title: OpenTelemetry vs. X-Ray - Choosing the Right Tracing Tool
 
 date: 2025-01-22
 tags: [opentelemetry, tools-comparison]
-authors: [sushant_gaurav] #
+authors: [sushant_gaurav]
 description: Compare OpenTelemetry and AWS X-Ray for distributed tracing. Learn their strengths, use cases, and how to choose the right tool for your needs.
 keywords:
   [opentelemetry vs xray, distributed tracing, observability, AWS, cloud-native, monitoring, SigNoz]
@@ -129,7 +129,7 @@ If your application primarily uses the AWS services, X-Ray offers various advant
       xray_client = boto3.client('xray')
       xray_client.put_trace_segments(
           TraceSegmentDocuments=[
-              # Include your trace segments here
+              Include your trace segments here
           ]
       )
       return 'Lambda function executed successfully!'
@@ -192,7 +192,7 @@ To implement OpenTelemetry tracing in your application, follow these steps:
      @app.route('/api/data')
      def get_data():
          with tracer.start_as_current_span("fetch-data"):
-             # Simulate data fetching
+             Simulate data fetching
              return "Data fetched!"
 
      ```

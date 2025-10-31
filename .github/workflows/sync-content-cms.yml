@@ -172,7 +172,7 @@ jobs:
           DEPLOYMENT_STATUS: ${{ needs.detect-changes.outputs.deployment_status }}
         with:
           script: |
-            const script = require('./scripts/update-pr-comment.js');
+            const script = require('${{ github.workspace }}/scripts/update-pr-comment.js');
             await script({github, context, core});
 
   report-status:
