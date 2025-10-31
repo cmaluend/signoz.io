@@ -428,42 +428,19 @@ async function syncToStrapi() {
         const { frontmatter, content } = parseMDXFile(filePath)
         const strapiData = await mapToStrapiSchema(folderName, frontmatter, content, pathField)
 
-        try {
-          const existingEntry = await findEntryByPath(folderName, pathField)
+        const existingEntry = await findEntryByPath(folderName, pathField)
 
+        if (existingEntry) {
           console.log(`🔄 Updating in CMS: ${pathField}`)
           await updateEntry(folderName, existingEntry.documentId, strapiData)
           console.log(`✅ Updated successfully`)
           results.updated.push(filePath)
-        } catch (error) {
-          console.log(`❌ [Debug] Error: ${JSON.stringify(error, null, 2)}`)
-          if (error.status === 404) {
-            console.log(`➕ Entry not found, trying to create in CMS: ${pathField}`)
-            try {
-              await createEntry(folderName, strapiData)
-              console.log(`✅ Created successfully`)
-              results.created.push(filePath)
-            } catch (createError) {
-              console.error(`❌ Error creating entry after update failed: ${createError.message}`)
-              throw createError
-            }
-          } else {
-            console.error(`❌ Error creating entry after update failed: ${error.message}`)
-            throw error
-          }
+        } else {
+          console.log(`➕ Creating in CMS: ${pathField}`)
+          await createEntry(folderName, strapiData)
+          console.log(`✅ Created successfully`)
+          results.created.push(filePath)
         }
-
-        // if (existingEntry) {
-        //   console.log(`🔄 Updating in CMS: ${pathField}`)
-        //   await updateEntry(folderName, existingEntry.documentId, strapiData)
-        //   console.log(`✅ Updated successfully`)
-        //   results.updated.push(filePath)
-        // } else {
-        //   console.log(`➕ Creating in CMS: ${pathField}`)
-        //   await createEntry(folderName, strapiData)
-        //   console.log(`✅ Created successfully`)
-        //   results.created.push(filePath)
-        // }
       }
     } catch (error) {
       console.error(`❌ Error processing ${filePath}: ${error.message}`)
