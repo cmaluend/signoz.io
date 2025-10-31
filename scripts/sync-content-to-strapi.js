@@ -436,7 +436,7 @@ async function syncToStrapi() {
           console.log(`✅ Updated successfully`)
           results.updated.push(filePath)
         } catch (error) {
-          if (error.response.status === 404) {
+          if (error.status === 404) {
             console.log(`➕ Entry not found, trying to create in CMS: ${pathField}`)
             await createEntry(folderName, strapiData)
             console.log(`✅ Created successfully`)
