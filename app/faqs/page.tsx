@@ -6,12 +6,15 @@ export const revalidate = 0
 export const dynamicParams = true
 
 export default async function FAQsPage() {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
   try {
     // Fetch all FAQs from Strapi
     const response = (await fetchMDXContentByPath(
       'faqs',
       undefined,
-      'live',
+      deploymentStatus,
       true
     )) as MDXContentApiResponse
 
