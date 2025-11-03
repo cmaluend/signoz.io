@@ -7,7 +7,8 @@ const CMS_API_URL = process.env.CMS_API_URL
 const CMS_API_TOKEN = process.env.CMS_API_TOKEN
 const SYNC_FOLDERS = JSON.parse(process.env.SYNC_FOLDERS)
 const DEPLOYMENT_STATUS = process.env.DEPLOYMENT_STATUS
-const CHANGED_FILES = JSON.parse(process.env.CHANGED_FILES)
+const CHANGED_FILES = JSON.parse(process.env.CHANGED_FILES || '[]')
+const DELETED_FILES = JSON.parse(process.env.DELETED_FILES || '[]')
 
 // Strapi Collection Type Schemas
 const COLLECTION_SCHEMAS = {
@@ -416,24 +417,50 @@ async function updateEntry(folderName, documentId, data) {
 async function deleteEntry(folderName, documentId) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
+    console.log(`  🗑️ [DEBUG] Deleting entry from ${schema.endpoint}`)
+    console.log(`  🗑️ [DEBUG] Document ID: ${documentId}`)
+    console.log(`  🗑️ [DEBUG] Delete URL: ${CMS_API_URL}/api/${schema.endpoint}/${documentId}`)
+
     const response = await axios.delete(`${CMS_API_URL}/api/${schema.endpoint}/${documentId}`, {
       headers: {
         Authorization: `Bearer ${CMS_API_TOKEN}`,
         'Content-Type': 'application/json',
       },
     })
+
+    console.log(`  ✅ [DEBUG] Delete response status: ${response.status}`)
+    console.log(`  ✅ [DEBUG] Delete response:`, JSON.stringify(response.data, null, 2))
     return response.data
   } catch (error) {
     const errorMsg = error.response?.data?.error?.message || error.message
+    console.error(`  ❌ [DEBUG] Delete failed: ${errorMsg}`)
+    if (error.response) {
+      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
+      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
+    }
     throw new Error(`Failed to delete entry: ${errorMsg}`)
   }
 }
 
 // Helper: Detect operation type
-function detectOperationType(filePath) {
-  if (!fs.existsSync(filePath)) {
+function detectOperationType(filePath, isDeletedFile = false) {
+  console.log(`  🔍 [DEBUG] detectOperationType called for: ${filePath}`)
+  console.log(`  🔍 [DEBUG] isDeletedFile flag: ${isDeletedFile}`)
+
+  if (isDeletedFile) {
+    console.log(`  🔍 [DEBUG] File is marked as deleted by GitHub`)
     return 'delete'
   }
+
+  const exists = fs.existsSync(filePath)
+  console.log(`  🔍 [DEBUG] File exists on disk: ${exists}`)
+
+  if (!exists) {
+    console.log(`  🔍 [DEBUG] File does not exist, operation: delete`)
+    return 'delete'
+  }
+
+  console.log(`  🔍 [DEBUG] File exists, operation: create_or_update`)
   return 'create_or_update'
 }
 
@@ -443,8 +470,12 @@ async function syncToStrapi() {
   console.log(`📦 Deployment Status: ${DEPLOYMENT_STATUS}`)
   console.log(`🔗 CMS API URL: ${CMS_API_URL}`)
   console.log(`📁 Sync Folders: ${SYNC_FOLDERS.join(', ')}`)
-  console.log(`📄 Changed Files (${CHANGED_FILES.length}):`)
+  console.log(`\n📄 Changed Files (${CHANGED_FILES.length}):`)
   CHANGED_FILES.forEach((file, idx) => {
+    console.log(`   ${idx + 1}. ${file}`)
+  })
+  console.log(`\n🗑️ Deleted Files (${DELETED_FILES.length}):`)
+  DELETED_FILES.forEach((file, idx) => {
     console.log(`   ${idx + 1}. ${file}`)
   })
   console.log('')
@@ -458,9 +489,21 @@ async function syncToStrapi() {
     relationWarnings: [], // Track unmatched relations
   }
 
-  for (const filePath of CHANGED_FILES) {
+  // Combine changed and deleted files with a flag to indicate deletion
+  const allFiles = [
+    ...CHANGED_FILES.map((file) => ({ path: file, isDeleted: false })),
+    ...DELETED_FILES.map((file) => ({ path: file, isDeleted: true })),
+  ]
+
+  console.log(`\n📊 [DEBUG] Total files to process: ${allFiles.length}`)
+  console.log(`  - Changed/Modified: ${CHANGED_FILES.length}`)
+  console.log(`  - Deleted: ${DELETED_FILES.length}`)
+  console.log('')
+
+  for (const { path: filePath, isDeleted } of allFiles) {
     console.log(`\n${'='.repeat(80)}`)
     console.log(`📄 Processing: ${filePath}`)
+    console.log(`  🏷️ [DEBUG] File marked as deleted: ${isDeleted}`)
     console.log(`${'='.repeat(80)}`)
 
     try {
@@ -483,7 +526,7 @@ async function syncToStrapi() {
         throw new Error('Could not generate path field')
       }
 
-      const operationType = detectOperationType(filePath)
+      const operationType = detectOperationType(filePath, isDeleted)
       console.log(`  🔧 [DEBUG] Operation type: ${operationType}`)
 
       if (operationType === 'delete') {
