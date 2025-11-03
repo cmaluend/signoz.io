@@ -1,8 +1,9 @@
 ---
 date: 2025-08-24
-tags : [SigNoz Cloud, Self-Host]
+tags: [SigNoz Cloud, Self-Host, Frontend, JavaScript]
 title: Sending Metrics from your frontend application
 id: sending-metrics-frontend
+description: Send metrics from your frontend application to SigNoz
 ---
 
 This documentation provides steps for sending metrics from your frontend application to SigNoz.
@@ -18,11 +19,124 @@ Metrics can be collected on the client side at meaningful points to capture vari
 
 ## Setup
 
-### Step 1: Setup OTel Collector
+### Step 1: Install dependencies
 
-Install the OpenTelemetry Collector binary using [these instructions](https://signoz.io/docs/tutorial/opentelemetry-binary-usage-in-virtual-machine/). The Collector acts as an agent that receives, processes, and exports telemetry data. It is required to collect data from your application, including metrics.
+Install the following dependencies.
 
-You would also need to update the collector config to whitelist the frontend domain. This is required to allow Cross-Origin Resource Sharing (CORS) requests from your frontend application to the OpenTelemetry collector.
+<Tabs entityName="metrics-dependencies">
+  <TabItem value="npm" label="Npm">
+    ```sh npm i \ @opentelemetry/resources \ @opentelemetry/sdk-metrics \
+    @opentelemetry/exporter-metrics-otlp-http \ @opentelemetry/api ```
+  </TabItem>
+  <TabItem value="yarn" label="Yarn" default>
+    ```sh yarn add \ @opentelemetry/resources \ @opentelemetry/sdk-metrics \
+    @opentelemetry/exporter-metrics-otlp-http \ @opentelemetry/api ```
+  </TabItem>
+</Tabs>
+
+<details>
+<summary> Read more about the dependencies </summary>
+- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish metrics from different services in your SigNoz dashboard.
+
+- **`@opentelemetry/sdk-metrics`**: Contains the core metrics SDK implementation including `MeterProvider` and `PeriodicExportingMetricReader`. This is the foundation for creating and sending metrics from your application.
+
+- **`@opentelemetry/exporter-metrics-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your metrics to the SigNoz collector. This handles the actual transmission of metrics data over HTTP.
+
+- **`@opentelemetry/api-metrics`**: Provides the API interface that your application code uses to create metrics. This is the main API you'll interact with when adding metrics to your code.
+  </details>
+
+### Step 2: Create an instrumentation file
+
+The instrumentation file is required to setup the `MeterProvider` which is used to create custom metrics within your application and export them to your collector.
+
+<Tabs entityName="plans">
+  <TabItem value="typescript" label="TypeScript" default>
+    ```ts:instrumentation.ts
+    import {
+      MeterProvider,
+      PeriodicExportingMetricReader,
+    } from '@opentelemetry/sdk-metrics';
+    import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+    import { resourceFromAttributes } from '@opentelemetry/resources';
+    import { metrics } from '@opentelemetry/api';
+
+    // Define your resource, e.g., service name, environment.
+    const resource = resourceFromAttributes({
+      'service.name': '<<SERVICE_NAME>>',
+    });
+
+    // Create a metric reader with OTLP exporter configured to send metrics to a local collector.
+    const metricReader = new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        // For self-hosted version, please use the collector url instead.
+        url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/metrics`,
+        headers: {
+          'signoz-ingestion-key': <<INGESTION_KEY>>,
+        },
+      }),
+      exportIntervalMillis: 10000, // Export metrics every 10 seconds.
+    });
+
+    // Initialize a MeterProvider with the above configurations.
+    const myServiceMeterProvider = new MeterProvider({
+      resource,
+      readers: [metricReader],
+    });
+
+    // Set the initialized MeterProvider as global to enable metric collection across the app.
+    metrics.setGlobalMeterProvider(myServiceMeterProvider);
+    ```
+
+    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<<SERVICE_NAME>>` is the name of your service
+
+  </TabItem>
+  <TabItem value="javascript" label="JavaScript">
+    ```js:instrumentation.js
+    import {
+      MeterProvider,
+      PeriodicExportingMetricReader,
+    } from '@opentelemetry/sdk-metrics';
+    import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+    import { resourceFromAttributes } from '@opentelemetry/resources';
+    import { metrics } from '@opentelemetry/api';
+
+    // Define your resource, e.g., service name, environment.
+    const resource = resourceFromAttributes({
+      'service.name': '<<SERVICE_NAME>>',
+    });
+
+    // Create a metric reader with OTLP exporter configured to send metrics to a local collector.
+    const metricReader = new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        // For self-hosted version, please use the collector url instead.
+        url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/metrics`,
+        headers: {
+          'signoz-ingestion-key': <<INGESTION_KEY>>,
+        },
+      }),
+      exportIntervalMillis: 10000, // Export metrics every 10 seconds.
+    });
+
+    // Initialize a MeterProvider with the above configurations.
+    const myServiceMeterProvider = new MeterProvider({
+      resource,
+      readers: [metricReader],
+    });
+
+    // Set the initialized MeterProvider as global to enable metric collection across the app.
+    metrics.setGlobalMeterProvider(myServiceMeterProvider);
+    ```
+
+    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<<SERVICE_NAME>>` is the name of your service
+
+  </TabItem>
+</Tabs>
+
+**Note:** Please make sure to whitelist your frontend domain when using the self-hosted version
 
 ```sh
 receivers:
@@ -38,193 +152,277 @@ receivers:
           allowed_headers: ['*']
 ```
 
-### Step 2: Install dependencies
+### Step 3: Importing the instrumentation file
 
-Install the following dependencies.
+Import the instrumentation file at the top level of your application. This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture telemetry data from the very beginning of your application's execution.
 
-<Tabs entityName="metrics-dependencies">
-  <TabItem value="npm" label="Npm">
-    ```sh
-    npm i \
-      @opentelemetry/resources \
-      @opentelemetry/sdk-metrics \
-      @opentelemetry/exporter-metrics-otlp-http \
-      @opentelemetry/api
+<Tabs groupId="framework-choice">
+  <TabItem value="react" label="React (Vite/CRA)" default>
+    In your main entry file (typically `main.tsx` or `index.tsx`), import the instrumentation file at the very top:
+
+    ```ts:src/main.tsx
+    import './instrumentation';
+    import { StrictMode } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import './index.css';
+    import App from './App';
+
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
     ```
+
   </TabItem>
-  <TabItem value="yarn" label="Yarn" default>
-    ```sh
-    yarn add \
-      @opentelemetry/resources \
-      @opentelemetry/sdk-metrics \
-      @opentelemetry/exporter-metrics-otlp-http \
-      @opentelemetry/api
+  
+  <TabItem value="nextjs-app" label="Next.js (App Router)">
+    Next.js (App Router) supports instrumentation through a special `instrumentation.ts` file at the root of your project (or inside `src/` if using the `src` directory).
+
+    Create `instrumentation.ts` (or `.js`) at the project root:
+
+    ```ts:instrumentation.ts
+    export async function register() {
+      if (process.env.NEXT_RUNTIME === 'nodejs') {
+        // This runs on the server - you can optionally skip client instrumentation here
+        // We'll handle client-side instrumentation separately
+      }
+
+      if (process.env.NEXT_RUNTIME === 'edge') {
+        // This runs on edge runtime
+      }
+    }
     ```
+
+    For **client-side instrumentation**, create a separate file and import it in your root layout:
+
+    ```ts:app/instrumentation-client.ts
+    // Your OpenTelemetry instrumentation code here
+    // (the code from Step 2)
+    ```
+
+    Import it in your root layout:
+
+    ```tsx:app/layout.tsx
+    import './instrumentation-client';
+
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return (
+        <html lang="en">
+          <body>{children}</body>
+        </html>
+      );
+    }
+    ```
+
+    **Note:** Make sure to enable instrumentation in `next.config.js`:
+
+    ```js:next.config.js
+    module.exports = {
+      experimental: {
+        instrumentationHook: true,
+      },
+    };
+    ```
+
+  </TabItem>
+
+  <TabItem value="nextjs-pages" label="Next.js (Pages Router)">
+    For Next.js with Pages Router, import the instrumentation in your `_app.tsx` file:
+
+    ```tsx:pages/_app.tsx
+    import '../instrumentation';
+    import type { AppProps } from 'next/app';
+
+    export default function App({ Component, pageProps }: AppProps) {
+      return <Component {...pageProps} />;
+    }
+    ```
+
+    Alternatively, you can use the `instrumentation.ts` file at the root (requires Next.js 13.2+):
+
+    ```ts:instrumentation.ts
+    export async function register() {
+      if (typeof window !== 'undefined') {
+        // Client-side instrumentation
+        await import('./instrumentation-client');
+      }
+    }
+    ```
+
+    And enable it in `next.config.js`:
+
+    ```js:next.config.js
+    module.exports = {
+      experimental: {
+        instrumentationHook: true,
+      },
+    };
+    ```
+
+  </TabItem>
+
+  <TabItem value="nuxt" label="Nuxt.js">
+    For Nuxt.js, create a plugin to initialize the instrumentation:
+
+    ```ts:plugins/instrumentation.client.ts
+    // Your OpenTelemetry instrumentation code here
+    // (the code from Step 2)
+
+    export default defineNuxtPlugin(() => {
+      // Instrumentation is initialized when this plugin loads
+    });
+    ```
+
+    The `.client.ts` suffix ensures this only runs on the client side. Nuxt will automatically load this plugin during application initialization.
+
+    Alternatively, you can import it directly in `app.vue`:
+
+    ```vue:app.vue
+    <script setup>
+    import './instrumentation';
+    </script>
+
+    <template>
+      <NuxtPage />
+    </template>
+    ```
+
+  </TabItem>
+
+  <TabItem value="angular" label="Angular">
+    For Angular, import the instrumentation file at the very top of your `main.ts`:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import { bootstrapApplication } from '@angular/platform-browser';
+    import { appConfig } from './app/app.config';
+    import { AppComponent } from './app/app.component';
+
+    bootstrapApplication(AppComponent, appConfig)
+      .catch((err) => console.error(err));
+    ```
+
+    For older Angular versions using `platformBrowserDynamic`:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+    import { AppModule } from './app/app.module';
+
+    platformBrowserDynamic().bootstrapModule(AppModule)
+      .catch(err => console.error(err));
+    ```
+
+  </TabItem>
+
+  <TabItem value="vue" label="Vue.js">
+    For Vue.js, import the instrumentation file at the very top of your `main.ts` (or `main.js`):
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import { createApp } from 'vue';
+    import App from './App.vue';
+
+    createApp(App).mount('#app');
+    ```
+
+    For Vue 2:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import Vue from 'vue';
+    import App from './App.vue';
+
+    new Vue({
+      render: h => h(App),
+    }).$mount('#app');
+    ```
+
+  </TabItem>
+
+  <TabItem value="svelte" label="Svelte/SvelteKit">
+    For **Svelte** (with Vite), import in your `main.ts`:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import App from './App.svelte';
+
+    const app = new App({
+      target: document.getElementById('app')!,
+    });
+
+    export default app;
+    ```
+
+    For **SvelteKit**, create a hook in `src/hooks.client.ts`:
+
+    ```ts:src/hooks.client.ts
+    import './instrumentation';
+    ```
+
+    Or import it in your root layout:
+
+    ```svelte:src/routes/+layout.svelte
+    <script>
+      import '../instrumentation';
+    </script>
+
+    <slot />
+    ```
+
   </TabItem>
 </Tabs>
 
-<details>
-<summary> Read more about the dependencies </summary>
-- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish metrics from different services in your SigNoz dashboard.
-
-- **`@opentelemetry/sdk-metrics`**: Contains the core metrics SDK implementation including `MeterProvider` and `PeriodicExportingMetricReader`. This is the foundation for creating and sending metrics from your application.
-
-- **`@opentelemetry/exporter-metrics-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your metrics to the SigNoz collector. This handles the actual transmission of metrics data over HTTP.
-
-- **`@opentelemetry/api-metrics`**: Provides the API interface that your application code uses to create metrics. This is the main API you'll interact with when adding metrics to your code.
-</details>
-
-### Step 3: Create an instrumentation file
-
-The instrumentation file is required to setup the `MeterProvider` which is used to create custom metrics within your application and export them to your collector.
-Inside your `src` directory, create a file named `instrument.js` (or `instrument.ts` for TypeScript):
-
-<Tabs entityName="logs-instrumentation">
-  <TabItem value="cloud" label="SigNoz Cloud" default>
-    ```ts:instrument.js
-      import {
-        MeterProvider,
-        PeriodicExportingMetricReader,
-      } from '@opentelemetry/sdk-metrics';
-      import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
-      import { resourceFromAttributes } from '@opentelemetry/resources';
-      import { metrics } from '@opentelemetry/api';
-
-      // Define your resource, e.g., service name, environment.
-      const resource = resourceFromAttributes({
-        'service.name': <<SERVICE_NAME>>,
-      });
-
-      // Create a metric reader with OTLP exporter configured to send metrics to a local collector.
-      const metricReader = new PeriodicExportingMetricReader({
-        exporter: new OTLPMetricExporter({
-          url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/metrics`,
-          headers: {
-            'signoz-ingestion-key': <<INGESTION_KEY>>,
-          },
-        }),
-        exportIntervalMillis: 10000, // Export metrics every 10 seconds.
-      });
-
-      // Initialize a MeterProvider with the above configurations.
-      const myServiceMeterProvider = new MeterProvider({
-        resource,
-        readers: [metricReader],
-      });
-
-      // Set the initialized MeterProvider as global to enable metric collection across the app.
-      metrics.setGlobalMeterProvider(myServiceMeterProvider);
-    ```
-
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
-  </TabItem>
-  <TabItem value="self-hosted" label="SigNoz Self-Hosted">
-    ```ts:instrument.js
-      import {
-        MeterProvider,
-        PeriodicExportingMetricReader,
-      } from '@opentelemetry/sdk-metrics';
-      import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
-      import { resourceFromAttributes } from '@opentelemetry/resources';
-      import { metrics } from '@opentelemetry/api';
-
-      // Define your resource, e.g., service name, environment.
-      const resource = resourceFromAttributes({
-        'service.name': <<SERVICE_NAME>>,
-      });
-
-      // Create a metric reader with OTLP exporter configured to send metrics to a local collector.
-      const metricReader = new PeriodicExportingMetricReader({
-        exporter: new OTLPMetricExporter({
-          url: '<<SIGNOZ_COLLECTOR_URL>>/v1/metrics',
-        }),
-        exportIntervalMillis: 10000, // Export metrics every 10 seconds.
-      });
-
-      // Initialize a MeterProvider with the above configurations.
-      const myServiceMeterProvider = new MeterProvider({
-        resource,
-        readers: [metricReader],
-      });
-
-      // Set the initialized MeterProvider as global to enable metric collection across the app.
-      metrics.setGlobalMeterProvider(myServiceMeterProvider);
-    ```
-
-    - `<<SERVICE_NAME>>` is the name of your service
-    - `<<SIGNOZ_COLLECTOR_URL>>` is the url where your collector is running
-  </TabItem>
-</Tabs>
-
-### Step 4: Importing the instrumentation file
-
-Import the instrumentation file at the top level of your application. This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture metrics from the very beginning of your application's execution.
-
-```ts
-import './instrument';
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App';
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
-```
-
-### Step 5: Setting up Metrics within your Application
+### Step 4: Setting up Metrics within your Application
 
 Now you can create and record metrics in your application. Here's an example of how to create and use metrics.
 
 ```ts
-import { metrics } from '@opentelemetry/api';
+import { metrics } from '@opentelemetry/api'
 
 // Get a meter from the global meter provider
-const meter = metrics.getMeter('my-app-metrics');
+const meter = metrics.getMeter('my-app-metrics')
 
 // Create a histogram metric for measuring request duration (also gives count & sum)
 const requestDuration = meter.createHistogram('http.client.request.duration', {
   description: 'Duration of HTTP requests',
   unit: 's', // seconds
-});
+})
 
 // Record metrics in your application
 async function handleRequest() {
-  const startTime = performance.now();
-  
+  const startTime = performance.now()
+
   try {
-    const response = await fetch('/api/data', { method: 'GET' });
+    const response = await fetch('/api/data', { method: 'GET' })
 
     // Record the request duration
-    const duration = (performance.now() - startTime) / 1000; // Convert to seconds
+    const duration = (performance.now() - startTime) / 1000 // Convert to seconds
     requestDuration.record(duration, {
       'http.request.method': 'GET',
       'http.response.status_code': response.status,
       'http.route': '/api/data',
       'url.path': '/api/data',
       'url.scheme': window.location.protocol.replace(':', ''),
-    });
+    })
 
-    return await response.json();
+    return await response.json()
   } catch (err) {
-    const duration = (performance.now() - startTime) / 1000; // Convert to seconds
+    const duration = (performance.now() - startTime) / 1000 // Convert to seconds
     requestDuration.record(duration, {
       'http.request.method': 'GET',
       'http.response.status_code': 0,
       'http.route': '/api/data',
       'url.path': '/api/data',
       'url.scheme': window.location.protocol.replace(':', ''),
-    });
-    throw err;
+    })
+    throw err
   }
 }
 ```
 
-### Step 6: Viewing Captured Metrics in SigNoz
+### Step 5: Viewing Captured Metrics in SigNoz
 
 The captured metrics can then be viewed in the [Metrics Explorer](https://signoz.io/docs/metrics-management/metrics-explorer/).
 
@@ -239,5 +437,6 @@ The captured metrics can then be viewed in the [Metrics Explorer](https://signoz
   </figcaption>
 </figure>
 
-## Demo Application  
+## Demo Application
+
 Check out this [Sample React Application](https://github.com/SigNoz/frontend-monitoring-examples/tree/main/sending-metrics) that demonstrates sending metrics to SigNoz.

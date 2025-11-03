@@ -1,8 +1,9 @@
 ---
 date: 2025-08-17
-tags : [SigNoz Cloud, Self-Host]
+tags: [SigNoz Cloud, Self-Host, Frontend, JavaScript]
 title: Sending Logs from your frontend application
 id: sending-logs-frontend
+description: Send logs from your frontend application to SigNoz
 ---
 
 This documentation provides steps for sending logs from your frontend application to SigNoz.
@@ -18,11 +19,110 @@ Logs can be collected on the client side at meaningful points to capture various
 
 ## Setup
 
-### Step 1: Setup OTel Collector
+### Step 1: Install dependencies
 
-Install the OpenTelemetry Collector binary using [these instructions](https://signoz.io/docs/tutorial/opentelemetry-binary-usage-in-virtual-machine/). The Collector acts as an agent that receives, processes, and exports telemetry data. It is required to collect data from your application, including logs.
+Install the following dependencies.
 
-You would also need to update the collector config to whitelist the frontend domain. This is required to allow Cross-Origin Resource Sharing (CORS) requests from your frontend application to the OpenTelemetry collector.
+<Tabs entityName="logs-dependencies">
+  <TabItem value="npm" label="Npm">
+    ```sh npm i \ @opentelemetry/resources \ @opentelemetry/sdk-logs \
+    @opentelemetry/exporter-logs-otlp-http \ @opentelemetry/api-logs ```
+  </TabItem>
+  <TabItem value="yarn" label="Yarn" default>
+    ```sh yarn add \ @opentelemetry/resources \ @opentelemetry/sdk-logs \
+    @opentelemetry/exporter-logs-otlp-http \ @opentelemetry/api-logs ```
+  </TabItem>
+</Tabs>
+
+<details>
+<summary> Read more about the dependencies </summary>
+- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish logs from different services in your SigNoz dashboard.
+
+- **`@opentelemetry/sdk-logs`**: Contains the core logging SDK implementation including `LoggerProvider` and `SimpleLogRecordProcessor`. This is the foundation for creating and processing log records in your application.
+
+- **`@opentelemetry/exporter-logs-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your logs to the SigNoz collector. This handles the actual transmission of log data over HTTP.
+
+- **`@opentelemetry/api-logs`**: Provides the logging API interface (`logs` object) that your application code uses to create log records. This is the main API you'll interact with when adding logging statements to your code.
+  </details>
+
+### Step 2: Create an instrumentation file
+
+The instrumentation file is required to setup the `LoggerProvider` which is used to create custom logs within your application and export them to your collector.
+
+<Tabs entityName="plans">
+  <TabItem value="typescript" label="TypeScript" default>
+    ```ts:instrumentation.ts
+    import {
+      LoggerProvider,
+      SimpleLogRecordProcessor,
+    } from '@opentelemetry/sdk-logs';
+    import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
+    import { logs } from '@opentelemetry/api-logs';
+    import { resourceFromAttributes } from '@opentelemetry/resources';
+
+    const loggerProvider = new LoggerProvider({
+      resource: resourceFromAttributes({
+        'service.name': '<<SERVICE_NAME>>',
+      }),
+      processors: [
+        new SimpleLogRecordProcessor(
+          new OTLPLogExporter({
+            // For self-hosted version, please use the collector url instead.
+            url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/logs`,
+            headers: {
+              'signoz-ingestion-key': <<INGESTION_KEY>>,
+            },
+          }),
+        ),
+      ],
+    });
+
+    logs.setGlobalLoggerProvider(loggerProvider);
+    ```
+
+    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<<SERVICE_NAME>>` is the name of your service
+
+  </TabItem>
+  <TabItem value="javascript" label="JavaScript">
+    ```js:instrumentation.js
+    import {
+      LoggerProvider,
+      SimpleLogRecordProcessor,
+    } from '@opentelemetry/sdk-logs';
+    import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
+    import { logs } from '@opentelemetry/api-logs';
+    import { resourceFromAttributes } from '@opentelemetry/resources';
+
+    const loggerProvider = new LoggerProvider({
+      resource: resourceFromAttributes({
+        'service.name': '<<SERVICE_NAME>>',
+      }),
+      processors: [
+        new SimpleLogRecordProcessor(
+          new OTLPLogExporter({
+            // For self-hosted version, please use the collector url instead.
+            url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/logs`,
+            headers: {
+              'signoz-ingestion-key': <<INGESTION_KEY>>,
+            },
+          }),
+        ),
+      ],
+    });
+
+    logs.setGlobalLoggerProvider(loggerProvider);
+    ```
+
+    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<<SERVICE_NAME>>` is the name of your service
+
+  </TabItem>
+</Tabs>
+
+**Note:** Please make sure to whitelist your frontend domain when using the self-hosted version
 
 ```sh
 receivers:
@@ -38,133 +138,233 @@ receivers:
           allowed_headers: ['*']
 ```
 
-### Step 2: Install dependencies
+### Step 3: Importing the instrumentation file
 
-Install the following dependencies.
+Import the instrumentation file at the top level of your application. This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture telemetry data from the very beginning of your application's execution.
 
-<Tabs entityName="logs-dependencies">
-  <TabItem value="npm" label="Npm">
-    ```sh
-    npm i \
-      @opentelemetry/resources \
-      @opentelemetry/sdk-logs \
-      @opentelemetry/exporter-logs-otlp-http \
-      @opentelemetry/api-logs
+<Tabs groupId="framework-choice">
+  <TabItem value="react" label="React (Vite/CRA)" default>
+    In your main entry file (typically `main.tsx` or `index.tsx`), import the instrumentation file at the very top:
+
+    ```ts:src/main.tsx
+    import './instrumentation';
+    import { StrictMode } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import './index.css';
+    import App from './App';
+
+    createRoot(document.getElementById('root')!).render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
     ```
+
   </TabItem>
-  <TabItem value="yarn" label="Yarn" default>
-    ```sh
-    yarn add \
-      @opentelemetry/resources \
-      @opentelemetry/sdk-logs \
-      @opentelemetry/exporter-logs-otlp-http \
-      @opentelemetry/api-logs
+  
+  <TabItem value="nextjs-app" label="Next.js (App Router)">
+    Next.js (App Router) supports instrumentation through a special `instrumentation.ts` file at the root of your project (or inside `src/` if using the `src` directory).
+
+    Create `instrumentation.ts` (or `.js`) at the project root:
+
+    ```ts:instrumentation.ts
+    export async function register() {
+      if (process.env.NEXT_RUNTIME === 'nodejs') {
+        // This runs on the server - you can optionally skip client instrumentation here
+        // We'll handle client-side instrumentation separately
+      }
+
+      if (process.env.NEXT_RUNTIME === 'edge') {
+        // This runs on edge runtime
+      }
+    }
     ```
+
+    For **client-side instrumentation**, create a separate file and import it in your root layout:
+
+    ```ts:app/instrumentation-client.ts
+    // Your OpenTelemetry instrumentation code here
+    // (the code from Step 2)
+    ```
+
+    Import it in your root layout:
+
+    ```tsx:app/layout.tsx
+    import './instrumentation-client';
+
+    export default function RootLayout({ children }: { children: React.ReactNode }) {
+      return (
+        <html lang="en">
+          <body>{children}</body>
+        </html>
+      );
+    }
+    ```
+
+    **Note:** Make sure to enable instrumentation in `next.config.js`:
+
+    ```js:next.config.js
+    module.exports = {
+      experimental: {
+        instrumentationHook: true,
+      },
+    };
+    ```
+
+  </TabItem>
+
+  <TabItem value="nextjs-pages" label="Next.js (Pages Router)">
+    For Next.js with Pages Router, import the instrumentation in your `_app.tsx` file:
+
+    ```tsx:pages/_app.tsx
+    import '../instrumentation';
+    import type { AppProps } from 'next/app';
+
+    export default function App({ Component, pageProps }: AppProps) {
+      return <Component {...pageProps} />;
+    }
+    ```
+
+    Alternatively, you can use the `instrumentation.ts` file at the root (requires Next.js 13.2+):
+
+    ```ts:instrumentation.ts
+    export async function register() {
+      if (typeof window !== 'undefined') {
+        // Client-side instrumentation
+        await import('./instrumentation-client');
+      }
+    }
+    ```
+
+    And enable it in `next.config.js`:
+
+    ```js:next.config.js
+    module.exports = {
+      experimental: {
+        instrumentationHook: true,
+      },
+    };
+    ```
+
+  </TabItem>
+
+  <TabItem value="nuxt" label="Nuxt.js">
+    For Nuxt.js, create a plugin to initialize the instrumentation:
+
+    ```ts:plugins/instrumentation.client.ts
+    // Your OpenTelemetry instrumentation code here
+    // (the code from Step 2)
+
+    export default defineNuxtPlugin(() => {
+      // Instrumentation is initialized when this plugin loads
+    });
+    ```
+
+    The `.client.ts` suffix ensures this only runs on the client side. Nuxt will automatically load this plugin during application initialization.
+
+    Alternatively, you can import it directly in `app.vue`:
+
+    ```vue:app.vue
+    <script setup>
+    import './instrumentation';
+    </script>
+
+    <template>
+      <NuxtPage />
+    </template>
+    ```
+
+  </TabItem>
+
+  <TabItem value="angular" label="Angular">
+    For Angular, import the instrumentation file at the very top of your `main.ts`:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import { bootstrapApplication } from '@angular/platform-browser';
+    import { appConfig } from './app/app.config';
+    import { AppComponent } from './app/app.component';
+
+    bootstrapApplication(AppComponent, appConfig)
+      .catch((err) => console.error(err));
+    ```
+
+    For older Angular versions using `platformBrowserDynamic`:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+    import { AppModule } from './app/app.module';
+
+    platformBrowserDynamic().bootstrapModule(AppModule)
+      .catch(err => console.error(err));
+    ```
+
+  </TabItem>
+
+  <TabItem value="vue" label="Vue.js">
+    For Vue.js, import the instrumentation file at the very top of your `main.ts` (or `main.js`):
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import { createApp } from 'vue';
+    import App from './App.vue';
+
+    createApp(App).mount('#app');
+    ```
+
+    For Vue 2:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import Vue from 'vue';
+    import App from './App.vue';
+
+    new Vue({
+      render: h => h(App),
+    }).$mount('#app');
+    ```
+
+  </TabItem>
+
+  <TabItem value="svelte" label="Svelte/SvelteKit">
+    For **Svelte** (with Vite), import in your `main.ts`:
+
+    ```ts:src/main.ts
+    import './instrumentation';
+    import App from './App.svelte';
+
+    const app = new App({
+      target: document.getElementById('app')!,
+    });
+
+    export default app;
+    ```
+
+    For **SvelteKit**, create a hook in `src/hooks.client.ts`:
+
+    ```ts:src/hooks.client.ts
+    import './instrumentation';
+    ```
+
+    Or import it in your root layout:
+
+    ```svelte:src/routes/+layout.svelte
+    <script>
+      import '../instrumentation';
+    </script>
+
+    <slot />
+    ```
+
   </TabItem>
 </Tabs>
 
-<details>
-<summary> Read more about the dependencies </summary>
-- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish logs from different services in your SigNoz dashboard.
-
-- **`@opentelemetry/sdk-logs`**: Contains the core logging SDK implementation including `LoggerProvider` and `SimpleLogRecordProcessor`. This is the foundation for creating and processing log records in your application.
-
-- **`@opentelemetry/exporter-logs-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your logs to the SigNoz collector. This handles the actual transmission of log data over HTTP.
-
-- **`@opentelemetry/api-logs`**: Provides the logging API interface (`logs` object) that your application code uses to create log records. This is the main API you'll interact with when adding logging statements to your code.
-</details>
-
-### Step 3: Create an instrumentation file
-
-The instrumentation file is required to setup the `LoggerProvider` which is used to create custom logs within your application and export them to your collector.
-Inside your `src` directory, create a file named `instrument.js` (or `instrument.ts` for TypeScript):
-
-<Tabs entityName="logs-instrumentation">
-  <TabItem value="cloud" label="SigNoz Cloud" default>
-    ```ts:instrument.js
-      import {
-        LoggerProvider,
-        SimpleLogRecordProcessor,
-      } from '@opentelemetry/sdk-logs';
-      import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
-      import { logs } from '@opentelemetry/api-logs';
-      import { resourceFromAttributes } from '@opentelemetry/resources';
-
-      const loggerProvider = new LoggerProvider({
-        resource: resourceFromAttributes({
-          'service.name': '<<SERVICE_NAME>>',
-        }),
-        processors: [
-          new SimpleLogRecordProcessor(
-            new OTLPLogExporter({
-              url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/logs`,
-              headers: {
-                'signoz-ingestion-key': <<INGESTION_KEY>>,
-              },
-            }),
-          ),
-        ],
-      });
-
-      logs.setGlobalLoggerProvider(loggerProvider);
-    ```
-
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
-  </TabItem>
-  <TabItem value="self-hosted" label="SigNoz Self-Hosted">
-    ```ts:instrument.js
-      import {
-        LoggerProvider,
-        SimpleLogRecordProcessor,
-      } from '@opentelemetry/sdk-logs';
-      import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
-      import { logs } from '@opentelemetry/api-logs';
-      import { resourceFromAttributes } from '@opentelemetry/resources';
-
-      const loggerProvider = new LoggerProvider({
-        resource: resourceFromAttributes({
-          'service.name': '<<SERVICE_NAME>>',
-        }),
-        processors: [
-          new SimpleLogRecordProcessor(
-            new OTLPLogExporter({ url: '<<SIGNOZ_COLLECTOR_URL>>/v1/logs' })
-          ),
-        ],
-      });
-
-      logs.setGlobalLoggerProvider(loggerProvider);
-    ```
-
-    - `<<SERVICE_NAME>>` is the name of your service
-    - `<<SIGNOZ_COLLECTOR_URL>>` is the url where your collector is running
-  </TabItem>
-</Tabs>
-
-### Step 4: Importing the instrumentation file
-
-Import the instrumentation file at the top level of your application. This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture logs from the very beginning of your application's execution.
-
-```ts
-import './instrument';
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App';
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>
-);
-```
-
-### Step 5: Create utility functions for Logging
+### Step 4: Create utility functions for Logging
 
 The `utils` file will contain our utility functions for recording various kinds of logs (`info`, `warning`, `error`).
 
-<Tabs entityName="logs-utilities">
+<Tabs entityName="plans">
   <TabItem value="ts" label="TypeScript">
     ```ts
     import {
@@ -202,6 +402,7 @@ The `utils` file will contain our utility functions for recording various kinds 
       });
     }
     ```
+
   </TabItem>
   <TabItem value="js" label="JavaScript" default>
     ```js
@@ -239,27 +440,28 @@ The `utils` file will contain our utility functions for recording various kinds 
       });
     }
     ```
+
   </TabItem>
 </Tabs>
 
-### Step 6: Setting up Logs within your Application
+### Step 5: Setting up Logs within your Application
 
 Add logs at meaningful points in your application.
 
 ```ts
 function onNextClick() {
   try {
-    const response = await fetch('/api/data');
-    const data = await response.json();
-    logInfo('Next button clicked!', { data });
-    return data;
+    const response = await fetch('/api/data')
+    const data = await response.json()
+    logInfo('Next button clicked!', { data })
+    return data
   } catch (error) {
-    logError('Failed to fetch data', { error: error.message });
+    logError('Failed to fetch data', { error: error.message })
   }
 }
 ```
 
-### Step 7: Viewing Captured Logs in SigNoz
+### Step 6: Viewing Captured Logs in SigNoz
 
 The captured logs can then be viewed in the [Logs Explorer](https://signoz.io/docs/userguide/logs/).
 
@@ -274,13 +476,13 @@ The captured logs can then be viewed in the [Logs Explorer](https://signoz.io/do
   </figcaption>
 </figure>
 
-## Attaching additional identifiers to your Logs
+### Attaching additional identifiers to your Logs
 
 You can enrich logs with additional metadata like browser type, user ID etc. to enable real user monitoring (RUM)-like insights.
 
 To do so, you need to write a custom implementation on top of `LogRecordProcessor` which will intercept all your exported logs and attach additional attributes to them.
 
-<Tabs entityName="logs-processor">
+<Tabs entityName="plans">
   <TabItem value="ts" label="TypeScript">
     ```ts
     import type { LogRecordProcessor, SdkLogRecord } from '@opentelemetry/sdk-logs';
@@ -329,6 +531,7 @@ To do so, you need to write a custom implementation on top of `LogRecordProcesso
       }
     }
     ```
+
   </TabItem>
   <TabItem value="js" label="JavaScript" default>
     ```js
@@ -377,6 +580,7 @@ To do so, you need to write a custom implementation on top of `LogRecordProcesso
       }
     }
     ```
+
   </TabItem>
 </Tabs>
 
@@ -389,11 +593,9 @@ const loggerProvider = new LoggerProvider({
   }),
   processors: [
     new CustomAttributesProcessor(),
-    new SimpleLogRecordProcessor(
-      new OTLPLogExporter({ url: '<<SIGNOZ_COLLECTOR_URL>>/v1/logs' })
-    ),
+    new SimpleLogRecordProcessor(new OTLPLogExporter({ url: '<<SIGNOZ_COLLECTOR_URL>>/v1/logs' })),
   ],
-});
+})
 ```
 
 Now every log exported will include these additional contextual attributes.
@@ -468,5 +670,6 @@ These captured logs can then also be viewed in the [Logs Explorer](https://signo
   </figcaption>
 </figure>
 
-## Demo Application  
+## Demo Application
+
 Check out this [Sample React Application](https://github.com/SigNoz/frontend-monitoring-examples/tree/main/sending-logs) that demonstrates sending logs to SigNoz.
