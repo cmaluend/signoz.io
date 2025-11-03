@@ -413,10 +413,10 @@ async function updateEntry(folderName, documentId, data) {
 }
 
 // Helper: Delete entry in Strapi
-async function deleteEntry(folderName, entryId) {
+async function deleteEntry(folderName, documentId) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
-    const response = await axios.delete(`${CMS_API_URL}/api/${schema.endpoint}/${entryId}`, {
+    const response = await axios.delete(`${CMS_API_URL}/api/${schema.endpoint}/${documentId}`, {
       headers: {
         Authorization: `Bearer ${CMS_API_TOKEN}`,
         'Content-Type': 'application/json',
@@ -491,7 +491,7 @@ async function syncToStrapi() {
         const existingEntry = await findEntryByPath(folderName, pathField)
 
         if (existingEntry) {
-          await deleteEntry(folderName, existingEntry.id)
+          await deleteEntry(folderName, existingEntry.documentId)
           console.log(`✅ Deleted successfully`)
           results.deleted.push({ file: filePath, path: pathField })
         } else {
