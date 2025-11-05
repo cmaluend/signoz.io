@@ -16,6 +16,8 @@ keywords:
   ]
 ---
 
+Test
+
 Regex, short for "regular expressions," is a powerful tool for searching and manipulating text patterns. When combined with Grafana, a popular open-source visualization tool, regex allows users to filter, refine, and visualize data more effectively. This guide will walk you through the process of using regex in Grafana queries, from the basics to advanced techniques, to help you get the most out of your dashboards.
 
 ## Understanding Regex in Grafana Queries
@@ -150,6 +152,7 @@ Regex queries in Grafana can transform how you filter, display, and analyze data
   ```
 - The `$service` variable would populate dynamically based on user input or predefined options, making your dashboard adaptable to different contexts.
   How do you add variables to the Grafana Dashboard?
+
   1. Navigate to the dashboard where you want to add a variable. Click the gear icon (⚙️) and select "Variables". Then click "Add variable".
 
      <Figure
@@ -203,12 +206,12 @@ Regex queries in Grafana can transform how you filter, display, and analyze data
        http_requests_total{instance=~"$instance"}
        ```
        - `$instance` is the variable you created. It will dynamically reflect the selected value(s) from the dropdown.
-       {' '}
-       <Figure
-         src="/img/guides/2024/09/a-regex-in-query-in-grafana-image%2010.webp"
-         alt="Running Regex query using Dynamic variable in Grafana"
-         caption="Running Regex query using Dynamic variable in Grafana"
-       />
+         {' '}
+         <Figure
+           src="/img/guides/2024/09/a-regex-in-query-in-grafana-image%2010.webp"
+           alt="Running Regex query using Dynamic variable in Grafana"
+           caption="Running Regex query using Dynamic variable in Grafana"
+         />
      - Save Changes: Click "Apply" and save the panel.
 
 ### Advanced Regex Techniques for Grafana
