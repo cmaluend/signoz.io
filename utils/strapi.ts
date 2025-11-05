@@ -281,6 +281,10 @@ export const fetchMDXContentByPath = async (
   try {
     const queryObject: any = {
       populate: '*',
+      pagination: {
+        pageSize: 100,
+      },
+      sort: ['publishedAt:desc'],
     }
 
     // Add filters only if not fetching all
@@ -304,9 +308,6 @@ export const fetchMDXContentByPath = async (
         }
       }
     } else {
-      // When fetching all, add sorting
-      queryObject.sort = ['date:desc']
-
       // Optionally filter by deployment status for list views
       if (deployment_status) {
         queryObject.filters = {

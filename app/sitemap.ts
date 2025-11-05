@@ -2,14 +2,12 @@ import { MetadataRoute } from 'next'
 import {
   allBlogs,
   allAuthors,
-  // allComparisons,
   allGuides,
   allOpentelemetries,
   allDocs,
 } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
-
-// TODO: Add FAQs, Comparisons, Case Studies handling to the sitemap
+import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
 const mapChangeFrequency = (
   frequency: string
@@ -28,7 +26,10 @@ const mapChangeFrequency = (
   }
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export const dynamic = 'force-dynamic'
+export const revalidate = 60
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = siteMetadata.siteUrl
 
   const blogRoutes = allBlogs
@@ -77,7 +78,47 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }))
 
-  // FAQs are now fetched from Strapi dynamically, not included in static sitemap
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  // Fetch FAQs from Strapi CMS at runtime
+  let faqRoutes: MetadataRoute.Sitemap = []
+  try {
+    const faqsResponse = (await fetchMDXContentByPath(
+      'faqs',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+    console.log('FAQs response:', faqsResponse)
+    faqRoutes = faqsResponse.data.map((faq) => ({
+      url: `${siteUrl}/faqs${faq.path}/`,
+      lastModified: faq.date || faq.updatedAt || faq.publishedAt,
+    }))
+  } catch (error) {
+    console.error('Error fetching FAQs for sitemap:', error)
+    // Return empty array if fetching fails
+  }
+
+  let caseStudyRoutes: MetadataRoute.Sitemap = []
+  try {
+    const caseStudiesResponse = (await fetchMDXContentByPath(
+      'case-studies',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+    console.log('Case studies response:', caseStudiesResponse)
+    caseStudyRoutes = caseStudiesResponse.data.map((caseStudy) => ({
+      url: `${siteUrl}/case-study${caseStudy.path}/`,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.5,
+      lastModified: caseStudy.updatedAt || caseStudy.publishedAt,
+    }))
+  } catch (error) {
+    console.error('Error fetching case studies for sitemap:', error)
+    // Return empty array if fetching fails
+  }
 
   const routes = [
     '',
@@ -102,9 +143,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...routes,
     ...blogRoutes,
-    // ...comparisonRoutes,
     ...opentelemetryRoutes,
     ...docRoutes,
     ...guideRoutes,
+    ...faqRoutes,
+    ...caseStudyRoutes,
   ]
 }
