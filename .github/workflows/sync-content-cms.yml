@@ -14,7 +14,7 @@ on:
   push:
     branches:
       - main  # Configurable: Change to your production branch
-      -  # Configurable: Change to your staging branch
+      - staging # Configurable: Change to your staging branch
     paths:
       - 'data/**/*.mdx'
       - 'data/**/*.md'
@@ -33,7 +33,7 @@ env:
   
   # Branch Configuration
   PRODUCTION_BRANCH: 'main'
-  STAGING_BRANCH: ''
+  STAGING_BRANCH: 'staging'
 
 jobs:
   detect-changes:
