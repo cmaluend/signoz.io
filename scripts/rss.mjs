@@ -10,8 +10,8 @@ import {
   allComparisons,
   allGuides,
   allOpentelemetries,
-  allFAQs,
 } from '../.contentlayer/generated/index.mjs'
+// TODO: Add FAQs handling to the RSS feed
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
 const generateRssItem = (config, post) => {
@@ -71,7 +71,7 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 }
 
 const rss = () => {
-  generateRSS(siteMetadata, [...allBlogs, ...allComparisons, ...allGuides, ...allOpentelemetries, ...allDocs, ...allFAQs])
+  generateRSS(siteMetadata, [...allBlogs, ...allComparisons, ...allGuides, ...allOpentelemetries, ...allDocs])
   console.log('RSS feed generated...')
 }
 

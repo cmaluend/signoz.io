@@ -1,6 +1,17 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allAuthors, allComparisons, allGuides, allOpentelemetries, allDocs, allFAQs } from 'contentlayer/generated'
+import {
+  allBlogs,
+  allAuthors,
+  allComparisons,
+  allGuides,
+  allOpentelemetries,
+  allDocs,
+} from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
+import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 const mapChangeFrequency = (
   frequency: string
@@ -19,7 +30,7 @@ const mapChangeFrequency = (
   }
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = siteMetadata.siteUrl
 
   const blogRoutes = allBlogs
@@ -68,10 +79,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }))
 
-  const faqRoutes = allFAQs.map((faq) => ({
-    url: `${siteUrl}/${faq.path}/`,
-    lastModified: faq.lastmod || faq.date,
-  }))
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  // Fetch FAQs from Strapi CMS at runtime
+  let faqRoutes: MetadataRoute.Sitemap = []
+  try {
+    const faqsResponse = (await fetchMDXContentByPath(
+      'faqs',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+    faqRoutes = faqsResponse.data.map((faq) => ({
+      url: `${siteUrl}/faqs${faq.path}/`,
+      lastModified: faq.date || faq.updatedAt || faq.publishedAt,
+    }))
+  } catch (error) {
+    console.error('Error fetching FAQs for sitemap:', error)
+    // Return empty array if fetching fails
+  }
 
   const routes = [
     '',
@@ -93,5 +120,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: mapChangeFrequency('weekly'),
   }))
 
-  return [...routes, ...blogRoutes, ...comparisonRoutes, ...opentelemetryRoutes, ...docRoutes, ...guideRoutes, ...faqRoutes]
+  return [
+    ...routes,
+    ...blogRoutes,
+    ...comparisonRoutes,
+    ...opentelemetryRoutes,
+    ...docRoutes,
+    ...guideRoutes,
+    ...faqRoutes,
+  ]
 }
