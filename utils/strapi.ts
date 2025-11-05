@@ -282,6 +282,7 @@ export const fetchMDXContentByPath = async (
     const queryObject: any = {
       populate: '*',
       pagination: {
+        page: 1,
         pageSize: 100,
       },
       sort: ['publishedAt:desc'],
@@ -318,19 +319,82 @@ export const fetchMDXContentByPath = async (
       }
     }
 
+    if (!API_URL) {
+      throw new Error('NEXT_PUBLIC_SIGNOZ_CMS_API_URL is not configured')
+    }
+
+    // If fetchAll is true, fetch all pages and combine results
+    if (fetchAll) {
+      let allData: MDXContent[] = []
+      let currentPage = 1
+      let totalPages = 1
+      let finalMeta: any = {}
+
+      do {
+        queryObject.pagination.page = currentPage
+
+        const queryParams = qs.stringify(queryObject, {
+          encode: false,
+          addQueryPrefix: true,
+          arrayFormat: 'repeat',
+        })
+
+        const response = await fetch(`${API_URL}/api/${collectionName}${queryParams}`, {
+          next: {
+            tags: [`${collectionName}-list`],
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            Pragma: 'no-cache',
+            Expires: '0',
+          },
+          cache: 'no-store',
+        })
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Content not found')
+          }
+          const errorMessage = await response.text()
+          throw new Error(`Network response was not ok: ${response.status} ${errorMessage}`)
+        }
+
+        const data: MDXContentApiResponse = await response.json()
+
+        if (data.data && data.data.length > 0) {
+          allData = allData.concat(data.data)
+        }
+
+        totalPages = data.meta.pagination.pageCount
+        finalMeta = data.meta
+        currentPage++
+      } while (currentPage <= totalPages)
+
+      // Update the pagination meta to reflect all data
+      finalMeta.pagination = {
+        page: 1,
+        pageSize: allData.length,
+        pageCount: 1,
+        total: allData.length,
+      }
+
+      return {
+        data: allData,
+        meta: finalMeta,
+      }
+    }
+
+    // Single content fetch
     const queryParams = qs.stringify(queryObject, {
       encode: false,
       addQueryPrefix: true,
       arrayFormat: 'repeat',
     })
 
-    if (!API_URL) {
-      throw new Error('NEXT_PUBLIC_SIGNOZ_CMS_API_URL is not configured')
-    }
-
     const response = await fetch(`${API_URL}/api/${collectionName}${queryParams}`, {
       next: {
-        tags: fetchAll ? [`${collectionName}-list`] : [`${collectionName}-${path}`],
+        tags: [`${collectionName}-${path}`],
       },
       headers: {
         'Content-Type': 'application/json',
@@ -351,22 +415,15 @@ export const fetchMDXContentByPath = async (
 
     const data: MDXContentApiResponse = await response.json()
 
-    if (!fetchAll) {
-      console.log('Data:', data)
-      console.log('Data.data:', data.data)
-      console.log('Data.data.length:', data.data.length)
-      console.log('Query URL:', `${API_URL}/api/${collectionName}${queryParams}`)
-      console.log('Authors in response:', data.data[0]?.attributes?.authors)
-      console.log('Related FAQs in response:', data.data[0]?.attributes?.related_faqs)
-    }
+    console.log('Data:', data)
+    console.log('Data.data:', data.data)
+    console.log('Data.data.length:', data.data.length)
+    console.log('Query URL:', `${API_URL}/api/${collectionName}${queryParams}`)
+    console.log('Authors in response:', data.data[0]?.attributes?.authors)
+    console.log('Related FAQs in response:', data.data[0]?.attributes?.related_faqs)
 
     if (!data.data || data.data.length === 0) {
       throw new Error('Content not found')
-    }
-
-    // Return all data for list views, only first item for single content
-    if (fetchAll) {
-      return data
     }
 
     return {
