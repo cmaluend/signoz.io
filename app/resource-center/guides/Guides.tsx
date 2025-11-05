@@ -1,125 +1,58 @@
-'use client'
+import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
+import GuidesClient from './GuidesClient'
+import readingTime from 'reading-time'
 
-import { allGuides } from 'contentlayer/generated'
-import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
-import React, { useState, useEffect, useMemo } from 'react'
-import BlogPostCard from '../Shared/BlogPostCard'
-import { filterData } from 'app/utils/common'
-import SearchInput from '../Shared/Search'
-import { Frown } from 'lucide-react'
-import SideBar, { GUIDES_TOPICS } from '@/components/SideBar'
+export default async function Guides() {
+  try {
+    // Fetch all guides from Strapi
+    const isProduction = process.env.VERCEL_ENV === 'production'
+    const deployment_status = isProduction ? 'live' : 'staging'
 
-interface HeadingProps {
-  tag: string
-  text: string
-  className?: string
-}
+    const response = (await fetchMDXContentByPath(
+      'guides',
+      undefined,
+      deployment_status,
+      true
+    )) as MDXContentApiResponse
 
-const Heading: React.FC<HeadingProps> = ({ tag, text, className = '' }) => {
-  const Tag = tag as keyof JSX.IntrinsicElements
-  return <Tag className={className}>{text}</Tag>
-}
-
-interface GuidesHeaderProps {
-  title: string
-  description: string
-  searchPlaceholder?: string
-  onSearch: (e) => void
-}
-
-const GuidesHeader = ({ title, description, searchPlaceholder, onSearch }) => {
-  return (
-    <section className="mb-[16px] flex max-w-[697px] flex-col leading-[143%]">
-      <h2 className="mb-0 self-start text-center text-sm font-medium uppercase tracking-wider text-signoz_sakura-500 dark:text-signoz_sakura-400">
-        resources
-      </h2>
-      <h1 className="my-0 mt-3 self-start text-3xl font-semibold text-indigo-500 dark:text-indigo-200">
-        {title}
-      </h1>
-      <p className="my-4  w-full text-lg leading-8 tracking-normal text-stone-700 dark:text-stone-300 max-md:max-w-full">
-        {description}
-      </p>
-      <SearchInput placeholder={searchPlaceholder || ''} onSearch={onSearch} />
-    </section>
-  )
-}
-
-export default function Guides() {
-  const posts = allCoreContent(sortPosts(allGuides))
-  const [activeItem, setActiveItem] = useState(GUIDES_TOPICS.ALL)
-  const [searchQuery, setSearchQuery] = useState('')
-  const POST_PER_PAGE = 20
-  const pageNumber = 1
-
-  useEffect(() => {
-    if (!window) {
-      return
+    if (!response || !response.data) {
+      console.error('Invalid response from Strapi for guides')
+      return <GuidesClient guides={[]} />
     }
 
-    const activeItemToSet: GUIDES_TOPICS =
-      (window.location.hash as GUIDES_TOPICS) || GUIDES_TOPICS.ALL
+    // Transform the data to match the expected format
+    const guides = response.data.map((guide) => {
+      const readingTimeData = readingTime(guide.content || '')
 
-    setActiveItem(activeItemToSet)
-  }, [window])
-
-  const blogs = useMemo(() => {
-    if (searchQuery) {
-      return filterData(posts, searchQuery)
-    }
-
-    if (activeItem === GUIDES_TOPICS.ALL) {
-      return posts
-    }
-
-    const formattedActiveItem = activeItem.replace('#', '').toLowerCase().replace(/\s+/g, '')
-
-    return posts.filter((post) => {
-      const postTags = post.tags?.map((tag) => tag.toLowerCase().replace(/\s+/g, ''))
-      return postTags?.includes(formattedActiveItem)
+      return {
+        title: guide.title,
+        description: guide.description,
+        summary: guide.summary,
+        date: guide.date,
+        lastmod: guide.lastmod,
+        tags: guide.tags?.map((tag) => tag.value) || [],
+        draft: guide.deployment_status === 'draft',
+        slug: guide.path?.replace(/^\//, '') || '', // Remove leading slash for slug
+        path: guide.path,
+        image: guide.image,
+        images: guide.images || [],
+        authors: guide.authors?.map((author) => author?.key) || [],
+        readingTime: readingTimeData,
+        type: 'Guide',
+      }
     })
-  }, [searchQuery, activeItem])
 
-  const handleCategoryClick = (category) => {
-    setActiveItem(category)
-    window.history.pushState(null, '', category)
+    // Sort by date (descending)
+    const sortedGuides = guides.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    )
+
+    // Filter out drafts
+    const publishedGuides = sortedGuides.filter((g) => !g.draft)
+
+    return <GuidesClient guides={publishedGuides} />
+  } catch (error) {
+    console.error('Error fetching guides:', error)
+    return <GuidesClient guides={[]} />
   }
-
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.value)
-    setActiveItem(GUIDES_TOPICS.ALL)
-  }
-
-  const pagination = {
-    currentPage: pageNumber,
-    totalPages: Math.ceil(posts.length / POST_PER_PAGE),
-    pageRoute: 'guide',
-  }
-
-  return (
-    <div>
-      <GuidesHeader
-        title="SigNoz Guides"
-        description="Level up your engineering skills with great resources, tutorials, and guides on monitoring, observability, Opentelemetry, and more."
-        searchPlaceholder="Search for guides..."
-        onSearch={handleSearch}
-      />
-
-      <div className="relative mt-8 flex flex-col gap-8 xl:-mr-16 xl:pr-16">
-        <SideBar onCategoryClick={handleCategoryClick} activeItem={activeItem} />
-        <div className="flex-1">
-          {blogs && Array.isArray(blogs) && blogs.length <= 0 && (
-            <div className="no-blogs my-8 flex items-center gap-4 font-mono font-bold">
-              <Frown size={16} /> No Guides found
-            </div>
-          )}
-
-          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((post) => {
-              return <BlogPostCard key={post.slug} blog={post} />
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
 }

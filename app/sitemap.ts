@@ -1,11 +1,5 @@
 import { MetadataRoute } from 'next'
-import {
-  allBlogs,
-  allAuthors,
-  allGuides,
-  allOpentelemetries,
-  allDocs,
-} from 'contentlayer/generated'
+import { allBlogs, allAuthors, allOpentelemetries, allDocs } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -69,14 +63,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
 
   // New section for guides
-  const guideRoutes = allGuides
-    .filter((guide) => !guide.draft)
-    .map((guide) => ({
-      url: `${siteUrl}/${guide.path}/`,
-      lastModified: guide.lastmod || guide.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.7,
-    }))
+  // const guideRoutes = allGuides
+  //   .filter((guide) => !guide.draft)
+  //   .map((guide) => ({
+  //     url: `${siteUrl}/${guide.path}/`,
+  //     lastModified: guide.lastmod || guide.date,
+  //     changeFrequency: mapChangeFrequency('weekly'),
+  //     priority: 0.7,
+  //   }))
 
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
@@ -117,6 +111,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   } catch (error) {
     console.error('Error fetching case studies for sitemap:', error)
+    // Return empty array if fetching fails
+  }
+
+  let guideRoutes: MetadataRoute.Sitemap = []
+  try {
+    const guidesResponse = (await fetchMDXContentByPath(
+      'guides',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+    console.log('Guides response:', guidesResponse)
+    guideRoutes = guidesResponse.data.map((guide) => ({
+      url: `${siteUrl}/guides${guide.path}/`,
+      lastModified: guide.updatedAt || guide.publishedAt,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.7,
+    }))
+  } catch (error) {
+    console.error('Error fetching guides for sitemap:', error)
     // Return empty array if fetching fails
   }
 

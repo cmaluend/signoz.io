@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { slug } from 'github-slugger'
 import { formatDate } from 'pliny/utils/formatDate'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Doc, Guide, Opentelemetry } from 'contentlayer/generated'
+import type { Blog, Doc, Opentelemetry } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import Button from '@/components/Button/Button'
@@ -17,9 +17,9 @@ interface PaginationProps {
   currentPage: number
 }
 interface ListLayoutProps {
-  posts: CoreContent<Blog | Doc | Opentelemetry | Guide>[]
+  posts: CoreContent<Blog | Doc | Opentelemetry>[]
   title: string
-  initialDisplayPosts?: CoreContent<Blog | Doc | Opentelemetry | Guide>[]
+  initialDisplayPosts?: CoreContent<Blog | Doc | Opentelemetry>[]
   pagination?: PaginationProps
   emptyMessage?: string
 }

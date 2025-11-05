@@ -8,12 +8,12 @@ import {
   allBlogs,
   allDocs,
   // allComparisons,
-  allGuides,
+  // allGuides,
   allOpentelemetries,
 } from '../.contentlayer/generated/index.mjs'
 import { sortPosts } from 'pliny/utils/contentlayer.js'
 
-// TODO: Add FAQs, Comparisons, Case Studies handling to the RSS feed
+// TODO: Add FAQs, Comparisons, Case Studies, Guides handling to the RSS feed
 
 const generateRssItem = (config, post) => {
   let urlPath = 'blog'
@@ -72,7 +72,7 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 }
 
 const rss = () => {
-  generateRSS(siteMetadata, [...allBlogs, ...allGuides, ...allOpentelemetries, ...allDocs])
+  generateRSS(siteMetadata, [...allBlogs, ...allOpentelemetries, ...allDocs])
   console.log('RSS feed generated...')
 }
 

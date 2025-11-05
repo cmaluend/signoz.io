@@ -4,12 +4,12 @@ import {
   allBlogs,
   allDocs,
   // allComparisons,
-  allGuides,
+  // allGuides,
   allOpentelemetries,
 } from '../.contentlayer/generated/index.mjs'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer.js'
 
-// TODO: Add FAQs, Comparisons, Case Studies handling to the search indexes
+// TODO: Add FAQs, Comparisons, Case Studies, Guides handling to the search indexes
 
 function createSearchIndex(content) {
   if (
@@ -31,7 +31,7 @@ const searchIndexes = () => {
   createSearchIndex([
     ...allBlogs,
     // ...allComparisons,
-    ...allGuides,
+    // ...allGuides,
     ...allOpentelemetries,
     ...allDocs,
   ])

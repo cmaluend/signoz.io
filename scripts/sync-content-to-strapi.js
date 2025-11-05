@@ -79,6 +79,30 @@ const COLLECTION_SCHEMAS = {
       },
     },
   },
+  guides: {
+    apiPath: 'api::guide.guide',
+    endpoint: 'guides',
+    fields: ['title', 'description', 'image', 'path', 'content', 'deployment_status', 'date'],
+    relations: {
+      authors: {
+        endpoint: 'authors',
+        matchField: 'key', // Match against author.key
+        frontmatterField: 'authors', // Array of author keys in frontmatter
+      },
+      tags: {
+        endpoint: 'tags',
+        matchField: 'key', // Match against tag.key
+        frontmatterField: 'tags', // Array of tag values in frontmatter
+        filterKey: true, // Also check if tag.key contains 'faq' or 'faqs'
+        matchValue: true, // Match against tag.value (case insensitive)
+      },
+      related_guides: {
+        endpoint: 'guides',
+        matchField: 'path', // Match against guide.path
+        frontmatterField: 'related_guides', // Array of guide paths in frontmatter
+      },
+    },
+  },
   authors: {
     apiPath: 'api::author.author',
     endpoint: 'authors',
@@ -150,6 +174,44 @@ async function fetchAllEntities(endpoint) {
   }
 }
 
+// Helper: Create a tag or keyword entry
+async function createTagOrKeyword(endpoint, value, folderName) {
+  try {
+    // Generate key by appending folder name to the value (lowercase, hyphenated)
+    const key = `${folderName}-${value}`
+
+    const data = {
+      key: key,
+      value: value,
+      // description is optional, so we don't include it
+    }
+
+    console.log(`    🆕 Creating new ${endpoint} entry:`)
+    console.log(`       • key: "${key}"`)
+    console.log(`       • value: "${value}"`)
+
+    const response = await axios.post(
+      `${CMS_API_URL}/api/${endpoint}`,
+      { data },
+      {
+        headers: {
+          Authorization: `Bearer ${CMS_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+
+    console.log(
+      `    ✅ Successfully created ${endpoint} entry with documentId: ${response.data.data.documentId}`
+    )
+    return response.data.data
+  } catch (error) {
+    const errorMsg = error.response?.data?.error?.message || error.message
+    console.error(`    ❌ Failed to create ${endpoint} entry: ${errorMsg}`)
+    throw error
+  }
+}
+
 // Helper: Resolve relation IDs
 async function resolveRelations(folderName, frontmatter) {
   const schema = COLLECTION_SCHEMAS[folderName]
@@ -169,10 +231,13 @@ async function resolveRelations(folderName, frontmatter) {
 
     console.log(`  🔗 Resolving ${relationName}: ${frontmatterValues.join(', ')}`)
 
-    // Fetch all entities from the relation endpoint
-    const entities = await fetchAllEntities(relationConfig.endpoint)
+    // Check if this is tags or keywords relation
+    const isTagsOrKeywords = relationName === 'tags' || relationName === 'keywords'
 
-    if (entities.length === 0) {
+    // Fetch all entities from the relation endpoint
+    let entities = await fetchAllEntities(relationConfig.endpoint)
+
+    if (entities.length === 0 && !isTagsOrKeywords) {
       console.warn(`  ⚠️ No entities found in ${relationConfig.endpoint}`)
       continue
     }
@@ -216,8 +281,32 @@ async function resolveRelations(folderName, frontmatter) {
         )
       } else {
         // No match found
-        unmatchedValues.push(value)
         console.warn(`    ⚠️ No match found for "${value}" in ${relationConfig.endpoint}`)
+
+        // Auto-create tags or keywords if not found
+        if (isTagsOrKeywords) {
+          try {
+            console.log(`    🔧 Auto-creating missing ${relationName} entry for: "${value}"`)
+            const newEntry = await createTagOrKeyword(relationConfig.endpoint, value, folderName)
+
+            if (newEntry && newEntry.documentId) {
+              matchedIds.push(newEntry.documentId)
+              // Add to entities array so it's available for subsequent matches
+              entities.push(newEntry)
+              console.log(`    ✅ Auto-created and matched "${value}" → ID: ${newEntry.documentId}`)
+            } else {
+              unmatchedValues.push(value)
+              console.error(`    ❌ Created entry but no documentId returned for "${value}"`)
+            }
+          } catch (createError) {
+            unmatchedValues.push(value)
+            console.error(
+              `    ❌ Failed to auto-create ${relationName} for "${value}": ${createError.message}`
+            )
+          }
+        } else {
+          unmatchedValues.push(value)
+        }
       }
     }
 
