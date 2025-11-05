@@ -34,7 +34,7 @@ env:
   
   # Branch Configuration
   PRODUCTION_BRANCH: 'main'
-  STAGING_BRANCH: 'staging'
+  STAGING_BRANCH: 'test/cms-with-isr'
 
 jobs:
   detect-changes:
