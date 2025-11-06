@@ -183,7 +183,10 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
   </TabItem>
 </Tabs>
 
-**Note:** Please make sure to whitelist your frontend domain when using the self-hosted version
+<Admonition type="info">
+  For self-hosted deployments, add the following CORS configuration to your OpenTelemetry Collector
+  config file to allow browser requests from your frontend domain:
+</Admonition>
 
 ```sh
 receivers:
