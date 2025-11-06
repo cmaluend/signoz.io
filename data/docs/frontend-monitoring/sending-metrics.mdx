@@ -121,7 +121,7 @@ The instrumentation file is required to setup the `MeterProvider` which is used 
         // For self-hosted version, please use the collector url instead.
         url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/metrics`,
         headers: {
-          'signoz-ingestion-key': <INGESTION_KEY>,
+          'signoz-ingestion-key': '<INGESTION_KEY>',
         },
       }),
       exportIntervalMillis: 10000, // Export metrics every 10 seconds.
