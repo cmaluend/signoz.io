@@ -188,7 +188,7 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
   config file to allow browser requests from your frontend domain:
 </Admonition>
 
-```sh
+```yaml
 receivers:
   otlp:
     protocols:
@@ -440,7 +440,7 @@ Once done, your frontend traces should automatically get linked with your backen
 
 For the purpose of this guide, we have setup a simple Node.js API with instrumentation.
 
-```ts
+```ts:backend.ts
 import { NodeSDK } from '@opentelemetry/sdk-node'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http'
 import { resourceFromAttributes } from '@opentelemetry/resources'
@@ -451,7 +451,10 @@ const sdk = new NodeSDK({
     'service.name': '<SERVICE_NAME>',
   }),
   traceExporter: new OTLPTraceExporter({
-    url: '<SIGNOZ_COLLECTOR_URL>/v1/traces',
+    url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/traces`,
+    headers: {
+      'signoz-ingestion-key': '<INGESTION_KEY>',
+    },
   }),
   instrumentations: [getNodeAutoInstrumentations()],
 })
@@ -459,7 +462,7 @@ const sdk = new NodeSDK({
 sdk.start()
 ```
 
-```ts
+```ts:backend.ts
 app.post('<api-endpoint>', (req, res) => {
   try {
     // Your api logic

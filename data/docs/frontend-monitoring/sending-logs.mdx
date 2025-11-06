@@ -135,7 +135,7 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
   config file to allow browser requests from your frontend domain:
 </Admonition>
 
-```sh
+```yaml
 receivers:
   otlp:
     protocols:
@@ -377,7 +377,7 @@ The `utils` file will contain our utility functions for recording various kinds 
 
 <Tabs entityName="plans">
   <TabItem value="ts" label="TypeScript">
-    ```ts
+    ```ts:utils.ts
     import {
       logs,
       SeverityNumber,
@@ -416,7 +416,7 @@ The `utils` file will contain our utility functions for recording various kinds 
 
   </TabItem>
   <TabItem value="js" label="JavaScript" default>
-    ```js
+    ```js:utils.js
     import {
       logs,
       SeverityNumber,
@@ -459,7 +459,7 @@ The `utils` file will contain our utility functions for recording various kinds 
 
 Add logs at meaningful points in your application.
 
-```ts
+```ts:func.ts
 async function onNextClick() {
   try {
     const response = await fetch('/api/data');
@@ -604,7 +604,12 @@ const loggerProvider = new LoggerProvider({
   }),
   processors: [
     new CustomAttributesProcessor(),
-    new SimpleLogRecordProcessor(new OTLPLogExporter({ url: '<SIGNOZ_COLLECTOR_URL>/v1/logs' })),
+    new SimpleLogRecordProcessor(new OTLPLogExporter({
+      url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/logs`,
+      headers: {
+        'signoz-ingestion-key': '<INGESTION_KEY>',
+      },
+    })),
   ],
 })
 ```

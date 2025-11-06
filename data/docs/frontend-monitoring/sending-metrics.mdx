@@ -149,7 +149,7 @@ The instrumentation file is required to setup the `MeterProvider` which is used 
   config file to allow browser requests from your frontend domain:
 </Admonition>
 
-```sh
+```yaml
 receivers:
   otlp:
     protocols:
@@ -389,7 +389,7 @@ Import the instrumentation file at the top level of your application. This ensur
 
 Now you can create and record metrics in your application. Here's an example of how to create and use metrics.
 
-```ts
+```ts:meter.ts
 import { metrics } from '@opentelemetry/api'
 
 // Get a meter from the global meter provider
