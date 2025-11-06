@@ -53,25 +53,26 @@ Install the following dependencies.
 </Tabs>
 
 <details>
-<summary> Read more about the dependencies </summary>
-- **`@opentelemetry/sdk-trace-base`**: Contains the core tracing SDK implementation including `BatchSpanProcessor` and base classes. This provides the foundation for creating and processing trace spans.
+  <summary> Read more about the dependencies </summary>
 
-- **`@opentelemetry/sdk-trace-web`**: Provides the `WebTracerProvider` specifically designed for browser environments. This is essential for web applications as it handles browser-specific tracing requirements.
+  - **`@opentelemetry/sdk-trace-base`**: Contains the core tracing SDK implementation including `BatchSpanProcessor` and base classes. This provides the foundation for creating and processing trace spans.
 
-- **`@opentelemetry/exporter-trace-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your traces to the SigNoz collector. This handles the actual transmission of trace data over HTTP.
+  - **`@opentelemetry/sdk-trace-web`**: Provides the `WebTracerProvider` specifically designed for browser environments. This is essential for web applications as it handles browser-specific tracing requirements.
 
-- **`@opentelemetry/instrumentation`**: Provides the `registerInstrumentations` function that allows you to register multiple instrumentations at once. This is the main API for setting up automatic instrumentation.
+  - **`@opentelemetry/exporter-trace-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your traces to the SigNoz collector. This handles the actual transmission of trace data over HTTP.
 
-- **`@opentelemetry/instrumentation-fetch`**: Automatically instruments `fetch()` API calls to capture spans for network requests. This is crucial for tracking HTTP requests from your frontend to backend services.
+  - **`@opentelemetry/instrumentation`**: Provides the `registerInstrumentations` function that allows you to register multiple instrumentations at once. This is the main API for setting up automatic instrumentation.
 
-- **`@opentelemetry/instrumentation-xml-http-request`**: Instruments legacy XMLHttpRequest calls for older code or libraries that don't use `fetch`. This ensures all network requests are captured regardless of the HTTP client used.
+  - **`@opentelemetry/instrumentation-fetch`**: Automatically instruments `fetch()` API calls to capture spans for network requests. This is crucial for tracking HTTP requests from your frontend to backend services.
 
-- **`@opentelemetry/context-zone`**: Provides context propagation for browser environments using Zone.js. This is essential for maintaining trace context across async operations and ensuring proper distributed tracing.
+  - **`@opentelemetry/instrumentation-xml-http-request`**: Instruments legacy XMLHttpRequest calls for older code or libraries that don't use `fetch`. This ensures all network requests are captured regardless of the HTTP client used.
 
-- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish traces from different services in your SigNoz dashboard.
+  - **`@opentelemetry/context-zone`**: Provides context propagation for browser environments using Zone.js. This is essential for maintaining trace context across async operations and ensuring proper distributed tracing.
 
-- **`@opentelemetry/instrumentation-user-interaction`**: Automatically instruments user interactions like clicks, inputs, and form submissions. This helps correlate user actions with resulting operations and provides insights into user behavior.
-  </details>
+  - **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish traces from different services in your SigNoz dashboard.
+
+  - **`@opentelemetry/instrumentation-user-interaction`**: Automatically instruments user interactions like clicks, inputs, and form submissions. This helps correlate user actions with resulting operations and provides insights into user behavior.
+</details>
 
 ### Step 2: Create an instrumentation file
 
