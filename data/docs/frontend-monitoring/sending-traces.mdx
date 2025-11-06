@@ -1,9 +1,9 @@
 ---
 date: 2025-08-17
-tags: [SigNoz Cloud, Self-Host, Frontend, JavaScript]
-title: Sending Traces from your frontend application
+tags: [SigNoz Cloud, Self-Host]
+title: Sending Traces from your frontend application using OpenTelemetry
 id: sending-traces-frontend
-description: Send traces from your frontend application to SigNoz
+description: Learn how to send frontend traces to SigNoz using OpenTelemetry for complete visibility across your application.
 ---
 
 This documentation provides steps for sending traces from your frontend application to SigNoz.
@@ -25,18 +25,30 @@ Install the following dependencies.
 
 <Tabs groupId="traces-dependencies">
   <TabItem value="npm" label="Npm">
-    ```sh npm i \ @opentelemetry/sdk-trace-base \ @opentelemetry/sdk-trace-web \
-    @opentelemetry/exporter-trace-otlp-http \ @opentelemetry/instrumentation \
-    @opentelemetry/instrumentation-fetch \ @opentelemetry/instrumentation-xml-http-request \
-    @opentelemetry/context-zone \ @opentelemetry/resources \
-    @opentelemetry/instrumentation-user-interaction ```
+    ```sh
+    npm install @opentelemetry/sdk-trace-base
+    npm install @opentelemetry/sdk-trace-web
+    npm install @opentelemetry/exporter-trace-otlp-http
+    npm install @opentelemetry/instrumentation
+    npm install @opentelemetry/instrumentation-fetch
+    npm install @opentelemetry/instrumentation-xml-http-request
+    npm install @opentelemetry/context-zone
+    npm install @opentelemetry/resources
+    npm install @opentelemetry/instrumentation-user-interaction
+    ```
   </TabItem>
   <TabItem value="yarn" label="Yarn" default>
-    ```sh yarn add \ @opentelemetry/sdk-trace-base \ @opentelemetry/sdk-trace-web \
-    @opentelemetry/exporter-trace-otlp-http \ @opentelemetry/instrumentation \
-    @opentelemetry/instrumentation-fetch \ @opentelemetry/instrumentation-xml-http-request \
-    @opentelemetry/context-zone \ @opentelemetry/resources \
-    @opentelemetry/instrumentation-user-interaction ```
+    ```sh
+    yarn add @opentelemetry/sdk-trace-base
+    yarn add @opentelemetry/sdk-trace-web
+    yarn add @opentelemetry/exporter-trace-otlp-http
+    yarn add @opentelemetry/instrumentation
+    yarn add @opentelemetry/instrumentation-fetch
+    yarn add @opentelemetry/instrumentation-xml-http-request
+    yarn add @opentelemetry/context-zone
+    yarn add @opentelemetry/resources
+    yarn add @opentelemetry/instrumentation-user-interaction
+    ```
   </TabItem>
 </Tabs>
 
@@ -79,15 +91,15 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
 
     const exporter = new OTLPTraceExporter({
       // For self-hosted version, please use the collector url instead.
-      url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/traces`,
+      url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/traces`,
       headers: {
-        'signoz-ingestion-key': <<INGESTION_KEY>>,
+        'signoz-ingestion-key': '<INGESTION_KEY>',
       },
     });
 
     const provider = new WebTracerProvider({
       resource: resourceFromAttributes({
-        'service.name': '<<SERVICE_NAME>>',
+        'service.name': '<SERVICE_NAME>',
       }),
       spanProcessors: [new BatchSpanProcessor(exporter)],
     });
@@ -112,9 +124,9 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
     });
     ```
 
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
+    - Set the `<INGESTION_REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<INGESTION_KEY>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<SERVICE_NAME>` is the name of your service
 
   </TabItem>
   <TabItem value="javascript" label="JavaScript">
@@ -130,15 +142,15 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
 
     const exporter = new OTLPTraceExporter({
       // For self-hosted version, please use the collector url instead.
-      url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/traces`,
+      url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/traces`,
       headers: {
-        'signoz-ingestion-key': <<INGESTION_KEY>>,
+        'signoz-ingestion-key': '<INGESTION_KEY>',
       },
     });
 
     const provider = new WebTracerProvider({
       resource: resourceFromAttributes({
-        'service.name': '<<SERVICE_NAME>>',
+        'service.name': '<SERVICE_NAME>',
       }),
       spanProcessors: [new BatchSpanProcessor(exporter)],
     });
@@ -163,10 +175,9 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
     });
     ```
 
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
-    - `<<SIGNOZ_COLLECTOR_URL>>` is the url where your collector is running
+    - Set the `<INGESTION_REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<INGESTION_KEY>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<SERVICE_NAME>` is the name of your service
 
   </TabItem>
 </Tabs>
@@ -183,7 +194,7 @@ receivers:
         endpoint: 0.0.0.0:4318
         cors:
           allowed_origins:
-            - <<YOUR_FRONTEND_URL>>
+            - <YOUR_FRONTEND_URL>
           allowed_headers: ['*']
 ```
 
@@ -433,10 +444,10 @@ import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentation
 
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
-    'service.name': '<<SERVICE_NAME>>',
+    'service.name': '<SERVICE_NAME>',
   }),
   traceExporter: new OTLPTraceExporter({
-    url: '<<SIGNOZ_COLLECTOR_URL>>/v1/traces',
+    url: '<SIGNOZ_COLLECTOR_URL>/v1/traces',
   }),
   instrumentations: [getNodeAutoInstrumentations()],
 })
@@ -445,7 +456,7 @@ sdk.start()
 ```
 
 ```ts
-app.post('<<api-endpoint>>', (req, res) => {
+app.post('<api-endpoint>', (req, res) => {
   try {
     // Your api logic
   } catch (error) {
@@ -634,16 +645,16 @@ If you need to create custom spans for capture activity, you can do so from any 
 
 ```ts
 function eventHandler() {
-  const span = tracer.startSpan('<<span-name>>')
+  const span = tracer.startSpan('<span-name>');
   try {
     await context.with(trace.setSpan(context.active(), span), async () => {
       // Your data fetching logic
-    })
+    });
   } catch (err) {
     // Your error fetching log
   } finally {
     // Close the span
-    span.end()
+    span.end();
   }
 }
 ```

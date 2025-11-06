@@ -1,9 +1,13 @@
 ---
 date: 2025-08-17
-tags: [SigNoz Cloud, Self-Host, Frontend, JavaScript]
-title: Sending Logs from your frontend application
+tags: [SigNoz Cloud, Self-Host]
+title: Sending Logs from your frontend using OpenTelemetry
+
+
 id: sending-logs-frontend
-description: Send logs from your frontend application to SigNoz
+description: Learn how to send frontend logs to SigNoz using OpenTelemetry for complete visibility across your application.
+
+
 ---
 
 This documentation provides steps for sending logs from your frontend application to SigNoz.
@@ -25,32 +29,40 @@ Install the following dependencies.
 
 <Tabs entityName="logs-dependencies">
   <TabItem value="npm" label="Npm">
-    ```sh npm i \ @opentelemetry/resources \ @opentelemetry/sdk-logs \
-    @opentelemetry/exporter-logs-otlp-http \ @opentelemetry/api-logs ```
+    ```sh
+    npm install @opentelemetry/resources
+    npm install @opentelemetry/sdk-logs
+    npm install @opentelemetry/exporter-logs-otlp-http
+    npm install @opentelemetry/api-logs
+    ```
   </TabItem>
   <TabItem value="yarn" label="Yarn" default>
-    ```sh yarn add \ @opentelemetry/resources \ @opentelemetry/sdk-logs \
-    @opentelemetry/exporter-logs-otlp-http \ @opentelemetry/api-logs ```
+    ```sh
+    yarn add @opentelemetry/resources
+    yarn add @opentelemetry/sdk-logs
+    yarn add @opentelemetry/exporter-logs-otlp-http
+    yarn add @opentelemetry/api-logs
+    ```
   </TabItem>
 </Tabs>
 
 <details>
 <summary> Read more about the dependencies </summary>
-- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish logs from different services in your SigNoz dashboard.
+  - **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish logs from different services in your SigNoz dashboard.
 
-- **`@opentelemetry/sdk-logs`**: Contains the core logging SDK implementation including `LoggerProvider` and `SimpleLogRecordProcessor`. This is the foundation for creating and processing log records in your application.
+  - **`@opentelemetry/sdk-logs`**: Contains the core logging SDK implementation including `LoggerProvider` and `SimpleLogRecordProcessor`. This is the foundation for creating and processing log records in your application.
 
-- **`@opentelemetry/exporter-logs-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your logs to the SigNoz collector. This handles the actual transmission of log data over HTTP.
+  - **`@opentelemetry/exporter-logs-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your logs to the SigNoz collector. This handles the actual transmission of log data over HTTP.
 
-- **`@opentelemetry/api-logs`**: Provides the logging API interface (`logs` object) that your application code uses to create log records. This is the main API you'll interact with when adding logging statements to your code.
-  </details>
+  - **`@opentelemetry/api-logs`**: Provides the logging API interface (`logs` object) that your application code uses to create log records. This is the main API you'll interact with when adding logging statements to your code.
+</details>
 
 ### Step 2: Create an instrumentation file
 
 The instrumentation file is required to setup the `LoggerProvider` which is used to create custom logs within your application and export them to your collector.
 
 <Tabs entityName="plans">
-  <TabItem value="typescript" label="TypeScript" default>
+  <TabItem value="ts" label="TypeScript" default>
     ```ts:instrumentation.ts
     import {
       LoggerProvider,
@@ -62,15 +74,15 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
 
     const loggerProvider = new LoggerProvider({
       resource: resourceFromAttributes({
-        'service.name': '<<SERVICE_NAME>>',
+        'service.name': '<SERVICE_NAME>',
       }),
       processors: [
         new SimpleLogRecordProcessor(
           new OTLPLogExporter({
             // For self-hosted version, please use the collector url instead.
-            url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/logs`,
+            url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/logs`,
             headers: {
-              'signoz-ingestion-key': <<INGESTION_KEY>>,
+              'signoz-ingestion-key': '<INGESTION_KEY>',
             },
           }),
         ),
@@ -80,12 +92,12 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
     logs.setGlobalLoggerProvider(loggerProvider);
     ```
 
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
+    - Set the `<INGESTION_REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<INGESTION_KEY>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<SERVICE_NAME>` is the name of your service
 
   </TabItem>
-  <TabItem value="javascript" label="JavaScript">
+  <TabItem value="js" label="JavaScript">
     ```js:instrumentation.js
     import {
       LoggerProvider,
@@ -97,15 +109,15 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
 
     const loggerProvider = new LoggerProvider({
       resource: resourceFromAttributes({
-        'service.name': '<<SERVICE_NAME>>',
+        'service.name': '<SERVICE_NAME>',
       }),
       processors: [
         new SimpleLogRecordProcessor(
           new OTLPLogExporter({
             // For self-hosted version, please use the collector url instead.
-            url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/logs`,
+            url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/logs`,
             headers: {
-              'signoz-ingestion-key': <<INGESTION_KEY>>,
+              'signoz-ingestion-key': '<INGESTION_KEY>',
             },
           }),
         ),
@@ -115,14 +127,17 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
     logs.setGlobalLoggerProvider(loggerProvider);
     ```
 
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
+    - Set the `<INGESTION_REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<INGESTION_KEY>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<SERVICE_NAME>` is the name of your service
 
   </TabItem>
 </Tabs>
 
-**Note:** Please make sure to whitelist your frontend domain when using the self-hosted version
+<Admonition type="info">
+  For self-hosted deployments, add the following CORS configuration to your OpenTelemetry Collector
+  config file to allow browser requests from your frontend domain:
+</Admonition>
 
 ```sh
 receivers:
@@ -134,7 +149,7 @@ receivers:
         endpoint: 0.0.0.0:4318
         cors:
           allowed_origins:
-            - <<YOUR_FRONTEND_URL>>
+            - <YOUR_FRONTEND_URL>
           allowed_headers: ['*']
 ```
 
@@ -449,14 +464,14 @@ The `utils` file will contain our utility functions for recording various kinds 
 Add logs at meaningful points in your application.
 
 ```ts
-function onNextClick() {
+async function onNextClick() {
   try {
-    const response = await fetch('/api/data')
-    const data = await response.json()
-    logInfo('Next button clicked!', { data })
-    return data
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    logInfo('Next button clicked!', { data });
+    return data;
   } catch (error) {
-    logError('Failed to fetch data', { error: error.message })
+    logError('Failed to fetch data', { error: error.message });
   }
 }
 ```
@@ -589,11 +604,11 @@ Update your `instrumentation` file to include this processor before the default 
 ```ts
 const loggerProvider = new LoggerProvider({
   resource: resourceFromAttributes({
-    'service.name': '<<SERVICE_NAME>>',
+    'service.name': '<SERVICE_NAME>',
   }),
   processors: [
     new CustomAttributesProcessor(),
-    new SimpleLogRecordProcessor(new OTLPLogExporter({ url: '<<SIGNOZ_COLLECTOR_URL>>/v1/logs' })),
+    new SimpleLogRecordProcessor(new OTLPLogExporter({ url: '<SIGNOZ_COLLECTOR_URL>/v1/logs' })),
   ],
 })
 ```

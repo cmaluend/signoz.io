@@ -1,9 +1,9 @@
 ---
 date: 2025-08-24
-tags: [SigNoz Cloud, Self-Host, Frontend, JavaScript]
-title: Sending Metrics from your frontend application
+tags: [SigNoz Cloud, Self-Host]
+title: Sending Metrics from your frontend using OpenTelemetry
 id: sending-metrics-frontend
-description: Send metrics from your frontend application to SigNoz
+description: Learn how to send frontend metrics to SigNoz using OpenTelemetry for complete visibility across your application.
 ---
 
 This documentation provides steps for sending metrics from your frontend application to SigNoz.
@@ -25,25 +25,33 @@ Install the following dependencies.
 
 <Tabs entityName="metrics-dependencies">
   <TabItem value="npm" label="Npm">
-    ```sh npm i \ @opentelemetry/resources \ @opentelemetry/sdk-metrics \
-    @opentelemetry/exporter-metrics-otlp-http \ @opentelemetry/api ```
+    ```sh
+    npm install @opentelemetry/resources
+    npm install @opentelemetry/sdk-metrics
+    npm install @opentelemetry/exporter-metrics-otlp-http
+    npm install @opentelemetry/api
+    ```
   </TabItem>
   <TabItem value="yarn" label="Yarn" default>
-    ```sh yarn add \ @opentelemetry/resources \ @opentelemetry/sdk-metrics \
-    @opentelemetry/exporter-metrics-otlp-http \ @opentelemetry/api ```
+    ```sh
+    yarn add @opentelemetry/resources
+    yarn add @opentelemetry/sdk-metrics
+    yarn add @opentelemetry/exporter-metrics-otlp-http
+    yarn add @opentelemetry/api
+    ```
   </TabItem>
 </Tabs>
 
 <details>
 <summary> Read more about the dependencies </summary>
-- **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish metrics from different services in your SigNoz dashboard.
+  - **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish metrics from different services in your SigNoz dashboard.
 
-- **`@opentelemetry/sdk-metrics`**: Contains the core metrics SDK implementation including `MeterProvider` and `PeriodicExportingMetricReader`. This is the foundation for creating and sending metrics from your application.
+  - **`@opentelemetry/sdk-metrics`**: Contains the core metrics SDK implementation including `MeterProvider` and `PeriodicExportingMetricReader`. This is the foundation for creating and sending metrics from your application.
 
-- **`@opentelemetry/exporter-metrics-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your metrics to the SigNoz collector. This handles the actual transmission of metrics data over HTTP.
+  - **`@opentelemetry/exporter-metrics-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your metrics to the SigNoz collector. This handles the actual transmission of metrics data over HTTP.
 
-- **`@opentelemetry/api-metrics`**: Provides the API interface that your application code uses to create metrics. This is the main API you'll interact with when adding metrics to your code.
-  </details>
+  - **`@opentelemetry/api-metrics`**: Provides the API interface that your application code uses to create metrics. This is the main API you'll interact with when adding metrics to your code.
+</details>
 
 ### Step 2: Create an instrumentation file
 
@@ -62,16 +70,16 @@ The instrumentation file is required to setup the `MeterProvider` which is used 
 
     // Define your resource, e.g., service name, environment.
     const resource = resourceFromAttributes({
-      'service.name': '<<SERVICE_NAME>>',
+      'service.name': '<SERVICE_NAME>',
     });
 
     // Create a metric reader with OTLP exporter configured to send metrics to a local collector.
     const metricReader = new PeriodicExportingMetricReader({
       exporter: new OTLPMetricExporter({
         // For self-hosted version, please use the collector url instead.
-        url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/metrics`,
+        url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/metrics`,
         headers: {
-          'signoz-ingestion-key': <<INGESTION_KEY>>,
+          'signoz-ingestion-key': '<INGESTION_KEY>',
         },
       }),
       exportIntervalMillis: 10000, // Export metrics every 10 seconds.
@@ -87,9 +95,9 @@ The instrumentation file is required to setup the `MeterProvider` which is used 
     metrics.setGlobalMeterProvider(myServiceMeterProvider);
     ```
 
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
+    - Set the `<INGESTION_REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<INGESTION_KEY>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<SERVICE_NAME>` is the name of your service
 
   </TabItem>
   <TabItem value="javascript" label="JavaScript">
@@ -104,16 +112,16 @@ The instrumentation file is required to setup the `MeterProvider` which is used 
 
     // Define your resource, e.g., service name, environment.
     const resource = resourceFromAttributes({
-      'service.name': '<<SERVICE_NAME>>',
+      'service.name': '<SERVICE_NAME>',
     });
 
     // Create a metric reader with OTLP exporter configured to send metrics to a local collector.
     const metricReader = new PeriodicExportingMetricReader({
       exporter: new OTLPMetricExporter({
         // For self-hosted version, please use the collector url instead.
-        url: `https://ingest.<<INGESTION_REGION>>.signoz.cloud:443/v1/metrics`,
+        url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/metrics`,
         headers: {
-          'signoz-ingestion-key': <<INGESTION_KEY>>,
+          'signoz-ingestion-key': <INGESTION_KEY>,
         },
       }),
       exportIntervalMillis: 10000, // Export metrics every 10 seconds.
@@ -129,14 +137,17 @@ The instrumentation file is required to setup the `MeterProvider` which is used 
     metrics.setGlobalMeterProvider(myServiceMeterProvider);
     ```
 
-    - Set the `<<INGESTION_REGION>>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
-    - Replace `<<INGESTION_KEY>>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
-    - `<<SERVICE_NAME>>` is the name of your service
+    - Set the `<INGESTION_REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+    - Replace `<INGESTION_KEY>` with your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
+    - `<SERVICE_NAME>` is the name of your service
 
   </TabItem>
 </Tabs>
 
-**Note:** Please make sure to whitelist your frontend domain when using the self-hosted version
+<Admonition type="info">
+  For self-hosted deployments, add the following CORS configuration to your OpenTelemetry Collector
+  config file to allow browser requests from your frontend domain:
+</Admonition>
 
 ```sh
 receivers:
@@ -148,7 +159,7 @@ receivers:
         endpoint: 0.0.0.0:4318
         cors:
           allowed_origins:
-            - <<YOUR_FRONTEND_URL>>
+            - <YOUR_FRONTEND_URL>
           allowed_headers: ['*']
 ```
 
