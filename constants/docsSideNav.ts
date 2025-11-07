@@ -2785,6 +2785,11 @@ const docsSideNav = [
         route: '/docs/tutorial/traefik-observability',
         label: 'Traefik Observability',
       },
+      {
+        type: 'doc',
+        route: '/docs/tutorial/set-custom-attributes',
+        label: 'Set Custom Attributes',
+      },
     ],
   },
   {

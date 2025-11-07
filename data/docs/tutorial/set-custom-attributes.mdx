@@ -1,0 +1,691 @@
+---
+date: 2025-11-04
+title: Guide on Setting Custom Attributes
+id: set-custom-attributes
+description: Guide on setting custom attributes and resource attributes in OpenTelemetry. Learn how to add contextual information to your telemetry data at both the collector and SDK level across traces, metrics, and logs.
+---
+
+## Overview
+
+Attributes/Resource attributes provide additional contextual information about the source and type of telemetry data, such as service name, environment, hostname, etc. Attributes help in better filtering, grouping, correlation of telemetry data in SigNoz.
+
+## Setting Attributes and Resource Attributes at the Collector Level
+
+The OpenTelemetry Collector provides several processors to modify attributes and resource attributes before data is exported. Here are the main approaches:
+
+### Using Attributes Processor
+
+The [attributes](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/attributesprocessor/README.md) processor modifies span, log, or metric attributes at the collector level.
+
+```yaml
+processors:
+  attributes:
+    actions:
+      - key: http.url
+        action: delete # Remove sensitive URLs
+      - key: db.statement
+        action: hash # Hash SQL queries
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [attributes, batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [attributes, batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [attributes, batch]
+      exporters: [otlp]
+```
+
+### Using Resource Processor
+
+The [resource](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourceprocessor/README.md) processor modifies resource attributes which can help provide additional context about the source of telemetry data, such as service name, environment, hostname, and deployment details.
+
+```yaml
+processors:
+  resource:
+    attributes:
+      - key: environment
+        value: production
+        action: upsert # Always set environment=production
+      - key: team
+        value: backend
+        action: insert # Only add if not already present
+      - key: internal.debug
+        action: delete # Remove this attribute
+      - key: user.id
+        action: hash # Hash PII data
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+```
+
+### Using Resource Detection Processor
+
+The [resource detection processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md) automatically detects and collects information about the host environment. It can automatically detect attributes like hostname, OS information, cloud provider information (GCP, AWS, Azure, etc.), and Kubernetes metadata:
+
+```yaml
+processors:
+  resourcedetection:
+    detectors: [env, host, system, docker, k8snode]
+    system:
+      hostname_sources: ['os']
+    timeout: 5s
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [otlp]
+```
+
+This example includes resource detection processor setup to automatically include resource attributes from the environment, host system, Docker containers, Kubernetes nodes. The complete list of supported detectors can be found [here](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md#supported-detectors).
+
+The `timeout` defines how long the processor waits for detection to complete.
+
+## Setting Custom Attributes at the SDK Level
+
+### Setting Attributes in Traces
+
+<Tabs>
+<TabItem value="nodejs" label="Node.js" default>
+
+```javascript
+const express = require('express')
+const { trace } = require('@opentelemetry/api')
+
+const app = express()
+
+app.get('/', (_req, res) => {
+  // Get current span
+  const currentSpan = trace.getActiveSpan()
+
+  // Add custom attributes
+  if (currentSpan && currentSpan.isRecording()) {
+    currentSpan.setAttribute('user.id', '12345')
+    currentSpan.setAttribute('operation.type', 'database-query')
+    currentSpan.setAttribute('request.size', 1024)
+  }
+
+  res.json({ message: 'Hello World' })
+})
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
+```
+
+</TabItem>
+
+<TabItem value="python" label="Python">
+
+```python
+from fastapi import FastAPI
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
+# Set up OpenTelemetry SDK
+resource = Resource.create()
+
+# Create tracer provider with resource
+tracer_provider = TracerProvider(resource=resource)
+trace.set_tracer_provider(tracer_provider)
+
+otlp_exporter = OTLPSpanExporter()
+
+# Add OTLP exporter with batch processor
+tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
+
+# Get tracer instance
+tracer = trace.get_tracer(__name__)
+
+# Create FastAPI app
+app = FastAPI()
+
+# Instrument FastAPI automatically
+FastAPIInstrumentor.instrument_app(app)
+
+
+@app.get("/")
+async def read_root():
+    # Get current span
+    current_span = trace.get_current_span()
+
+    # Add custom attributes to the current span
+    if current_span.is_recording():
+        current_span.set_attribute("custom.user_id", "12345")
+        current_span.set_attribute("custom.request_type", "root_endpoint")
+        current_span.set_attribute("custom.priority", "high")
+
+    # Or create a custom child span for specific operations
+    with tracer.start_as_current_span("process_request") as span:
+        span.set_attribute("operation.name", "generate_response")
+        span.set_attribute("operation.duration_estimate", "fast")
+
+        # Your business logic here
+        result = {"message": "Hello World"}
+
+        span.set_attribute("response.size", len(str(result)))
+
+    return result
+```
+
+</TabItem>
+
+<TabItem value="java" label="Java">
+
+```java
+package com.example.demo;
+
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import java.util.Map;
+
+@RestController
+public class HelloController {
+
+    @GetMapping("/")
+    public Map<String, String> hello() {
+        // Get current span
+        Span currentSpan = Span.current();
+
+        // Add custom attributes to the current span
+        currentSpan.setAttribute("custom.user_id", "12345");
+        currentSpan.setAttribute("custom.request_type", "root_endpoint");
+        currentSpan.setAttribute("custom.priority", "high");
+
+        // Call method with custom span
+        return processRequest();
+    }
+
+    @WithSpan(value = "process_request")
+    private Map<String, String> processRequest() {
+        Span span = Span.current();
+
+        span.setAttribute("operation.name", "generate_response");
+        span.setAttribute("operation.duration_estimate", "fast");
+
+        // Your business logic here
+        Map<String, String> result = Map.of("message", "Hello World");
+
+        span.setAttribute("response.size", result.toString().length());
+
+        return result;
+    }
+}
+```
+
+</TabItem>
+
+<TabItem value="dotnet" label=".NET">
+
+```dotnet
+using System.Diagnostics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure OpenTelemetry with tracing
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: "my-dotnet-app"))
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter());
+
+var app = builder.Build();
+
+app.MapGet("/", () =>
+{
+    var currentActivity = Activity.Current;
+
+    if (currentActivity != null)
+    {
+        currentActivity.SetTag("custom.user_id", "12345");
+        currentActivity.SetTag("custom.request_type", "root_endpoint");
+        currentActivity.SetTag("custom.priority", "high");
+    }
+
+    using var childActivity = DiagnosticsConfig.ActivitySource.StartActivity("process_request");
+    childActivity?.SetTag("operation.name", "generate_response");
+    childActivity?.SetTag("operation.duration_estimate", "fast");
+
+    var result = new { message = "Hello World" };
+
+    childActivity?.SetTag("response.size", result.ToString().Length);
+
+    return result;
+});
+
+app.Run();
+
+public static class DiagnosticsConfig
+{
+    public static readonly ActivitySource ActivitySource = new("my-dotnet-app");
+}
+```
+
+For more information on how to Instrument a .NET app, check this [guide](https://signoz.io/docs/instrumentation/opentelemetry-dotnet/).
+
+</TabItem>
+</Tabs>
+
+### Setting Attributes in Metrics
+
+<Tabs>
+<TabItem value="nodejs" label="Node.js" default>
+
+```javascript
+const express = require('express')
+const { metrics } = require('@opentelemetry/api')
+
+const app = express()
+
+// Get meter instance
+const meter = metrics.getMeter('my-express-app')
+
+// Create a counter metric
+const requestCounter = meter.createCounter('http.requests.total', {
+  description: 'Total HTTP requests',
+})
+
+// Create a histogram metric
+const requestDuration = meter.createHistogram('http.request.duration_ms', {
+  description: 'HTTP request duration in milliseconds',
+})
+
+app.get('/', (_req, res) => {
+  const startTime = Date.now()
+
+  // Increment counter with custom attributes
+  requestCounter.add(1, {
+    endpoint: '/',
+    'user.id': '12345',
+    'request.type': 'root_endpoint',
+    environment: 'production',
+  })
+
+  // Record histogram with custom attributes
+  const duration = Date.now() - startTime
+  requestDuration.record(duration, {
+    endpoint: '/',
+    'user.id': '12345',
+    'operation.type': 'database-query',
+    'request.size': 1024,
+  })
+
+  res.json({ message: 'Hello World' })
+})
+
+const PORT = process.env.PORT || 3002
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
+```
+
+</TabItem>
+
+<TabItem value="python" label="Python">
+
+```python
+from fastapi import FastAPI
+from opentelemetry import metrics
+from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+import time
+
+# Set up OpenTelemetry metrics
+resource = Resource.create()
+
+# Create metric exporter and reader
+otlp_metric_exporter = OTLPMetricExporter()
+metric_reader = PeriodicExportingMetricReader(otlp_metric_exporter)
+
+# Create meter provider with resource
+meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
+metrics.set_meter_provider(meter_provider)
+
+# Get meter instance
+meter = metrics.get_meter(__name__)
+
+# Create metrics
+request_counter = meter.create_counter(
+    name="http.requests.total",
+    description="Total HTTP requests",
+    unit="1",
+)
+
+request_duration = meter.create_histogram(
+    name="http.request.duration_ms",
+    description="HTTP request duration in milliseconds",
+    unit="ms",
+)
+
+# Create FastAPI app
+app = FastAPI()
+
+# Instrument FastAPI automatically
+FastAPIInstrumentor.instrument_app(app)
+RequestsInstrumentor().instrument()
+
+
+@app.get("/")
+async def read_root():
+    start_time = time.time()
+
+    # Increment counter with custom attributes
+    request_counter.add(
+        1,
+        attributes={
+            "endpoint": "/",
+            "user.id": "12345",
+            "request.type": "root_endpoint",
+            "environment": "production",
+        },
+    )
+
+    # Record histogram with custom attributes
+    duration_ms = (time.time() - start_time) * 1000
+    request_duration.record(
+        duration_ms,
+        attributes={
+            "endpoint": "/",
+            "user.id": "12345",
+            "operation.type": "database-query",
+            "request.size": 1024,
+        },
+    )
+
+    # Your business logic here
+    result = {"message": "Hello World"}
+
+    return result
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+```
+
+</TabItem>
+
+<TabItem value="dotnet" label=".NET">
+
+```dotnet
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Metrics;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Configure OpenTelemetry with metrics
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: "my-dotnet-metrics-app"))
+    .WithMetrics(metrics => metrics
+        .AddMeter("my-dotnet-metrics-app")
+        .AddAspNetCoreInstrumentation()
+        .AddOtlpExporter());
+
+var app = builder.Build();
+
+// Create meter and instruments
+var meter = new Meter("my-dotnet-metrics-app");
+var requestCounter = meter.CreateCounter<long>("http.requests.total",
+    description: "Total HTTP requests");
+var requestDuration = meter.CreateHistogram<double>("http.request.duration_ms",
+    description: "HTTP request duration in milliseconds");
+var operationCounter = meter.CreateCounter<long>("operation.total",
+    description: "Total operations");
+var responseSize = meter.CreateHistogram<int>("operation.response.size",
+    description: "Response size in bytes");
+
+app.MapGet("/", () =>
+{
+    var startTime = DateTime.UtcNow;
+
+    // Record counter with custom attributes
+    var requestTags = new TagList
+    {
+        { "endpoint", "/" },
+        { "user.id", "12345" },
+        { "request.type", "root_endpoint" },
+        { "environment", "production" }
+    };
+    requestCounter.Add(1, requestTags);
+
+    // Record histogram with custom attributes
+    var duration = (DateTime.UtcNow - startTime).TotalMilliseconds;
+    requestDuration.Record(duration, requestTags);
+
+    // Call method that records operation metrics
+    var result = ProcessRequest(operationCounter, responseSize);
+
+    return result;
+});
+
+app.Run();
+
+// Helper method to record operation metrics with custom attributes
+static object ProcessRequest(Counter<long> operationCounter, Histogram<int> responseSize)
+{
+    var operationTags = new TagList
+    {
+        { "operation.name", "process_request" },
+        { "operation.type", "generate_response" },
+        { "operation.duration_estimate", "fast" }
+    };
+
+    // Record operation counter
+    operationCounter.Add(1, operationTags);
+
+    // Your business logic here
+    var result = new { message = "Hello World" };
+
+    // Record response size with attributes
+    responseSize.Record(result.ToString().Length, operationTags);
+
+    return result;
+}
+
+public static class DiagnosticsConfig
+{
+    public static readonly ActivitySource ActivitySource = new("my-dotnet-metrics-app");
+}
+```
+
+</TabItem>
+</Tabs>
+
+### Setting Attributes in Logs
+
+<Tabs>
+<TabItem value="nodejs" label="Node.js" default>
+
+```javascript
+import { Resource } from '@opentelemetry/resources'
+import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
+import { NodeSDK } from '@opentelemetry/sdk-node'
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
+
+// Create a resource with custom attributes
+const resource = new Resource({
+  [SemanticResourceAttributes.SERVICE_NAME]: 'my-log-service',
+  [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
+  [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: 'production',
+  'custom.team': 'backend-team',
+  'custom.region': 'us-west-2',
+})
+
+// Initialize the SDK with the resource
+const sdk = new NodeSDK({
+  resource: resource,
+  logRecordProcessor: new BatchLogRecordProcessor(
+    new OTLPLogExporter({
+      url: 'http://localhost:4318/v1/logs',
+    })
+  ),
+})
+
+sdk.start()
+```
+
+This configuration creates a resource with both standard semantic conventions (service name, version, environment) and custom attributes (team, region). These attributes will be attached to all logs generated by this service.
+
+</TabItem>
+<TabItem value="python" label="Python">
+
+```python
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.semconv.resource import ResourceAttributes
+from opentelemetry._logs import set_logger_provider
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+
+# Create a resource with custom attributes
+resource = Resource.create({
+    ResourceAttributes.SERVICE_NAME: "my-log-service",
+    ResourceAttributes.SERVICE_VERSION: "1.0.0",
+    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "production",
+    "custom.team": "backend-team",
+    "custom.region": "us-west-2"
+})
+
+# Initialize logger provider with the resource
+logger_provider = LoggerProvider(resource=resource)
+set_logger_provider(logger_provider)
+
+# Add log exporter
+logger_provider.add_log_record_processor(
+    BatchLogRecordProcessor(
+        OTLPLogExporter(endpoint="http://localhost:4317")
+    )
+)
+```
+
+This Python configuration creates resource attributes using the OpenTelemetry semantic conventions and custom attributes. The resource is then attached to the logger provider, ensuring all logs include these attributes.
+
+</TabItem>
+<TabItem value="java" label="Java">
+
+```java
+import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.logs.SdkLoggerProvider;
+import io.opentelemetry.sdk.logs.export.BatchLogRecordProcessor;
+import io.opentelemetry.exporter.otlp.logs.OtlpGrpcLogRecordExporter;
+
+// Create a resource with custom attributes
+Resource resource = Resource.getDefault()
+    .merge(Resource.builder()
+        .put(ResourceAttributes.SERVICE_NAME, "my-log-service")
+        .put(ResourceAttributes.SERVICE_VERSION, "1.0.0")
+        .put(ResourceAttributes.DEPLOYMENT_ENVIRONMENT, "production")
+        .put("custom.team", "backend-team")
+        .put("custom.region", "us-west-2")
+        .build());
+
+// Initialize logger provider with the resource
+SdkLoggerProvider loggerProvider = SdkLoggerProvider.builder()
+    .setResource(resource)
+    .addLogRecordProcessor(BatchLogRecordProcessor.builder(
+        OtlpGrpcLogRecordExporter.builder()
+            .setEndpoint("http://localhost:4317")
+            .build())
+        .build())
+    .build();
+
+// Build the OpenTelemetry SDK
+OpenTelemetrySdk sdk = OpenTelemetrySdk.builder()
+    .setLoggerProvider(loggerProvider)
+    .build();
+```
+
+This Java configuration uses the builder pattern to create resource attributes and configure the OpenTelemetry SDK. The resource attributes are merged with default attributes and attached to all logs from this application.
+
+</TabItem>
+<TabItem value="dotnet" label=".NET">
+
+```csharp
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Logs;
+
+// Create a resource with custom attributes
+var resource = ResourceBuilder.CreateDefault()
+    .AddService("my-log-service", "1.0.0")
+    .AddAttributes(new Dictionary<string, object>
+    {
+        ["deployment.environment"] = "production",
+        ["custom.team"] = "backend-team",
+        ["custom.region"] = "us-west-2"
+    })
+    .Build();
+
+// Configure logging with OpenTelemetry
+var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.AddOpenTelemetry(options =>
+    {
+        options.SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService("my-log-service", "1.0.0")
+            .AddAttributes(new Dictionary<string, object>
+            {
+                ["deployment.environment"] = "production",
+                ["custom.team"] = "backend-team",
+                ["custom.region"] = "us-west-2"
+            }));
+
+        options.AddOtlpExporter(otlpOptions =>
+        {
+            otlpOptions.Endpoint = new Uri("http://localhost:4318/v1/logs");
+        });
+    });
+});
+```
+
+This .NET configuration uses the ResourceBuilder to create custom resource attributes. The AddService method automatically adds service name and version, while AddAttributes allows you to specify custom resource attributes that will be included with all logs.
+
+</TabItem>
+</Tabs>
