@@ -142,6 +142,8 @@ app.listen(PORT, () => {
 })
 ```
 
+For more information checkout [Javascript](https://signoz.io/docs/instrumentation/opentelemetry-javascript/) docs.
+
 </TabItem>
 
 <TabItem value="python" label="Python">
@@ -201,6 +203,8 @@ async def read_root():
     return result
 ```
 
+For more information checkout [Python](https://signoz.io/docs/instrumentation/opentelemetry-python/) docs.
+
 </TabItem>
 
 <TabItem value="java" label="Java">
@@ -247,6 +251,8 @@ public class HelloController {
     }
 }
 ```
+
+For more information checkout [Java](https://signoz.io/docs/instrumentation/opentelemetry-java/) docs.
 
 </TabItem>
 
@@ -299,7 +305,7 @@ public static class DiagnosticsConfig
 }
 ```
 
-For more information on how to Instrument a .NET app, check this [guide](https://signoz.io/docs/instrumentation/opentelemetry-dotnet/).
+For more information checkout (https://signoz.io/docs/instrumentation/opentelemetry-dotnet/) doc.
 
 </TabItem>
 </Tabs>
@@ -689,3 +695,22 @@ This .NET configuration uses the ResourceBuilder to create custom resource attri
 
 </TabItem>
 </Tabs>
+
+## Using Environment Variables
+
+You can also set the resource attributes using [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration) by the following ways:
+
+### Multiple attributes
+
+```bash
+# Set multiple resource attributes in a single environment variable
+export OTEL_RESOURCE_ATTRIBUTES="service.name=my-log-service,service.version=1.0.0,deployment.environment=production,custom.team=backend"
+```
+
+### Single attribute
+
+```bash
+
+# Set service name separately
+export OTEL_SERVICE_NAME="my-log-service"
+```
