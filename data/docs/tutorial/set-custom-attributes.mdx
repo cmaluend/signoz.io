@@ -17,7 +17,7 @@ The OpenTelemetry Collector provides several processors to modify attributes and
 
 The [attributes](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/attributesprocessor/README.md) processor modifies span, log, or metric attributes at the collector level.
 
-```yaml
+```yaml:otel-collector-config.yaml
 processors:
   attributes:
     actions:
@@ -46,7 +46,7 @@ service:
 
 The [resource](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourceprocessor/README.md) processor modifies resource attributes which can help provide additional context about the source of telemetry data, such as service name, environment, hostname, and deployment details.
 
-```yaml
+```yaml:otel-collector-config.yaml
 processors:
   resource:
     attributes:
@@ -81,7 +81,7 @@ service:
 
 The [resource detection processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md) automatically detects and collects information about the host environment. It can automatically detect attributes like hostname, OS information, cloud provider information (GCP, AWS, Azure, etc.), and Kubernetes metadata:
 
-```yaml
+```yaml:otel-collector-config.yaml
 processors:
   resourcedetection:
     detectors: [env, host, system, docker, k8snode]
@@ -116,7 +116,7 @@ The `timeout` defines how long the processor waits for detection to complete.
 <Tabs>
 <TabItem value="nodejs" label="Node.js" default>
 
-```javascript
+```javascript:index.js
 const express = require('express')
 const { trace } = require('@opentelemetry/api')
 
@@ -146,7 +146,7 @@ app.listen(PORT, () => {
 
 <TabItem value="python" label="Python">
 
-```python
+```python:app.py
 from fastapi import FastAPI
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -205,7 +205,7 @@ async def read_root():
 
 <TabItem value="java" label="Java">
 
-```java
+```java:HelloController.java
 package com.example.demo;
 
 import io.opentelemetry.api.trace.Span;
@@ -252,7 +252,7 @@ public class HelloController {
 
 <TabItem value="dotnet" label=".NET">
 
-```dotnet
+```csharp:Program.cs
 using System.Diagnostics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -309,7 +309,7 @@ For more information on how to Instrument a .NET app, check this [guide](https:/
 <Tabs>
 <TabItem value="nodejs" label="Node.js" default>
 
-```javascript
+```javascript:index.js
 const express = require('express')
 const { metrics } = require('@opentelemetry/api')
 
@@ -361,7 +361,7 @@ app.listen(PORT, () => {
 
 <TabItem value="python" label="Python">
 
-```python
+```python:app.py
 from fastapi import FastAPI
 from opentelemetry import metrics
 from opentelemetry.sdk.metrics import MeterProvider
@@ -449,7 +449,7 @@ if __name__ == "__main__":
 
 <TabItem value="dotnet" label=".NET">
 
-```dotnet
+```csharp:Program.cs
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using OpenTelemetry.Resources;
@@ -574,7 +574,7 @@ This configuration creates a resource with both standard semantic conventions (s
 </TabItem>
 <TabItem value="python" label="Python">
 
-```python
+```python:instrumentation.py
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.semconv.resource import ResourceAttributes
 from opentelemetry._logs import set_logger_provider
@@ -608,7 +608,7 @@ This Python configuration creates resource attributes using the OpenTelemetry se
 </TabItem>
 <TabItem value="java" label="Java">
 
-```java
+```java:OpenTelemetryConfig.java
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
@@ -647,7 +647,7 @@ This Java configuration uses the builder pattern to create resource attributes a
 </TabItem>
 <TabItem value="dotnet" label=".NET">
 
-```csharp
+```csharp:Program.cs
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Logs;
