@@ -318,7 +318,7 @@ public static class DiagnosticsConfig
 }
 ```
 
-For more information on how to instrument a .NET application, checkout (https://signoz.io/docs/instrumentation/opentelemetry-dotnet/) doc.
+For more information on how to instrument a .NET application, checkout [.NET](https://signoz.io/docs/instrumentation/opentelemetry-dotnet/) docs.
 
 </TabItem>
 </Tabs>
@@ -466,6 +466,77 @@ if __name__ == "__main__":
 
 </TabItem>
 
+<TabItem value="java" label="Java">
+
+```java:CustomMetricsExample.java
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.DoubleHistogram;
+import io.opentelemetry.api.metrics.Meter;
+import io.opentelemetry.sdk.metrics.SdkMeterProvider;
+import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
+import io.opentelemetry.exporter.otlp.metrics.OtlpGrpcMetricExporter;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
+public class CustomMetricsExample {
+
+    public static void main(String[] args) throws InterruptedException {
+        // Create an OTLP exporter
+        OtlpGrpcMetricExporter metricExporter = OtlpGrpcMetricExporter.builder().build();
+
+        // Create a metric reader
+        PeriodicMetricReader metricReader = PeriodicMetricReader.builder(metricExporter)
+                .setInterval(Duration.ofSeconds(1))
+                .build();
+
+        // Create a meter provider
+        SdkMeterProvider meterProvider = SdkMeterProvider.builder()
+                .registerMetricReader(metricReader)
+                .build();
+
+        // Get a meter
+        Meter meter = meterProvider.get("my-java-app");
+
+        // Create a counter
+        LongCounter requestCounter = meter.counterBuilder("http.requests.total")
+                .setDescription("Total HTTP requests")
+                .setUnit("1")
+                .build();
+
+        // Create a histogram
+        DoubleHistogram requestDuration = meter.histogramBuilder("http.request.duration_ms")
+                .setDescription("HTTP request duration in milliseconds")
+                .setUnit("ms")
+                .build();
+
+        // Record a value for the counter with attributes
+        requestCounter.add(1, Attributes.builder()
+                .put("endpoint", "/api/users")
+                .put("user.id", "1234")
+                .put("operation.type", "read")
+                .put("environment", "production")
+                .build());
+
+        // Record a value for the histogram with attributes
+        requestDuration.record(500.5, Attributes.builder()
+                .put("endpoint", "/api/users")
+                .put("user.id", "1234")
+                .put("operation.type", "read")
+                .put("request.size", 8192L)
+                .put("environment", "production")
+                .build());
+
+        System.out.println("Metrics recorded. Waiting for exporter to send them...");
+        TimeUnit.SECONDS.sleep(2); // Wait for the exporter to send the metrics
+        System.out.println("Done.");
+    }
+}
+```
+
+</TabItem>
+
 <TabItem value="dotnet" label=".NET">
 
 ```csharp:Program.cs
@@ -545,11 +616,6 @@ static object ProcessRequest(Counter<long> operationCounter, Histogram<int> resp
 
     return result;
 }
-
-public static class DiagnosticsConfig
-{
-    public static readonly ActivitySource ActivitySource = new("my-dotnet-metrics-app");
-}
 ```
 
 </TabItem>
@@ -564,6 +630,7 @@ public static class DiagnosticsConfig
 import { Resource } from '@opentelemetry/resources'
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { NodeSDK } from '@opentelemetry/sdk-node'
+import { BatchLogRecordProcessor } from '@opentelemetry/sdk-node'
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http'
 
 // Create a resource with custom attributes
