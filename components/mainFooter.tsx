@@ -61,8 +61,8 @@ function Footer() {
                   <ArrowUpRight size={16} />
                 </div>
                 <div className="mt-5 flex items-center gap-2 whitespace-nowrap pr-8 hover:underline max-md:pr-5">
-                  <Link href="https://twitter.com/SigNozHQ" target="_blank">
-                    Twitter
+                  <Link href="https://x.com/SigNozHQ" target="_blank">
+                    X
                   </Link>
                   <ArrowUpRight size={16} />
                 </div>
@@ -76,7 +76,7 @@ function Footer() {
                   <Link href="/changelog">Changelog</Link>
                 </div>
                 <div className="mt-5 flex items-center gap-2 whitespace-nowrap pr-8 hover:underline max-md:pr-5">
-                  <Link href="/dashboards" target="_blank">
+                  <Link href="/docs/dashboards/dashboard-templates/overview/" target="_blank">
                     Dashboard Templates
                   </Link>
                   <ArrowUpRight size={16} />
@@ -91,6 +91,12 @@ function Footer() {
                   <Link href="https://newsletter.signoz.io/" target="_blank">
                     Newsletter
                   </Link>
+                </div>
+                <div className="mt-5 flex items-center gap-2 whitespace-nowrap pr-8 hover:underline max-md:pr-5">
+                  <Link href="/events/kubecon-cloudnativecon-north-america-2025/" target="_blank">
+                    KubeCon, Atlanta 2025
+                  </Link>
+                  <ArrowUpRight size={16} />
                 </div>
               </div>
             </div>
@@ -192,7 +198,7 @@ function Footer() {
                   </Link>
 
                   <Link
-                    href={'https://twitter.com/SigNozHQ'}
+                    href={'https://x.com/SigNozHQ'}
                     target="_blank"
                     aria-label="SigNoz Twitter URL"
                   >

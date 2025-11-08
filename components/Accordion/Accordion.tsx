@@ -6,7 +6,7 @@ const Accordion = ({ topic, subtopics, onLinkClick }) => {
   const [accordionIsOpen, setAccordionIsOpen] = useState(false)
 
   return (
-    <div className="-mx-3 block rounded-lg px-3 text-base font-semibold leading-7 hover:bg-[#18181B]">
+    <div className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 hover:bg-[#18181B]">
       <button
         onClick={() => setAccordionIsOpen(!accordionIsOpen)}
         className="flex w-full items-center gap-1"
@@ -32,7 +32,7 @@ const Accordion = ({ topic, subtopics, onLinkClick }) => {
               onClick={() => onLinkClick && onLinkClick()}
             >
               {subtopic.icon && (
-                <img src={subtopic.icon} alt={`${subtopic.name} icon`} className="h-5 w-5" />
+                typeof subtopic.icon === 'string' ? <img src={subtopic.icon} alt={`${subtopic.name} icon`} className="h-5 w-5" /> : subtopic.icon
               )}
               <div className="flex flex-col">
                 <span className="font-medium">{subtopic.name}</span>

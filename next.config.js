@@ -63,6 +63,7 @@ module.exports = () => {
   const plugins = [withContentlayer, withBundleAnalyzer]
   return plugins.reduce((acc, next) => next(acc), {
     reactStrictMode: true,
+    productionBrowserSourceMaps: true, // Enable source maps for debugging
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
@@ -141,19 +142,19 @@ module.exports = () => {
         },
         {
           source: '/learn/user-stories/',
-          destination: '/observability-user-stories',
+          destination: '/blog/community-update-06/#observability-user-stories',
           permanent: true,
         },
         {
           source: '/slack/',
           destination:
-            'https://join.slack.com/t/signoz-community/shared_invite/zt-35r3be4oh-~4ociQZPFeQJ2COfKvDPLQ',
+            'https://join.slack.com/t/signoz-community/shared_invite/zt-3hr54hgo7-eZZHi6MRX4KodCfArtnTXA',
           basePath: false,
           permanent: true,
         },
         {
           source: '/careers/',
-          destination: 'https://www.ycombinator.com/companies/signoz/jobs/',
+          destination: 'https://jobs.ashbyhq.com/SigNoz',
           basePath: false,
           permanent: true,
         },
@@ -178,6 +179,11 @@ module.exports = () => {
           permanent: true,
         },
         {
+          source: '/docs/kubernetes/deployment/',
+          destination: '/docs/install/kubernetes/',
+          permanent: true,
+        },
+        {
           source: '/docs/installation/',
           destination: '/docs/install',
           permanent: true,
@@ -188,8 +194,18 @@ module.exports = () => {
           permanent: true,
         },
         {
-          source: '/docs/operate/upgrade/',
-          destination: '/docs/operate/migration/upgrade-0.8.0',
+          source: '/docs/operate/migration',
+          destination: '/docs/operate/upgrade',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/',
+          destination: '/docs/manage/administrator-guide/',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/kubernetes/',
+          destination: '/docs/install/kubernetes/',
           permanent: true,
         },
         {
@@ -230,7 +246,7 @@ module.exports = () => {
         },
         {
           source: '/docs/operate/sqlite/reset-admin-password/',
-          destination: '/docs/operate/query-service/reset-admin-password/',
+          destination: '/docs/operate/reset-admin-password/',
           permanent: true,
         },
         {
@@ -364,6 +380,11 @@ module.exports = () => {
           permanent: true,
         },
         {
+          source: '/docs/instrumentation/ruby/',
+          destination: '/docs/instrumentation/ruby-on-rails/',
+          permanent: true,
+        },
+        {
           source: '/docs/instrumentation/ruby-on-rails/',
           destination: '/docs/instrumentation/opentelemetry-ruby-on-rails/',
           permanent: true,
@@ -494,6 +515,353 @@ module.exports = () => {
           destination: '/docs/migration/migrate-from-newrelic-to-signoz/',
           permanent: true,
         },
+        {
+          source: '/dashboards',
+          destination: '/docs/dashboards/dashboard-templates/overview/',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/kubernetes-infra-metrics/',
+          destination: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/install-k8s-infra/',
+          permanent: true,
+        },
+        {
+          source: '/docs/metrics-management/k8s-infra-otel-config/',
+          destination: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/configure-k8s-infra/',
+          permanent: true,
+        },
+        {
+          source: '/docs/troubleshooting/signoz-cloud/logs-troubleshooting/',
+          destination: '/docs/logs-management/troubleshooting/troubleshooting/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/logs_troubleshooting/',
+          destination: '/docs/logs-management/troubleshooting/troubleshooting/',
+          permanent: true,
+        },
+        {
+          source: '/docs/troubleshooting/signoz-cloud/traces-troubleshooting/',
+          destination: '/docs/traces-management/troubleshooting/troubleshooting/',
+          permanent: true,
+        },
+        {
+          source: '/docs/troubleshooting/signoz-cloud/metrics-troubleshooting/',
+          destination: '/docs/metrics-management/troubleshooting/troubleshooting/',
+          permanent: true,
+        },
+        {
+          source: '/docs/troubleshooting/signoz-cloud/general-troubleshooting/',
+          destination: '/docs/faqs/general/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/troubleshoot-instrumentation/',
+          destination: '/docs/traces-management/troubleshooting/troubleshooting/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/query-handles-missing-values/',
+          destination: '/docs/userguide/query-builder/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/launch-week-1-day-1/',
+          destination: '/blog/launch-week-1-day-1/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/launch-week-1-day-2/',
+          destination: '/blog/launch-week-1-day-2/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/launch-week-1-day-3/',
+          destination: '/blog/launch-week-1-day-3/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/launch-week-1-day-4/',
+          destination: '/blog/launch-week-1-day-4/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/launch-week-1-day-5/',
+          destination: '/blog/launch-week-1-day-5/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/launch-week-1/',
+          destination: '/blog/launch-week-1/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/signoz-funding/',
+          destination: '/blog/signoz-funding/',
+          permanent: true,
+        },
+        {
+          source: '/newsroom/',
+          destination: '/blog/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/collecting-ecs-logs-and-metrics',
+          destination: '/docs/opentelemetry-collection-agents/ecs/ec2/overview/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/collecting-ecs-sidecar-infra',
+          destination: '/docs/opentelemetry-collection-agents/ecs/sidecar/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/0.75.0/query-service/user-invitation-smtp',
+          destination:
+            '/docs/manage/administrator-guide/configuration/smtp-email-invitations/#versions-less-than-or-equal-to-084x',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/0.75.0/query-service/reset-admin-password',
+          destination: 'docs/operate/reset-admin-password',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/0.75.0/configuration',
+          destination: '/docs/operate/configuration',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/docker-standalone/#upgrade',
+          destination: '/docs/operate/migration/upgrade-standard/#docker-standalone',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/docker-standalone/#uninstall-signoz-cluster',
+          destination: '/docs/install/uninstall/#docker-standalone',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/docker-swarm/#upgrade-signoz-cluster',
+          destination: '/docs/operate/migration/upgrade-standard/#docker-swarm-cluster',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/docker-standalone/#uninstall-signoz-cluster',
+          destination: '/docs/install/uninstall/#docker-swarm',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/kubernetes/#upgrade-signoz',
+          destination: '/docs/operate/migration/upgrade-standard/#kubernetes-deployment',
+          permanent: true,
+        },
+        {
+          source: '/docs/operate/kubernetes/#uninstall-signoz',
+          destination: '/docs/install/uninstall/#kubernetes',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/opentelemetry-operator-usage/',
+          destination: '/docs/opentelemetry-collection-agents/k8s/otel-operator/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/llm/opentelemetry-openai-monitoring/',
+          destination: '/docs/openai-monitoring/',
+          permanent: true,
+        },
+        {
+          source: '/docs/community/llm-monitoring/',
+          destination: '/docs/llm-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/llm/vercel-ai-sdk-monitoring/',
+          destination: '/docs/vercel-ai-sdk-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/llm/llamaindex-monitoring/',
+          destination: '/docs/llamaindex-observability/',
+          permanent: true,
+        },
+        // Redirects for renamed LLM observability docs (SEO edits #2090)
+        {
+          source: '/docs/opentelemetry-openai-monitoring/',
+          destination: '/docs/openai-monitoring/',
+          permanent: true,
+        },
+        {
+          source: '/docs/crewai-monitoring/',
+          destination: '/docs/crewai-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/langchain-monitoring/',
+          destination: '/docs/langchain-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/llamaindex-monitoring/',
+          destination: '/docs/llamaindex-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/mastra-monitoring/',
+          destination: '/docs/mastra-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/vercel-ai-sdk-monitoring/',
+          destination: '/docs/vercel-ai-sdk-observability/',
+          permanent: true,
+        },
+        {
+          source:
+            '/guides/upstream-connect-error-or-disconnect-reset-before-headers-reset-reason-connection-failure-spring-boot-and-java-11/',
+          destination: '/guides/upstream-connect-error/',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/writing-clickhouse-queries-in-dashboard/',
+          destination: '/docs/userguide/writing-clickhouse-traces-query/',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/instrumenting-angular-frontend/',
+          destination: '/docs/instrumentation/opentelemetry-angular/',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/get-started',
+          destination: '/docs/opentelemetry-collection-agents/get-started',
+          permanent: true,
+        },
+        // Docker Collection Agent redirects
+        {
+          source: '/docs/collection-agents/docker/install',
+          destination: '/docs/opentelemetry-collection-agents/docker/install',
+          permanent: true,
+        },
+        // Docker Swarm Collection Agent redirects
+        {
+          source: '/docs/collection-agents/docker-swarm/configure',
+          destination: '/docs/opentelemetry-collection-agents/docker-swarm/configure',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/docker-swarm/install',
+          destination: '/docs/opentelemetry-collection-agents/docker-swarm/install',
+          permanent: true,
+        },
+        // ECS Collection Agent redirects
+        {
+          source: '/docs/collection-agents/ecs/ec2/overview',
+          destination: '/docs/opentelemetry-collection-agents/ecs/ec2/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/ecs/ec2/install',
+          destination: '/docs/opentelemetry-collection-agents/ecs/ec2/install',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/ecs/ec2/configure',
+          destination: '/docs/opentelemetry-collection-agents/ecs/ec2/configure',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/ecs/sidecar/overview',
+          destination: '/docs/opentelemetry-collection-agents/ecs/sidecar/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/ecs/sidecar/install',
+          destination: '/docs/opentelemetry-collection-agents/ecs/sidecar/install',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/ecs/sidecar/configure',
+          destination: '/docs/opentelemetry-collection-agents/ecs/sidecar/configure',
+          permanent: true,
+        },
+        // Kubernetes Collection Agent redirects
+        {
+          source: '/docs/collection-agents/k8s/k8s-infra/overview',
+          destination: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/k8s-infra/install-k8s-infra',
+          destination: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/install-k8s-infra',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/k8s-infra/configure-k8s-infra',
+          destination: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/configure-k8s-infra',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/k8s-infra/user-guides/k8s-infra-multi-cluster',
+          destination:
+            '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-infra-multi-cluster',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/otel-operator/overview',
+          destination: '/docs/opentelemetry-collection-agents/k8s/otel-operator/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/otel-operator/install',
+          destination: '/docs/opentelemetry-collection-agents/k8s/otel-operator/install',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/otel-operator/configure',
+          destination: '/docs/opentelemetry-collection-agents/k8s/otel-operator/configure',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/serverless/overview',
+          destination: '/docs/opentelemetry-collection-agents/k8s/serverless/overview',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/serverless/install',
+          destination: '/docs/opentelemetry-collection-agents/k8s/serverless/install',
+          permanent: true,
+        },
+        {
+          source: '/docs/collection-agents/k8s/serverless/configure',
+          destination: '/docs/opentelemetry-collection-agents/k8s/serverless/configure',
+          permanent: true,
+        },
+        // OpenTelemetry Collector redirects
+        {
+          source: '/docs/collection-agents/opentelemetry-collector/configuration',
+          destination:
+            '/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration',
+          permanent: true,
+        },
+        // SSO redirects
+        {
+          source: '/docs/manage/administrator-guide/security-and-compliance/saml-authentication/',
+          destination: '/docs/manage/administrator-guide/sso/overview/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/sso-authentication/',
+          destination: '/docs/manage/administrator-guide/sso/overview/',
+          permanent: true,
+        },
+
+        {
+          source: '/docs/install/troubleshooting/',
+          destination: '/docs/setup/docker/troubleshooting/faq',
+          permanent: true,
+        },
       ]
     },
     webpack: (config, options) => {
@@ -510,7 +878,49 @@ module.exports = () => {
         })
       }
 
+      // Ensure source maps are generated in production (server & client)
+      if (!options.dev) {
+        config.devtool = 'source-map'
+      }
+
       return config
     },
   })
 }
+
+// Injected content via Sentry wizard below
+
+const { withSentryConfig } = require('@sentry/nextjs')
+
+module.exports = withSentryConfig(module.exports, {
+  // For all available options, see:
+  // https://www.npmjs.com/package/@sentry/webpack-plugin#options
+
+  org: `${process.env.NEXT_PUBLIC_SENTRY_ORG}`,
+  project: `${process.env.NEXT_PUBLIC_SENTRY_PROJECT}`,
+  sentryUrl: `${process.env.NEXT_PUBLIC_SENTRY_URL}`,
+
+  // Only print logs for uploading source maps in CI
+  silent: !process.env.CI,
+
+  // For all available options, see:
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+  // Upload a larger set of source maps for prettier stack traces (increases build time)
+  widenClientFileUpload: true,
+
+  // Uncomment to route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
+  // This can increase your server load as well as your hosting bill.
+  // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
+  // side errors will fail.
+  // tunnelRoute: "/monitoring",
+
+  // Automatically tree-shake Sentry logger statements to reduce bundle size
+  disableLogger: true,
+
+  // Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
+  // See the following for more information:
+  // https://docs.sentry.io/product/crons/
+  // https://vercel.com/docs/cron-jobs
+  automaticVercelMonitors: true,
+})

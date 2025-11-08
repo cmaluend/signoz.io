@@ -50,29 +50,10 @@ const docsSideNav = [
             route: '/docs/product-features/invite-team-member',
             label: 'Invite Team Member',
           },
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Breaking Changes',
-        isExpanded: false,
-        items: [
           {
             type: 'doc',
-            label: 'Breaking Changes in v0.76',
-            route: '/docs/overview/breaking-changes/breaking-changes-0.76',
-          },
-        ],
-      },
-      {
-        type: 'category',
-        label: "What's New",
-        isExpanded: false,
-        items: [
-          {
-            type: 'doc',
-            label: 'Changelog of v0.76',
-            route: '/docs/overview/whats-new/changelog-0.76',
+            route: '/docs/product-features/keyboard-shortcuts',
+            label: 'Keyboard Shortcuts',
           },
         ],
       },
@@ -141,6 +122,18 @@ const docsSideNav = [
                 label: 'Docker SELinux',
                 route: '/docs/install/docker-selinux',
               },
+              {
+                type: 'category',
+                isExpanded: false,
+                label: 'Troubleshooting',
+                items: [
+                  {
+                    type: 'doc',
+                    label: 'General FAQs',
+                    route: '/docs/setup/docker/troubleshooting/faq',
+                  },
+                ],
+              },
             ],
           },
           {
@@ -206,31 +199,43 @@ const docsSideNav = [
           },
           {
             type: 'doc',
-            label: "Deploying to ECS",
-            route: '/docs/install/ecs'
+            label: 'Deploying to ECS',
+            route: '/docs/install/ecs',
           },
           {
             type: 'doc',
-            label: 'Troubleshooting',
-            route: '/docs/install/troubleshooting',
-          },
-        ],
-      },
-
-      {
-        type: 'category',
-        isExpanded: false,
-        label: 'Install OTel collector',
-        items: [
-          {
-            route: '/docs/tutorial/opentelemetry-binary-usage-in-virtual-machine',
-            type: 'doc',
-            label: 'VM',
+            label: 'Deploying to Azure Container Apps',
+            route: '/docs/install/azure-container-apps',
           },
           {
-            route: '/docs/tutorial/kubernetes-infra-metrics',
             type: 'doc',
-            label: 'Kubernetes',
+            isExpanded: false,
+            label: 'Deploying from Marketplaces',
+            route: '/docs/install/marketplaces',
+          },
+          {
+            type: 'doc',
+            route: '/docs/install/uninstall',
+            label: 'Uninstall',
+          },
+          {
+            type: 'category',
+            label: 'Capacity Planning',
+            isExpanded: false,
+            items: [
+              {
+                type: 'category',
+                label: 'Community',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    label: 'SigNoz Resources Planning',
+                    route: '/docs/setup/capacity-planning/community/resources-planning',
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
@@ -244,116 +249,129 @@ const docsSideNav = [
     route: '/docs/manage/overview',
     items: [
       {
-        label: 'Administrator Guides (Self-hosted)',
+        type: 'category',
+        isExpanded: false,
+        label: 'Upgrade Guides',
+        route: '/docs/operate/upgrade',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-standard',
+            label: 'Upgrade Standard',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.94',
+            label: 'Upgrade to v0.94',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.92',
+            label: 'Upgrade to v0.92',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.88',
+            label: 'Upgrade to v0.88',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.86',
+            label: 'Upgrade to v0.86',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.76',
+            label: 'Upgrade to v0.76',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.70',
+            label: 'Upgrade to v0.70',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.64',
+            label: 'Upgrade to v0.64',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.55',
+            label: 'Upgrade to v0.55',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.51',
+            label: 'Upgrade to v0.51',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.49',
+            label: 'Upgrade to v0.49',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.45',
+            label: 'Upgrade to v0.45',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.38',
+            label: 'Upgrade to v0.38',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.36',
+            label: 'Upgrade to v0.36',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.27',
+            label: 'Upgrade to v0.27',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.23',
+            label: 'Upgrade to v0.23',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.19',
+            label: 'Upgrade to v0.19',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.12',
+            label: 'Upgrade to v0.12',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.10',
+            label: 'Upgrade to v0.10',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.9',
+            label: 'Upgrade to v0.9',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.8.1',
+            label: 'Upgrade to v0.8.1',
+          },
+          {
+            type: 'doc',
+            route: '/docs/operate/migration/upgrade-0.8.0',
+            label: 'Upgrade to v0.8.0',
+          },
+        ],
+      },
+      {
+        label: 'Administrator Guides',
         type: 'category',
         isExpanded: false,
         route: '/docs/manage/administrator-guide',
         items: [
-          {
-            type: 'category',
-            isExpanded: false,
-            label: 'Migration Guides',
-            route: '/docs/operate/migration',
-            // link: {
-            // type: 'generated-index',
-            // title: 'Migration Guides',
-            // description:
-            // 'The following sections provide instructions to migrate SigNoz components across newer versions. You need to run these migration scripts step by step. For example if you are currently on `0.8.2` and want to migrate to `0.10.0` - you need to run migration script for `0.9` first and then `0.10`',
-            // slug: '/docs/operate/migration/migration',
-            // },
-            items: [
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.88',
-                label: 'Upgrade to v0.88',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.76',
-                label: 'Upgrade to v0.76',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.70',
-                label: 'Upgrade to v0.70',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.64',
-                label: 'Upgrade to v0.64',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.55',
-                label: 'Upgrade to v0.55',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.51',
-                label: 'Upgrade to v0.51',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.49',
-                label: 'Upgrade to v0.49',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.45',
-                label: 'Upgrade to v0.45',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.38',
-                label: 'Upgrade to v0.38',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.36',
-                label: 'Upgrade to v0.36',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.27',
-                label: 'Upgrade to v0.27',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.23',
-                label: 'Upgrade to v0.23',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.19',
-                label: 'Upgrade to v0.19',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.12',
-                label: 'Upgrade to v0.12',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.10',
-                label: 'Upgrade to v0.10',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.9',
-                label: 'Upgrade to v0.9',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.8.1',
-                label: 'Upgrade to v0.8.1',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/migration/upgrade-0.8.0',
-                label: 'Upgrade to v0.8.0',
-              },
-            ],
-          },
           {
             type: 'category',
             isExpanded: false,
@@ -428,17 +446,6 @@ const docsSideNav = [
                 route: '/docs/userguide/authentication',
                 label: 'Authentication',
               },
-              {
-                type: 'doc',
-                route: '/docs/userguide/sso-authentication',
-                label: 'SSO',
-              },
-              {
-                type: 'doc',
-                route:
-                  '/docs/manage/administrator-guide/security-and-compliance/saml-authentication',
-                label: 'SAML',
-              },
             ],
           },
           {
@@ -464,17 +471,62 @@ const docsSideNav = [
                 label: 'JWT Secret',
                 isExpanded: false,
               },
+              {
+                type: 'doc',
+                route: '/docs/manage/administrator-guide/configuration/relational-database',
+                label: 'Relational Databases Support',
+                isExpanded: false,
+              },
+            ],
+          },
+          {
+            type: 'category',
+            label: 'SSO',
+            isExpanded: false,
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/manage/administrator-guide/sso/overview',
+                label: 'Overview',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-jumpcloud',
+                    label: 'JumpCloud - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-awsso',
+                    label: 'AWS SSO - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-okta',
+                    label: 'Okta - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/saml-microsoft-entra',
+                    label: 'Microsoft Entra ID - SAML Authentication',
+                  },
+                  {
+                    type: 'doc',
+                    route: '/docs/manage/administrator-guide/sso/user-guides/sso-google',
+                    label: 'Google Workspace - Single Sign-on Authentication',
+                  },
+                ],
+              },
             ],
           },
           {
             type: 'doc',
             route: '/docs/telemetry',
             label: 'Statistics Reporting',
-          },
-          {
-            type: 'doc',
-            route: '/docs/tutorial/opentelemetry-operator-usage',
-            label: 'OpenTelemetry Operator Usage',
           },
           {
             type: 'doc',
@@ -515,7 +567,276 @@ const docsSideNav = [
       },
     ],
   },
-
+  {
+    label: 'Collection Agents',
+    type: 'category',
+    isExpanded: false,
+    route: '/docs/opentelemetry-collection-agents/get-started',
+    items: [
+      {
+        type: 'category',
+        isExpanded: false,
+        label: 'Kubernetes',
+        items: [
+          {
+            type: 'category',
+            label: 'K8s-Infra',
+            isExpanded: false,
+            items: [
+              {
+                label: 'Overview',
+                type: 'doc',
+                route: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/overview',
+              },
+              {
+                label: 'Install K8s Infra',
+                type: 'doc',
+                route: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/install-k8s-infra',
+              },
+              {
+                label: 'Configure K8s Infra',
+                type: 'doc',
+                route: '/docs/opentelemetry-collection-agents/k8s/k8s-infra/configure-k8s-infra',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-cluster',
+                    label: 'Monitoring Kubernetes Clusters using Opentelemetry Collection Agents',
+                  },
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-infra-multi-cluster',
+                    label: 'Monitor Multiple Kubernetes Clusters',
+                  },
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-infra-kubelet-endpoint',
+                    label:
+                      'Configuring Kubernetes Metrics Collection for IPv6 and Non-Standard Clusters',
+                  },
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/k8s-infra/user-guides/k8s-infra-kubelet-autogke',
+                    label: 'Configuring Kubernetes Metrics Collection for GKE Autopilot',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'category',
+            label: 'Serverless (EKS Fargate)',
+            isExpanded: false,
+            items: [
+              {
+                label: 'Overview',
+                type: 'doc',
+                route: '/docs/opentelemetry-collection-agents/k8s/serverless/overview',
+              },
+              {
+                label: 'Install',
+                type: 'doc',
+                route: '/docs/opentelemetry-collection-agents/k8s/serverless/install',
+              },
+              {
+                label: 'Configure',
+                type: 'doc',
+                route: '/docs/opentelemetry-collection-agents/k8s/serverless/configure',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/k8s/serverless/user-guides/k8s-cluster',
+                    label:
+                      'Monitoring Kubernetes Clusters in EKS Fargate using Opentelemetry Collection Agents',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'category',
+            label: 'OpenTelemetry Operator',
+            isExpanded: false,
+            items: [
+              {
+                type: 'doc',
+                label: 'Overview',
+                route: '/docs/opentelemetry-collection-agents/k8s/otel-operator/overview',
+              },
+              {
+                type: 'doc',
+                label: 'Install',
+                route: '/docs/opentelemetry-collection-agents/k8s/otel-operator/install',
+              },
+              {
+                type: 'doc',
+                label: 'Configure',
+                route: '/docs/opentelemetry-collection-agents/k8s/otel-operator/configure',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'category',
+        isExpanded: false,
+        label: 'VM',
+        items: [
+          {
+            type: 'category',
+            label: 'OpenTelemetry Binary',
+            isExpanded: false,
+            items: [
+              {
+                route: '/docs/tutorial/opentelemetry-binary-usage-in-virtual-machine',
+                type: 'doc',
+                label: 'Overview',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'category',
+        isExpanded: false,
+        label: 'Docker',
+        items: [
+          {
+            type: 'category',
+            label: 'Standalone',
+            isExpanded: false,
+            items: [
+              {
+                route: '/docs/opentelemetry-collection-agents/docker/install',
+                type: 'doc',
+                label: 'Install',
+              },
+            ],
+          },
+          {
+            type: 'category',
+            label: 'Swarm',
+            isExpanded: false,
+            items: [
+              {
+                route: '/docs/opentelemetry-collection-agents/docker-swarm/install',
+                type: 'doc',
+                label: 'Install',
+              },
+              {
+                route: '/docs/opentelemetry-collection-agents/docker-swarm/configure',
+                type: 'doc',
+                label: 'Configure',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'category',
+        label: 'ECS',
+        isExpanded: false,
+        items: [
+          {
+            type: 'category',
+            label: 'EC2',
+            isExpanded: false,
+            items: [
+              {
+                type: 'doc',
+                label: 'Overview',
+                route: '/docs/opentelemetry-collection-agents/ecs/ec2/overview',
+              },
+              {
+                type: 'doc',
+                label: 'Install',
+                route: '/docs/opentelemetry-collection-agents/ecs/ec2/install',
+              },
+              {
+                type: 'doc',
+                label: 'Configure',
+                route: '/docs/opentelemetry-collection-agents/ecs/ec2/configure',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route: '/docs/opentelemetry-collection-agents/ecs/ec2/user-guides/get-started',
+                    label: 'Monitoring ECS EC2 using Opentelemetry Collection Agentss',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            type: 'category',
+            label: 'Serverless',
+            isExpanded: false,
+            items: [
+              {
+                type: 'doc',
+                label: 'Overview',
+                route: '/docs/opentelemetry-collection-agents/ecs/sidecar/overview',
+              },
+              {
+                type: 'doc',
+                label: 'Install',
+                route: '/docs/opentelemetry-collection-agents/ecs/sidecar/install',
+              },
+              {
+                type: 'doc',
+                label: 'Configure',
+                route: '/docs/opentelemetry-collection-agents/ecs/sidecar/configure',
+              },
+              {
+                type: 'category',
+                label: 'User Guides',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/opentelemetry-collection-agents/ecs/sidecar/user-guides/get-started',
+                    label: 'Monitoring ECS Fargate using Opentelemetry Collection Agents',
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'category',
+        label: 'OpenTelemetry Collector Reference',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            label: 'Configuration Components',
+            route: '/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration',
+          },
+        ],
+      },
+    ],
+  },
   {
     label: 'APM & Distributed Tracing',
     type: 'category',
@@ -733,6 +1054,18 @@ const docsSideNav = [
               {
                 type: 'category',
                 isExpanded: false,
+                label: 'Java',
+                items: [
+                  {
+                    type: 'doc',
+                    route: '/docs/instrumentation/manual-instrumentation/java/annotations',
+                    label: 'Using Annotations',
+                  },
+                ],
+              },
+              {
+                type: 'category',
+                isExpanded: false,
                 label: 'JavaScript',
                 // route: '',
                 // link: {
@@ -744,6 +1077,12 @@ const docsSideNav = [
                     label: 'NodeJS',
                     route:
                       '/docs/instrumentation/manual-instrumentation/javascript/opentelemetry-nodejs',
+                  },
+                  {
+                    type: 'doc',
+                    label: 'Enable/disable Instrumentation',
+                    route:
+                      '/docs/instrumentation/manual-instrumentation/javascript/nodejs-selective-instrumentation',
                   },
                 ],
               },
@@ -817,34 +1156,6 @@ const docsSideNav = [
       {
         type: 'category',
         isExpanded: false,
-        label: 'Trace API',
-        // route: '',
-        items: [
-          {
-            type: 'doc',
-            route: '/docs/traces-management/trace-api/overview',
-            label: 'Overview',
-          },
-          {
-            type: 'doc',
-            route: '/docs/traces-management/trace-api/payload-model',
-            label: 'Payload Model',
-          },
-          {
-            type: 'doc',
-            route: '/docs/traces-management/trace-api/search-traces',
-            label: 'Search Traces',
-          },
-          {
-            type: 'doc',
-            route: '/docs/traces-management/trace-api/aggregate-traces',
-            label: 'Aggregate Traces',
-          },
-        ],
-      },
-      {
-        type: 'category',
-        isExpanded: false,
         label: 'Tutorials',
         // route: '',
         items: [
@@ -865,15 +1176,28 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/traces-management/guides/pii-scrubbing/',
+            label: 'PII Scrubbing',
+          },
+          {
+            type: 'doc',
             route: '/docs/traces-management/guides/correlate-traces-and-logs',
             label: 'Correlate Traces and Logs',
           },
         ],
       },
       {
-        type: 'doc',
-        route: '/docs/instrumentation/troubleshoot-instrumentation',
+        type: 'category',
+        route: '/docs/traces-management/troubleshooting/troubleshooting',
         label: 'Troubleshooting',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/traces-management/troubleshooting/faqs',
+            label: 'General FAQs',
+          },
+        ],
       },
     ],
   },
@@ -888,11 +1212,6 @@ const docsSideNav = [
         route: '/docs/infrastructure-monitoring/overview',
         label: 'Overview',
       },
-      // {
-      //   type: 'doc',
-      //   route: '/docs/userguide/navigate-user-interface',
-      //   label: 'Navigate the User Interface',
-      // },
       {
         type: 'doc',
         route: '/docs/userguide/hostmetrics',
@@ -1049,6 +1368,16 @@ const docsSideNav = [
             label: 'Windows Event logs',
             // className: 'new-doc',
           },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/send-logs/collect-systemd-logs',
+            label: 'SystemD logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/send-logs/zerolog-to-signoz',
+            label: 'Zerolog',
+          },
         ],
       },
       {
@@ -1107,6 +1436,11 @@ const docsSideNav = [
                 route: '/docs/logs-pipelines/guides/severity-parsing',
                 label: 'Severity Parsing',
               },
+              {
+                type: 'doc',
+                route: '/docs/logs-pipelines/guides/timestamp-parsing',
+                label: 'Parse Timestamp',
+              },
             ],
           },
         ],
@@ -1136,39 +1470,6 @@ const docsSideNav = [
       },
       {
         type: 'category',
-        isExpanded: false,
-        label: 'Logs API',
-        // route: '',
-        items: [
-          {
-            type: 'doc',
-            route: '/docs/logs-management/logs-api/overview',
-            label: 'Overview',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/logs-api/payload-model',
-            label: 'Payload Model',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/logs-api/search-logs',
-            label: 'Search Logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/logs-api/aggregate-logs',
-            label: 'Aggregate Logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/logs-api/logs-url-for-explorer-page',
-            label: 'Logs URL for Explorer',
-          },
-        ],
-      },
-      {
-        type: 'category',
         label: 'User Guide',
         isExpanded: false,
         items: [
@@ -1187,6 +1488,11 @@ const docsSideNav = [
             route: '/docs/userguide/parse-multiline-logs',
             label: 'Parse Multiline Logs',
           },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/guides/set-resource-attributes-for-logs',
+            label: 'Set Resource Attributes',
+          },
         ],
       },
       {
@@ -1196,9 +1502,17 @@ const docsSideNav = [
         className: 'new-doc',
       },
       {
-        type: 'doc',
-        route: '/docs/userguide/logs_troubleshooting',
+        type: 'category',
+        isExpanded: false,
         label: 'Troubleshooting',
+        route: '/docs/logs-management/troubleshooting/troubleshooting',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/logs-management/troubleshooting/faqs',
+            label: 'General FAQs',
+          },
+        ],
       },
       // {
       //   type: 'doc',
@@ -1248,15 +1562,29 @@ const docsSideNav = [
         label: 'Configure custom buckets for histograms',
       },
       {
-        type: 'doc',
-        route: '/docs/metrics-management/k8s-infra-otel-config',
-        label: 'Configure k8s-infra otelDeployment to collect metrics from receivers',
-      },
-      {
-        type: 'doc',
-        className: 'new-doc',
-        route: '/docs/metrics-management/docker-container-metrics',
-        label: 'Docker container metrics',
+        label: 'Send Metrics',
+        type: 'category',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            className: 'new-doc',
+            route: '/docs/metrics-management/docker-container-metrics',
+            label: 'Docker container metrics',
+          },
+          {
+            type: 'doc',
+            className: 'new-doc',
+            route: '/docs/metrics-management/nginx-metrics',
+            label: 'NGINX metrics',
+          },
+          {
+            type: 'doc',
+            className: 'new-doc',
+            route: '/docs/metrics-management/mysql-metrics',
+            label: 'MySQL metrics',
+          },
+        ],
       },
       {
         type: 'doc',
@@ -1264,26 +1592,40 @@ const docsSideNav = [
         label: 'Drop Metrics',
       },
       {
-        type: 'doc',
-        route: '/docs/metrics-management/query-range-api',
-        label: 'Query Range API',
-      },
-      {
         type: 'category',
-        label: 'Guides',
+        route: '/docs/metrics-management/troubleshooting/troubleshooting',
+        label: 'Troubleshooting',
         isExpanded: false,
         items: [
           {
             type: 'doc',
-            route: '/docs/userguide/collecting-ecs-logs-and-metrics',
-            label: 'ECS Infra Metrics & Logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/collecting-ecs-sidecar-infra',
-            label: 'ECS Infra Sidecar',
+            route: '/docs/metrics-management/troubleshooting/faqs',
+            label: 'General FAQs',
           },
         ],
+      },
+    ],
+  },
+  {
+    label: 'Cost Meter',
+    type: 'category',
+    className: 'new-doc',
+    isExpanded: false,
+    items: [
+      {
+        type: 'doc',
+        route: '/docs/cost-meter/overview',
+        label: 'Overview',
+      },
+      {
+        type: 'doc',
+        route: '/docs/cost-meter/meter-explorer',
+        label: 'Meter Explorer',
+      },
+      {
+        type: 'doc',
+        route: '/docs/cost-meter/alerts',
+        label: 'Alerts',
       },
     ],
   },
@@ -1294,14 +1636,27 @@ const docsSideNav = [
     // route: '',
     items: [
       {
-        type: 'doc',
-        route: '/docs/userguide/manage-dashboards',
-        label: 'Manage Dashboards',
-      },
-      {
-        type: 'doc',
-        route: '/docs/userguide/manage-panels',
-        label: 'Manage Panels',
+        label: 'Manage',
+        type: 'category',
+        className: 'new-doc',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/userguide/manage-dashboards',
+            label: 'Manage Dashboards',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/manage-panels',
+            label: 'Manage Panels',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/manage-variables',
+            label: 'Manage Variables',
+          },
+        ],
       },
       {
         type: 'category',
@@ -1347,9 +1702,199 @@ const docsSideNav = [
         ],
       },
       {
+        type: 'category',
+        route: '/docs/dashboards/interactivity',
+        label: 'Interactivity',
+      },
+      {
         type: 'doc',
-        route: '/docs/userguide/manage-variables',
-        label: 'Manage Variables',
+        route: '/docs/dashboards/import-dashboard',
+        label: 'Import Dashboard',
+      },
+      {
+        type: 'category',
+        isExpanded: false,
+        route: '/docs/dashboards/dashboard-templates/overview',
+        label: 'Out of Box Dashboards',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/amazon-bedrock-dashboard',
+            label: 'Amazon Bedrock API',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/anthropic-dashboard',
+            label: 'Anthropic API',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/apache-web-server',
+            label: 'Apache Web Server',
+          },
+          {
+            label: 'APM',
+            type: 'category',
+            isExpanded: false,
+            route: '/docs/dashboards/dashboard-templates/apm-dashboards',
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/apm-metrics',
+                label: 'APM Metrics',
+              },
+              {
+                type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/db-calls-monitoring',
+                label: 'DB Calls Monitoring',
+              },
+            ],
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/azure-openai-dashboard',
+            label: 'Azure OpenAI API',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/cicd',
+            label: 'CICD',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/claude-code-dashboard',
+            label: 'Claude Code',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/couchdb',
+            label: 'CouchDB',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/crewai-dashboard',
+            label: 'Crew AI',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/deepseek-dashboard',
+            label: 'DeepSeek API',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/docker-container-metrics',
+            label: 'Docker Container',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/google-gemini-dashboard',
+            label: 'Google Gemini',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/haproxy-monitoring',
+            label: 'HAProxy',
+          },
+          {
+            label: 'Hostmetrics',
+            type: 'category',
+            isExpanded: false,
+            route: '/docs/dashboards/dashboard-templates/hostmetrics-dashboards',
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/hostmetrics-k8s',
+                label: 'Hostmetrics (K8s)',
+              },
+            ],
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/jvm-metrics',
+            label: 'JVM',
+          },
+          {
+            label: 'Kubernetes',
+            type: 'category',
+            isExpanded: false,
+            route: '/docs/dashboards/dashboard-templates/kubernetes-dashboards',
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/kubernetes-pod-metrics-detailed',
+                label: 'Kubernetes Pod Metrics (Detailed)',
+              },
+              {
+                type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/kubernetes-node-metrics-detailed',
+                label: 'Kubernetes Node Metrics (Detailed)',
+              },
+            ],
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/key-operations',
+            label: 'Key Operations',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/mastra-dashboard',
+            label: 'Mastra',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/memcached',
+            label: 'Memcached',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/mysql',
+            label: 'MySQL',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/nginx',
+            label: 'NGINX',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/postgresql',
+            label: 'PostgreSQL',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/pydantic-ai-dashboard',
+            label: 'Pydantic AI',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/rabbitmq',
+            label: 'RabbitMQ',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/signoz-ingestion-analysis',
+            label: 'SigNoz Ingestion Analysis',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/vercel-ai-sdk-dashboard',
+            label: 'Vercel AI SDK',
+          },
+        ],
+      },
+      {
+        type: 'category',
+        route: '/docs/dashboards/troubleshooting/troubleshooting',
+        label: 'Troubleshooting',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/dashboards/troubleshooting/faqs',
+            label: 'General FAQs',
+          },
+        ],
       },
     ],
   },
@@ -1368,6 +1913,46 @@ const docsSideNav = [
         type: 'doc',
         route: '/docs/userguide/query-builder',
         label: 'Query Builder',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/query-builder-v5',
+        label: 'Query Builder (new)',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/search-syntax',
+        label: 'Search Syntax',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/operators-reference',
+        label: 'Operators Reference',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/full-text-search',
+        label: 'Full-Text Search Guide',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/functions-reference',
+        label: 'Functions Reference',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/field-context-data-types',
+        label: 'Field Context & Data Types',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/search-troubleshooting',
+        label: 'Troubleshooting Guide',
+      },
+      {
+        type: 'doc',
+        route: '/docs/userguide/search-advanced-examples',
+        label: 'Advanced Examples',
       },
       {
         type: 'category',
@@ -1523,6 +2108,11 @@ const docsSideNav = [
       },
       {
         type: 'doc',
+        route: '/docs/alerts-management/routing-policy',
+        label: 'Routing Policies',
+      },
+      {
+        type: 'doc',
         route: '/docs/alerts-management/alerts-history',
         label: 'Alerts History',
       },
@@ -1532,28 +2122,98 @@ const docsSideNav = [
         label: 'Terraform Provider',
       },
       {
+        type: 'category',
+        route: '/docs/alerts-management/troubleshooting/troubleshooting',
+        label: 'Troubleshooting',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/alerts-management/troubleshooting/faqs',
+            label: 'General FAQs',
+          },
+          {
+            type: 'doc',
+            route:
+              '/docs/alerts-management/troubleshooting/alerts-firing-without-visible-threshold-breach',
+            label: 'Alerts Firing Without Visible Threshold Breach',
+          },
+        ],
+      },
+      {
+        type: 'category',
+        route: '/docs/alerts-management/user-guides/user-guides',
+        label: 'User Guides',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/alerts-management/user-guides/understanding-alert-evaluation-patterns',
+            label: 'Understanding Alert Evaluation Patterns',
+          },
+          {
+            type: 'doc',
+            route: '/docs/alerts-management/user-guides/time-aggregation-best-practices',
+            label: 'Time Aggregation Best Practices',
+          },
+          {
+            type: 'doc',
+            route: '/docs/alerts-management/user-guides/how-to-configure-alerts-for-missing-data',
+            label: 'How to Configure Alerts for Missing Data',
+          },
+          {
+            type: 'doc',
+            route: '/docs/alerts-management/no-data-alerts-for-groups',
+            label: 'No Data Alerts for Groups',
+          },
+        ],
+      },
+      {
         type: 'doc',
-        route: '/docs/alerts-management/no-data-alerts-for-groups',
-        label: 'No Data Alerts for Groups',
+        route: '/docs/alerts-management/apdex-alerts',
+        label: 'Apdex Alerts',
       },
     ],
   },
   {
-    label: 'Frontend & Mobile Monitoring',
+    label: 'Frontend Monitoring',
     type: 'category',
     isExpanded: false,
-    route: '/docs/frontend-and-mobile-monitoring',
+    route: '/docs/frontend-monitoring',
     items: [
       {
         type: 'doc',
-        route: '/docs/frontend-monitoring/document-load',
-        label: 'Document Load',
+        route: '/docs/frontend-monitoring/sending-logs',
+        label: 'Sending Logs',
+      },
+      {
+        type: 'doc',
+        route: '/docs/frontend-monitoring/sending-traces',
+        label: 'Sending Traces',
+      },
+      {
+        type: 'doc',
+        route: '/docs/frontend-monitoring/sending-metrics',
+        label: 'Sending Metrics',
       },
       {
         type: 'doc',
         route: '/docs/frontend-monitoring/opentelemetry-web-vitals',
         label: 'Web Vitals',
       },
+      {
+        type: 'doc',
+        route: '/docs/frontend-monitoring/document-load',
+        label: 'Document Load',
+      },
+    ],
+  },
+  {
+    label: 'Mobile Monitoring',
+    type: 'category',
+    isExpanded: false,
+    route: '/docs/mobile-monitoring',
+    items: [
       {
         type: 'doc',
         label: 'Swift UI',
@@ -1577,6 +2237,98 @@ const docsSideNav = [
     ],
   },
   {
+    type: 'category',
+    isExpanded: false,
+    route: '/docs/llm-observability',
+    label: 'LLM Observability',
+
+    items: [
+      {
+        route: '/docs/llm-community-integrations',
+        label: 'LLM Community Integrations',
+        type: 'doc',
+      },
+      {
+        route: '/docs/amazon-bedrock-monitoring',
+        label: 'Amazon Bedrock',
+        type: 'doc',
+      },
+      {
+        route: '/docs/anthropic-monitoring',
+        label: 'Anthropic API',
+        type: 'doc',
+      },
+      {
+        route: '/docs/azure-openai-monitoring',
+        label: 'Azure OpenAI API',
+        type: 'doc',
+      },
+      {
+        route: '/docs/claude-code-monitoring',
+        label: 'Claude Code',
+        type: 'doc',
+      },
+      {
+        route: '/docs/crewai-observability',
+        label: 'Crew AI',
+        type: 'doc',
+      },
+      {
+        route: '/docs/deepseek-monitoring',
+        label: 'DeepSeek',
+        type: 'doc',
+      },
+      {
+        route: '/docs/google-gemini-monitoring',
+        label: 'Google Gemini',
+        type: 'doc',
+      },
+      {
+        route: '/docs/langchain-observability',
+        label: 'LangChain/LangGraph',
+        type: 'doc',
+      },
+      {
+        route: '/docs/llamaindex-observability',
+        label: 'LlamaIndex',
+        type: 'doc',
+      },
+      {
+        route: '/docs/mastra-observability',
+        label: 'Mastra',
+        type: 'doc',
+      },
+      {
+        route: '/docs/openai-monitoring',
+        label: 'OpenAI',
+        type: 'doc',
+      },
+      {
+        route: '/docs/pydantic-ai-observability',
+        label: 'Pydantic AI',
+        type: 'doc',
+      },
+      {
+        route: '/docs/vercel-ai-sdk-observability',
+        label: 'Vercel AI SDK',
+        type: 'doc',
+      },
+    ],
+  },
+  {
+    type: 'category',
+    isExpanded: false,
+    label: 'SigNoz MCP',
+
+    items: [
+      {
+        type: 'doc',
+        route: '/docs/signoz-mcp-server',
+        label: 'SigNoz MCP Server',
+      },
+    ],
+  },
+  {
     label: 'Integrations',
     type: 'category',
     isExpanded: false,
@@ -1593,6 +2345,12 @@ const docsSideNav = [
             route: '/docs/integrations/aws/one-click-aws-integrations',
             className: 'new-doc',
             label: 'Overview',
+          },
+          {
+            type: 'doc',
+            route: '/docs/integrations/aws/ecs',
+            className: 'new-doc',
+            label: 'ECS',
           },
           {
             type: 'doc',
@@ -1647,6 +2405,11 @@ const docsSideNav = [
       },
       {
         type: 'doc',
+        route: '/docs/integrations/mongodb-atlas',
+        label: 'MongoDB Atlas',
+      },
+      {
+        type: 'doc',
         route: '/docs/integrations/clickhouse',
         label: 'Clickhouse',
       },
@@ -1669,6 +2432,21 @@ const docsSideNav = [
         type: 'doc',
         route: '/docs/integrations/aws-elasticache-redis',
         label: 'AWS Elasticache Redis',
+      },
+      {
+        type: 'doc',
+        route: '/docs/integrations/sql-server',
+        label: 'Microsoft SQL Server',
+      },
+      {
+        type: 'doc',
+        route: '/docs/integrations/supabase',
+        label: 'Supabase',
+      },
+      {
+        type: 'doc',
+        route: '/docs/integrations/nomad',
+        label: 'Nomad',
       },
     ],
   },
@@ -1764,6 +2542,25 @@ const docsSideNav = [
     ],
   },
   {
+    label: 'Trace Funnels',
+    type: 'category',
+    className: 'new-doc',
+    isExpanded: false,
+    // route: '',
+    items: [
+      {
+        type: 'doc',
+        route: '/docs/trace-funnels/overview',
+        label: 'Overview',
+      },
+      {
+        type: 'doc',
+        route: '/docs/trace-funnels/setup',
+        label: 'Setup',
+      },
+    ],
+  },
+  {
     label: 'CICD Monitoring',
     type: 'category',
     className: 'new-doc',
@@ -1841,7 +2638,107 @@ const docsSideNav = [
             route: '/docs/ingestion/signoz-cloud/keys',
             label: 'Keys',
           },
+          {
+            type: 'doc',
+            route: '/docs/ingestion/signoz-cloud/troubleshooting/troubleshooting',
+            label: 'Troubleshooting',
+          },
         ],
+      },
+      {
+        label: 'Self-Host SigNoz',
+        type: 'category',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/ingestion/self-hosted/overview',
+            label: 'Overview',
+          },
+        ],
+      },
+      {
+        type: 'doc',
+        route: '/docs/ingestion/cloud-vs-self-hosted',
+        label: 'Cloud vs Self-Hosted',
+      },
+    ],
+  },
+  {
+    label: 'SigNoz APIs',
+    type: 'category',
+    isExpanded: false,
+    items: [
+      {
+        type: 'doc',
+        route: '/api-reference/',
+        label: 'API Reference',
+      },
+      {
+        type: 'category',
+        isExpanded: false,
+        label: 'Trace API',
+        // route: '',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/traces-management/trace-api/overview',
+            label: 'Overview',
+          },
+          {
+            type: 'doc',
+            route: '/docs/traces-management/trace-api/payload-model',
+            label: 'Payload Model',
+          },
+          {
+            type: 'doc',
+            route: '/docs/traces-management/trace-api/search-traces',
+            label: 'Search Traces',
+          },
+          {
+            type: 'doc',
+            route: '/docs/traces-management/trace-api/aggregate-traces',
+            label: 'Aggregate Traces',
+          },
+        ],
+      },
+      {
+        type: 'category',
+        isExpanded: false,
+        label: 'Logs API',
+        // route: '',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/logs-management/logs-api/overview',
+            label: 'Overview',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/logs-api/payload-model',
+            label: 'Payload Model',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/logs-api/search-logs',
+            label: 'Search Logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/logs-api/aggregate-logs',
+            label: 'Aggregate Logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/logs-api/logs-url-for-explorer-page',
+            label: 'Logs URL for Explorer',
+          },
+        ],
+      },
+      {
+        type: 'doc',
+        route: '/docs/metrics-management/query-range-api',
+        label: 'Metrics Query API',
       },
     ],
   },
@@ -1872,11 +2769,6 @@ const docsSideNav = [
         type: 'doc',
         route: '/docs/tutorial/mongodb-metrics',
         label: 'MongoDB Metrics',
-      },
-      {
-        type: 'doc',
-        route: '/docs/tutorial/instrumenting-angular-frontend',
-        label: 'Instrumenting Angular Frontend Web App',
       },
       {
         type: 'doc',
@@ -2074,7 +2966,7 @@ const docsSideNav = [
         className: 'new-doc',
         type: 'category',
         isExpanded: false,
-        route: '/docs/migration/migrate-from-datadog-to-newrelic',
+        route: '/docs/migration/migrate-from-newrelic-to-signoz',
         items: [
           {
             type: 'doc',
@@ -2100,6 +2992,25 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/migration/migrate-from-newrelic/alerts',
             label: 'Migrating Alerts',
+          },
+        ],
+      },
+      {
+        label: 'From OpenTelemetry',
+        className: 'new-doc',
+        type: 'category',
+        isExpanded: false,
+        route: '/docs/migration/migrate-from-opentelemetry-to-signoz',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/migration/migrate-from-opentelemetry/cloud',
+            label: 'Migrate to SigNoz Cloud',
+          },
+          {
+            type: 'doc',
+            route: '/docs/migration/migrate-from-opentelemetry/self-hosted',
+            label: 'Migrate to Self-Hosted SigNoz',
           },
         ],
       },
@@ -2241,6 +3152,11 @@ const docsSideNav = [
         type: 'doc',
         route: '/docs/azure-monitoring/db-metrics',
         label: 'SQL Database Metrics',
+      },
+      {
+        type: 'doc',
+        route: '/docs/azure-monitoring/mysql-flexible-server',
+        label: 'MySQL Flexible Server',
       },
       {
         type: 'category',
@@ -2510,118 +3426,6 @@ const docsSideNav = [
     ],
   },
   {
-    type: 'category',
-    isExpanded: false,
-    label: 'Operate Self-Hosted SigNoz',
-    route: '/docs/operate',
-    // link: {
-    // type: 'generated-index',
-    // title: 'Operate',
-    // description:
-    // 'The following sections provide an overview of the activities that are required to successfully operate SigNoz. Based on your environment, proceed to one of the sections below.',
-    // slug: '/docs/operate',
-    // },
-    items: [
-      {
-        type: 'category',
-        isExpanded: false,
-        label: '<=0.75.0',
-        //route: '/docs/operate/migration',
-        // link: {
-        // type: 'generated-index',
-        // title: 'Migration Guides',
-        // description:
-        // 'The following sections provide instructions to migrate SigNoz components across newer versions. You need to run these migration scripts step by step. For example if you are currently on `0.8.2` and want to migrate to `0.10.0` - you need to run migration script for `0.9` first and then `0.10`',
-        // slug: '/docs/operate/migration/migration',
-        // },
-        items: [
-          {
-            type: 'doc',
-            route: '/docs/operate/0.75.0/configuration',
-            label: 'Configuration',
-          },
-          {
-            type: 'category',
-            isExpanded: false,
-            label: 'Query Service',
-            route: '/docs/operate/0.75.0/query-service',
-            // link: {
-            // type: 'generated-index',
-            // title: 'Query Service',
-            // description:
-            // 'The following sections provide instructions to operate Query Service. You can proceed to one of the sections below.',
-            // slug: '/docs/operate/query-service',
-            // },
-            items: [
-              {
-                type: 'doc',
-                route: '/docs/operate/0.75.0/query-service/reset-admin-password',
-                label: 'Reset Admin Password',
-              },
-              {
-                type: 'doc',
-                route: '/docs/operate/0.75.0/query-service/user-invitation-smtp',
-                label: 'Enable SMTP for User Invitations',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        type: 'doc',
-        route: '/docs/operate/docker-standalone',
-        label: 'Docker Standalone',
-      },
-      {
-        type: 'doc',
-        route: '/docs/operate/docker-swarm',
-        label: 'Docker Swarm',
-      },
-      {
-        type: 'doc',
-        route: '/docs/operate/kubernetes',
-        label: 'Kubernetes',
-      },
-      {
-        type: 'doc',
-        route: '/docs/production-readiness',
-        label: 'Best Practices for Production',
-      },
-    ],
-  },
-  {
-    type: 'category',
-    isExpanded: false,
-    label: 'About SigNoz',
-    items: [
-      {
-        route: '/docs/contributing',
-        label: 'Contributing Guidelines',
-        type: 'doc',
-      },
-      // 'about-signoz/architecture',
-      // 'about-signoz/contributing',
-      // 'about-signoz/roadmap',
-    ],
-  },
-  {
-    type: 'category',
-    isExpanded: false,
-    label: 'LLM Monitoring',
-    items: [
-      {
-        route: '/docs/llm/opentelemetry-openai-monitoring',
-        label: 'OpenAI Monitoring',
-        type: 'doc',
-      },
-      {
-        route: '/docs/community/llm-monitoring',
-        label: 'LLM Monitoring',
-        type: 'doc',
-      },
-    ],
-  },
-  {
     label: 'Community',
     type: 'category',
     isExpanded: false,
@@ -2636,52 +3440,10 @@ const docsSideNav = [
         route: '/docs/community',
         type: 'doc',
       },
-    ],
-  },
-  {
-    label: 'Troubleshooting',
-    type: 'category',
-    isExpanded: false,
-    // route: '/docs/faqs',
-    // link: {
-    // type: 'generated-index',
-    // title: 'Frequently Asked Questions',
-    // description:
-    // 'Find the most commonly questions about SigNoz Installation, Instrumentation, Features, Troubleshooting, and Contributing here:',
-    // slug: '/docs/faqs/faq',
-    // },
-    items: [
       {
-        label: 'SigNoz Cloud',
-        type: 'category',
-        isExpanded: false,
-        items: [
-          {
-            type: 'doc',
-            route: '/docs/troubleshooting/signoz-cloud/general-troubleshooting',
-            label: 'General Troubleshooting',
-          },
-          {
-            type: 'doc',
-            route: '/docs/troubleshooting/signoz-cloud/traces-troubleshooting',
-            label: 'Traces Troubleshooting',
-          },
-          {
-            type: 'doc',
-            route: '/docs/troubleshooting/signoz-cloud/logs-troubleshooting',
-            label: 'Logs Troubleshooting',
-          },
-          {
-            type: 'doc',
-            route: '/docs/troubleshooting/signoz-cloud/metrics-troubleshooting',
-            label: 'Metrics Troubleshooting',
-          },
-          {
-            type: 'doc',
-            route: '/docs/troubleshooting/signoz-cloud/ingestion-troubleshooting',
-            label: 'Ingestion Troubleshooting',
-          },
-        ],
+        route: '/docs/contributing',
+        label: 'Contributing Guidelines',
+        type: 'doc',
       },
     ],
   },
@@ -2698,6 +3460,11 @@ const docsSideNav = [
     // slug: '/docs/faqs/faq',
     // },
     items: [
+      {
+        type: 'doc',
+        route: '/docs/faqs/general',
+        label: 'General - FAQs',
+      },
       {
         type: 'doc',
         route: '/docs/faqs/product',

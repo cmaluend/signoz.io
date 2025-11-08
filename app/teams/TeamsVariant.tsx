@@ -448,11 +448,11 @@ const SignupFormIsolated: React.FC<{
               <button
                 type="button"
                 key={region.id}
-                className={`flex items-center justify-center gap-2 rounded-md border border-solid p-2.5 text-sm transition-colors
+                className={`flex items-center justify-center gap-2 rounded-md border-2 border-solid p-2.5 text-sm transition-all duration-200
             ${
               region.id === formState.dataRegion
-                ? 'border-signoz_robin-500/60 bg-signoz_robin-500/10 text-signoz_robin-500'
-                : 'border-signoz_slate-400 bg-signoz_ink-300 hover:border-signoz_slate-300'
+                ? 'border-signoz_robin-500 bg-signoz_robin-500/20 text-signoz_robin-400 shadow-lg shadow-signoz_robin-500/25 ring-2 ring-signoz_robin-500/30'
+                : 'border-signoz_slate-400 bg-signoz_ink-300 text-signoz_vanilla-100/70 hover:border-signoz_slate-300 hover:bg-signoz_ink-200'
             }`}
                 onClick={() => handleRegionChange(region.id)}
               >
@@ -470,7 +470,9 @@ const SignupFormIsolated: React.FC<{
         </div>
 
         <div className="space-y-4">
-          <div className="text-center text-sm text-signoz_vanilla-100/70">Sign up with</div>
+          <div className="text-center text-sm text-signoz_vanilla-100/70">
+            Sign up with your work account
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -499,7 +501,7 @@ const SignupFormIsolated: React.FC<{
 
         <div className="flex items-center">
           <div className="flex-1 border-t border-signoz_slate-400"></div>
-          <span className="px-4 text-sm text-signoz_vanilla-100/50">Or use email</span>
+          <span className="px-4 text-sm text-signoz_vanilla-100/50">Or use your work email</span>
           <div className="flex-1 border-t border-signoz_slate-400"></div>
         </div>
       </div>
@@ -836,7 +838,7 @@ const TeamsVariant: React.FC = () => {
 
       <div className="flex h-[calc(100vh-56px)] flex-col lg:flex-row">
         {/* Left section - Sign up form */}
-        <div className="bg-signoz_ink-600 relative flex w-full flex-col p-8 pt-[calc(56px+10vh)] lg:w-5/12 lg:p-12 lg:pt-[calc(56px+10vh)]">
+        <div className="bg-signoz_ink-600 relative flex w-full flex-col p-8 pt-[calc(56px+5vh)] lg:w-5/12 lg:p-12 lg:pt-[calc(56px+5vh)]">
           <div className="w-full">
             {(!isSubmitting && submitFailed) || ssoError ? (
               <ErrorState error={errors.apiError || ''} />
@@ -851,7 +853,7 @@ const TeamsVariant: React.FC = () => {
             )}
           </div>
 
-          <div className="absolute bottom-4 left-0 right-0 hidden text-center lg:block">
+          <div className="absolute bottom-4 left-0 right-0 hidden text-center lg:block [@media(max-height:790px)]:lg:hidden">
             <p className="flex justify-around px-8 text-xs text-signoz_vanilla-100/60">
               <span>OpenTelemetry Native.</span>
               <span>Unfied Signals.</span>

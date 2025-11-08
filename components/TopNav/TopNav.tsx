@@ -5,13 +5,12 @@ import { Button, Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowBigLeft, ArrowRight, BookOpenText, ChevronDown, PenSquare } from 'lucide-react'
+import { ArrowBigLeft, ArrowRight, BookOpenText, Brain, ChevronDown, Cone, Logs, PenSquare, WorkflowIcon } from 'lucide-react'
 import SearchButton from '../SearchButton'
 import GitHubStars from '../GithubStars/GithubStars'
 import React from 'react'
 import DocsSidebar from '../DocsSidebar/DocsSidebar'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import Banner from '../Banner/Banner'
 import Tabs from '../../app/resource-center/Shared/Tabs'
 import { Popover, PopoverTrigger, PopoverContent } from '@nextui-org/react'
 import Accordion from '../Accordion/Accordion'
@@ -47,9 +46,17 @@ const productDropdownItems = [
     key: 'Alerts',
     url: '/alerts-management',
     icon: '/img/index_features/concierge-bell_feature.svg',
-    description: "Always know what's going on",
+    description: "Multiple thresholds and dynamic routing at scale",
     name: 'Alerts',
     order: 5,
+  },
+  {
+    key: 'trace-funnels',
+    url: '/trace-funnels/',
+    icon: <Cone className="text-signoz_robin-400" size={20} />,
+    description: 'Track drop-offs in multi-step flows',
+    name: 'Trace Funnels',
+    order: 9,
   },
   {
     key: 'DistributedTracing',
@@ -68,10 +75,18 @@ const productDropdownItems = [
     order: 6,
   },
   {
+    key: 'external-apis',
+    url: '/external-apis/',
+    icon: <WorkflowIcon className="text-signoz_robin-400" size={20} />,
+    description: 'Track third-party API performance',
+    name: 'External API Monitoring',
+    order: 10,
+  },
+  {
     key: 'LogManagement',
     url: '/log-management',
     icon: '/img/index_features/logs_feature.svg',
-    description: 'Unlock key insights from logs',
+    description: 'Fast queries with columnar database',
     name: 'Log Management',
     order: 3,
   },
@@ -82,6 +97,14 @@ const productDropdownItems = [
     description: 'Record exceptions automatically',
     name: 'Exceptions',
     order: 7,
+  },
+  {
+    key: 'messaging-queues',
+    url: '/docs/messaging-queues/overview/',
+    icon: <Logs className="text-signoz_robin-400" size={20} />,
+    description: 'Monitor Kafka, Celery lag & throughput',
+    name: 'Messaging Queues',
+    order: 11,
   },
   {
     key: 'InfraMonitoring',
@@ -98,6 +121,14 @@ const productDropdownItems = [
     description: 'Control your observability costs',
     name: 'Ingest Guard',
     order: 8,
+  },
+  {
+    key: 'llm-observability',
+    url: '/docs/llm-observability/',
+    icon: <Brain className="text-signoz_robin-400" size={20} />,
+    description: 'Monitor AI and LLM workflows',
+    name: 'LLM Observability',
+    order: 12,
   },
 ]
 
@@ -164,7 +195,7 @@ const resourcesDropdownItems = {
     },
     {
       key: 'dashboards',
-      url: '/dashboards/',
+      url: '/docs/dashboards/dashboard-templates/overview/',
       description: 'Explore dashboard templates for your use cases',
       name: 'Dashboard Templates',
     },
@@ -186,6 +217,8 @@ export default function TopNav() {
   const [isOpenResources, setIsOpenResources] = useState(false)
   const [timeoutId, setTimeoutId] = useState<any>(null)
   const [timeoutIdResources, setTimeoutIdResources] = useState<any>(null)
+  // Track viewport >= lg (1024px) to ensure only one SearchButton mounts
+  const [isLg, setIsLg] = useState<boolean | null>(null)
 
   const loginRoute = '/login/'
   const signupRoute = '/teams/'
@@ -223,8 +256,28 @@ export default function TopNav() {
     }
   }, [pathname])
 
+  // Determine breakpoint on mount to avoid double-mounting SearchButton (and Cmd+K)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const mql = window.matchMedia('(min-width: 1024px)')
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsLg('matches' in e ? e.matches : (e as MediaQueryList).matches)
+    }
+    // Initialize and subscribe
+    handler(mql as unknown as MediaQueryList)
+    mql.addEventListener?.('change', handler as (ev: Event) => void)
+    // Fallback for older browsers
+    // @ts-ignore
+    mql.addListener?.(handler)
+    return () => {
+      mql.removeEventListener?.('change', handler as (ev: Event) => void)
+      // @ts-ignore
+      mql.removeListener?.(handler)
+    }
+  }, [])
+
   // Hide TopNav on teams page or if source is onboarding
-  if (isSignupRoute|| isWordleRoute || source === ONBOARDING_SOURCE) {
+  if (isSignupRoute || isWordleRoute || source === ONBOARDING_SOURCE) {
     return null
   }
 
@@ -289,7 +342,7 @@ export default function TopNav() {
             </TrackingLink>
 
             {!isLoginRoute && (
-              <div className="hidden items-center gap-x-6 lg:flex">
+              <div className="hidden items-center gap-x-6 lg:ml-6 lg:flex">
                 <div
                   onMouseEnter={handleMouseEnterProduct}
                   onMouseLeave={handleMouseLeaveProduct}
@@ -323,11 +376,12 @@ export default function TopNav() {
                           >
                             Product Modules
                           </div>
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-5">
+                          <div className="grid grid-cols-3 gap-x-0 gap-y-4">
                             {productDropdownItems.map((item) => (
                               <TrackingLink
-                                href={item.url}
-                                className="group flex h-auto items-center gap-4"
+                                href={item.url || ''}
+                                disabled={item.url === undefined}
+                                className={`group flex h-auto items-center gap-4 ${item.url === undefined ? 'opacity-80 cursor-not-allowed' : ''}`}
                                 key={item.key}
                                 clickType="Nav Click"
                                 clickName={`${item.name} Product Link`}
@@ -335,12 +389,14 @@ export default function TopNav() {
                                 clickLocation="Top Navbar"
                                 onClick={handleProductDropdownClick}
                               >
-                                <Image
-                                  src={item.icon}
-                                  alt={`${item.name}`}
-                                  width={20}
-                                  height={20}
-                                />
+                                {
+                                  typeof item.icon === 'string' && item.icon !== null ? <Image
+                                    src={item.icon}
+                                    alt={`${item.name}`}
+                                    width={20}
+                                    height={20}
+                                  /> : <div className="h-5 w-5">{item.icon}</div>
+                                }
                                 <div>
                                   <div className="flex flex-row items-center gap-1">
                                     <span>{item.name}</span>{' '}
@@ -566,8 +622,9 @@ export default function TopNav() {
               </div>
             )}
           </div>
-          <div className="flex justify-end lg:hidden">
-            {!mobileMenuOpen && <SearchButton />}
+          <div className="flex items-center justify-end gap-1 lg:hidden">
+            {/* Render SearchButton on mobile only when below lg */}
+            {!mobileMenuOpen && isLg === false && <SearchButton />}
             <button
               type="button"
               className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5"
@@ -585,7 +642,8 @@ export default function TopNav() {
           <div className="hidden items-center gap-3 lg:flex lg:flex-1 lg:justify-end">
             {!isLoginRoute && (
               <>
-                <SearchButton />
+                {/* Render SearchButton on desktop only when at/above lg */}
+                {isLg === true && <SearchButton />}
                 <GitHubStars location="Top Navbar" />
 
                 <TrackingButton
