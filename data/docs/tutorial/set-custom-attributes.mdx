@@ -5,6 +5,8 @@ id: set-custom-attributes
 description: Guide on setting custom attributes and resource attributes in OpenTelemetry. Learn how to add contextual information to your telemetry data at both the collector and SDK level across traces, metrics, and logs.
 ---
 
+import GetHelp from '@/components/shared/get-help.md'
+
 ## Overview
 
 Attributes/Resource attributes provide additional contextual information about the source and type of telemetry data, such as service name, environment, hostname, etc. Attributes help in better filtering, grouping, correlation of telemetry data in SigNoz.
@@ -42,6 +44,8 @@ service:
       exporters: [otlp]
 ```
 
+This example configuration of attributes processor deletes `http.url` attribute and hashes `db.statement` attributes from telemetry data.
+
 ### Using Resource Processor
 
 The [resource](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourceprocessor/README.md) processor modifies resource attributes which can help provide additional context about the source of telemetry data, such as service name, environment, hostname, and deployment details.
@@ -77,6 +81,13 @@ service:
       exporters: [otlp]
 ```
 
+This configuration does the following using resource processor:
+
+- Upserts the `environment` resource attribute so it's always set.
+- Inserts the `team` resource attribute if it doesn't exist.
+- Deletes the `internal.debug` resource attribute.
+- Hashes the `user.id` for PII data.
+
 ### Using Resource Detection Processor
 
 The [resource detection processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md) automatically detects and collects information about the host environment. It can automatically detect attributes like hostname, OS information, cloud provider information (GCP, AWS, Azure, etc.), and Kubernetes metadata:
@@ -111,6 +122,8 @@ The `timeout` defines how long the processor waits for detection to complete.
 
 ## Setting Custom Attributes at the SDK Level
 
+You can also configure attributes as well as resource attributes directly in code using [OpenTelemetry SDK](https://signoz.io/docs/instrumentation/). This method gives you fine-grained control over the attributes for each service.
+
 ### Setting Attributes in Traces
 
 <Tabs>
@@ -142,7 +155,7 @@ app.listen(PORT, () => {
 })
 ```
 
-For more information checkout [Javascript](https://signoz.io/docs/instrumentation/opentelemetry-javascript/) docs.
+For more information on how to instrument a JavaScript application, checkout [JavaScript](https://signoz.io/docs/instrumentation/opentelemetry-javascript/) docs.
 
 </TabItem>
 
@@ -203,7 +216,7 @@ async def read_root():
     return result
 ```
 
-For more information checkout [Python](https://signoz.io/docs/instrumentation/opentelemetry-python/) docs.
+For more information on how to instrument a Python application, checkout [Python](https://signoz.io/docs/instrumentation/opentelemetry-python/) docs.
 
 </TabItem>
 
@@ -252,7 +265,7 @@ public class HelloController {
 }
 ```
 
-For more information checkout [Java](https://signoz.io/docs/instrumentation/opentelemetry-java/) docs.
+For more information on how to instrument a Java application, checkout [Java](https://signoz.io/docs/instrumentation/opentelemetry-java/) docs.
 
 </TabItem>
 
@@ -305,7 +318,7 @@ public static class DiagnosticsConfig
 }
 ```
 
-For more information checkout (https://signoz.io/docs/instrumentation/opentelemetry-dotnet/) doc.
+For more information on how to instrument a .NET application, checkout (https://signoz.io/docs/instrumentation/opentelemetry-dotnet/) doc.
 
 </TabItem>
 </Tabs>
@@ -547,7 +560,7 @@ public static class DiagnosticsConfig
 <Tabs>
 <TabItem value="nodejs" label="Node.js" default>
 
-```javascript
+```javascript:instrumentation.js
 import { Resource } from '@opentelemetry/resources'
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions'
 import { NodeSDK } from '@opentelemetry/sdk-node'
@@ -710,7 +723,10 @@ export OTEL_RESOURCE_ATTRIBUTES="service.name=my-log-service,service.version=1.0
 ### Single attribute
 
 ```bash
-
 # Set service name separately
 export OTEL_SERVICE_NAME="my-log-service"
 ```
+
+## Get Help
+
+<GetHelp />
