@@ -94,6 +94,7 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
       // For self-hosted version, please use the collector url instead.
       url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/traces`,
       headers: {
+        // Optional for the self-hosted version
         'signoz-ingestion-key': '<INGESTION_KEY>',
       },
     });
@@ -145,6 +146,7 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
       // For self-hosted version, please use the collector url instead.
       url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/traces`,
       headers: {
+        // Optional for the self-hosted version
         'signoz-ingestion-key': '<INGESTION_KEY>',
       },
     });
@@ -185,7 +187,8 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
 
 <Admonition type="info">
   For self-hosted deployments, add the following CORS configuration to your OpenTelemetry Collector
-  config file to allow browser requests from your frontend domain:
+  config file to allow browser requests from your frontend domain. Also, update the endpoint and remove the ingestion key header as shown in  
+  <a href="/docs/ingestion/cloud-vs-self-hosted#cloud-to-self-hosted">Cloud → Self-Hosted</a>. 
 </Admonition>
 
 ```yaml
@@ -213,7 +216,10 @@ Going through each of the 3 instrumentations set up:
 
 ### Step 3: Importing the instrumentation file
 
-Import the instrumentation file at the top level of your application. This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture telemetry data from the very beginning of your application's execution.
+<Admonition type="info">
+  Import the instrumentation file at the top level of your application. 
+  This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture telemetry data from the very beginning of your application's execution.
+</Admonition>
 
 <Tabs groupId="framework-choice">
   <TabItem value="react" label="React (Vite/CRA)" default>
@@ -284,6 +290,10 @@ Import the instrumentation file at the top level of your application. This ensur
     };
     ```
 
+    <Admonition>
+    This step is only needed when using NextJs 14 and below
+    </Admonition>
+
   </TabItem>
 
   <TabItem value="nextjs-pages" label="Next.js (Pages Router)">
@@ -318,6 +328,10 @@ Import the instrumentation file at the top level of your application. This ensur
       },
     };
     ```
+
+    <Admonition>
+    This step is only needed when using NextJs 14 and below
+    </Admonition>
 
   </TabItem>
 
@@ -453,6 +467,7 @@ const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({
     url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/traces`,
     headers: {
+      // Optional for the self-hosted version
       'signoz-ingestion-key': '<INGESTION_KEY>',
     },
   }),
@@ -650,8 +665,12 @@ Now every span exported will include these additional contextual attributes.
 
 If you need to create custom spans for capture activity, you can do so from any handler function in your code like this.
 
-```ts
-function eventHandler() {
+```ts:manual.js
+import { context, trace } from '@opentelemetry/api';
+
+const tracer = trace.getTracer('<service-name>');
+
+export async function eventHandler() {
   const span = tracer.startSpan('<span-name>');
   try {
     await context.with(trace.setSpan(context.active(), span), async () => {

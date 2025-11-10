@@ -46,7 +46,7 @@ Install the following dependencies.
 <summary> Read more about the dependencies </summary>
   - **`@opentelemetry/resources`**: Provides resource attributes that identify your service (like service name, version, etc.). This helps distinguish logs from different services in your SigNoz dashboard.
 
-  - **`@opentelemetry/sdk-logs`**: Contains the core logging SDK implementation including `LoggerProvider` and `SimpleLogRecordProcessor`. This is the foundation for creating and processing log records in your application.
+  - **`@opentelemetry/sdk-logs`**: Contains the core logging SDK implementation including `LoggerProvider` and `BatchLogRecordProcessor`. This is the foundation for creating and processing log records in your application.
 
   - **`@opentelemetry/exporter-logs-otlp-http`**: Implements the OTLP (OpenTelemetry Protocol) HTTP exporter that sends your logs to the SigNoz collector. This handles the actual transmission of log data over HTTP.
 
@@ -62,7 +62,7 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
     ```ts:instrumentation.ts
     import {
       LoggerProvider,
-      SimpleLogRecordProcessor,
+      BatchLogRecordProcessor,
     } from '@opentelemetry/sdk-logs';
     import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
     import { logs } from '@opentelemetry/api-logs';
@@ -73,11 +73,12 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
         'service.name': '<SERVICE_NAME>',
       }),
       processors: [
-        new SimpleLogRecordProcessor(
+        new BatchLogRecordProcessor(
           new OTLPLogExporter({
             // For self-hosted version, please use the collector url instead.
             url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/logs`,
             headers: {
+              // Optional for the self-hosted version
               'signoz-ingestion-key': '<INGESTION_KEY>',
             },
           }),
@@ -97,7 +98,7 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
     ```js:instrumentation.js
     import {
       LoggerProvider,
-      SimpleLogRecordProcessor,
+      BatchLogRecordProcessor,
     } from '@opentelemetry/sdk-logs';
     import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
     import { logs } from '@opentelemetry/api-logs';
@@ -108,11 +109,12 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
         'service.name': '<SERVICE_NAME>',
       }),
       processors: [
-        new SimpleLogRecordProcessor(
+        new BatchLogRecordProcessor(
           new OTLPLogExporter({
             // For self-hosted version, please use the collector url instead.
             url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/logs`,
             headers: {
+              // Optional for the self-hosted version
               'signoz-ingestion-key': '<INGESTION_KEY>',
             },
           }),
@@ -132,10 +134,11 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
 
 <Admonition type="info">
   For self-hosted deployments, add the following CORS configuration to your OpenTelemetry Collector
-  config file to allow browser requests from your frontend domain:
+  config file to allow browser requests from your frontend domain. Also, update the endpoint and remove the ingestion key header as shown in  
+  <a href="/docs/ingestion/cloud-vs-self-hosted#cloud-to-self-hosted">Cloud → Self-Hosted</a>. 
 </Admonition>
 
-```yaml
+```yaml:config.yaml
 receivers:
   otlp:
     protocols:
@@ -151,7 +154,10 @@ receivers:
 
 ### Step 3: Importing the instrumentation file
 
-Import the instrumentation file at the top level of your application. This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture telemetry data from the very beginning of your application's execution.
+<Admonition type="info">
+  Import the instrumentation file at the top level of your application. 
+  This ensures that the OpenTelemetry instrumentation is initialized before any other code runs, allowing it to capture telemetry data from the very beginning of your application's execution.
+</Admonition>
 
 <Tabs groupId="framework-choice">
   <TabItem value="react" label="React (Vite/CRA)" default>
@@ -222,6 +228,10 @@ Import the instrumentation file at the top level of your application. This ensur
     };
     ```
 
+    <Admonition>
+    This step is only needed when using NextJs 14 and below
+    </Admonition>
+
   </TabItem>
 
   <TabItem value="nextjs-pages" label="Next.js (Pages Router)">
@@ -256,6 +266,10 @@ Import the instrumentation file at the top level of your application. This ensur
       },
     };
     ```
+
+    <Admonition>
+    This step is only needed when using NextJs 14 and below
+    </Admonition>
 
   </TabItem>
 
@@ -597,16 +611,17 @@ To do so, you need to write a custom implementation on top of `LogRecordProcesso
 
 Update your `instrumentation` file to include this processor before the default one.
 
-```ts
+```ts:instrumentation.ts
 const loggerProvider = new LoggerProvider({
   resource: resourceFromAttributes({
     'service.name': '<SERVICE_NAME>',
   }),
   processors: [
     new CustomAttributesProcessor(),
-    new SimpleLogRecordProcessor(new OTLPLogExporter({
+    new BatchLogRecordProcessor(new OTLPLogExporter({
       url: `https://ingest.<INGESTION_REGION>.signoz.cloud:443/v1/logs`,
       headers: {
+        // Optional for the self-hosted version
         'signoz-ingestion-key': '<INGESTION_KEY>',
       },
     })),
