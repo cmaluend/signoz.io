@@ -1,8 +1,9 @@
 ---
 date: 2025-11-04
-title: How to set custom Attributes in OpenTelemetry Traces, Logs and Metrics
+title: How to Set Custom Attributes in OpenTelemetry Traces, Logs, and Metrics
 id: set-custom-attributes
 description: Guide on setting custom attributes and resource attributes in OpenTelemetry. Learn how to add contextual information to your telemetry data at both the collector and SDK level across traces, metrics, and logs.
+tags: [SigNoz Cloud, Self-Host]
 ---
 
 import GetHelp from '@/components/shared/get-help.md'
@@ -60,7 +61,9 @@ service:
       exporters: [otlp]
 ```
 
-This example configuration of attributes processor deletes `http.url` attribute and hashes `db.statement` attributes from telemetry data.
+This example configuration of attributes processor, which applies to trace, logs, and metrics pipelines deletes `http.url` attribute and hashes `db.statement` attributes from telemetry data.
+
+**Note:** Here we are using attributes processor to modify attributes in OpenTelemetry data like traces, metrics, and logs.
 
 ### Using Resource Processor
 
@@ -135,6 +138,8 @@ service:
 This example includes resource detection processor setup to automatically include resource attributes from the environment, host system, Docker containers, Kubernetes nodes. The complete list of supported detectors can be found [here](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md#supported-detectors).
 
 The `timeout` defines how long the processor waits for detection to complete.
+
+**Note:** The detectors you enable should match your deployment environment. For example, use the `docker` detector when running in Docker, `k8snode` for Kubernetes, and cloud-specific detectors like `gcp`, `aws`, or `azure` when deployed on those platforms. You can combine multiple detectors to gather comprehensive resource information.
 
 ## Setting Custom Attributes at the SDK Level
 
@@ -803,12 +808,38 @@ You can also set the resource attributes using [environment variables](https://o
 export OTEL_RESOURCE_ATTRIBUTES="service.name=my-log-service,service.version=1.0.0,deployment.environment=production,custom.team=backend"
 ```
 
-### Setting Service Name Separately
+### Setting Service Name
+
+Service name is a specifical resource attribute which can be set by `OTEL_SERVICE_NAME` environment variable.
 
 ```bash
 # Set service name separately
 export OTEL_SERVICE_NAME="my-log-service"
 ```
+
+## Validate the changes
+
+After setting up custom attributes, you can verify them in the SigNoz UI.
+
+### In Traces
+
+1.  Navigate to the **Traces** page from the left sidebar.
+2.  Select a trace from the list to open the detailed view.
+3.  Click on a specific span to open the span details panel on the right.
+4.  You will find the custom attributes you set for that span in attributes section.
+
+### In Logs
+
+1.  Go to the **Logs** page from the left sidebar.
+2.  Run a query to find the relevant logs.
+3.  Expand a log line by clicking on it.
+4.  The custom attributes will be displayed in the log details.
+
+### In Metrics
+
+1.  Go to the **Metrics** page from the left sidebar.
+2.  Use the Query Builder to select the metric you created.
+3.  In the `Group By` clause, you can select your custom attributes to filter your metrics.
 
 ## Get Help
 
