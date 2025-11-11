@@ -509,7 +509,7 @@ To do so, you need to write a custom implementation on top of `LogRecordProcesso
 
 <Tabs entityName="plans">
   <TabItem value="ts" label="TypeScript">
-    ```ts
+    ```ts:custom-processor.ts
     import type { LogRecordProcessor, SdkLogRecord } from '@opentelemetry/sdk-logs';
     import { UAParser } from 'ua-parser-js';
 
@@ -559,7 +559,7 @@ To do so, you need to write a custom implementation on top of `LogRecordProcesso
 
   </TabItem>
   <TabItem value="js" label="JavaScript" default>
-    ```js
+    ```js:custom-processor.js
     import { UAParser } from 'ua-parser-js';
 
     function getBrowserInfo() {
@@ -706,6 +706,6 @@ These captured logs can then also be viewed in the [Logs Explorer](https://signo
 Check out this [Sample React Application](https://github.com/SigNoz/frontend-monitoring-examples/tree/main/sending-logs) that demonstrates sending logs to SigNoz.
 
 ## Next Steps
-- [Sending metrics](/docs/frontend-monitoring/sending-logs-with-opentelemetry)
+- [Sending metrics](/docs/frontend-monitoring/sending-metrics-with-opentelemetry)
 - [Sending traces](/docs/frontend-monitoring/sending-traces-with-opentelemetry)
 - [Sending web vitals](/docs/frontend-monitoring/opentelemetry-web-vitals)

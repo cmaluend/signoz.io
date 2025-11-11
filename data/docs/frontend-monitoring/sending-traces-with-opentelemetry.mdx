@@ -521,7 +521,7 @@ To do so, you need to write a custom implementation of `SpanProcessor` which wil
 
 <Tabs entityName="plans">
   <TabItem value="ts" label="TypeScript">
-    ```ts
+    ```ts:custom-processor.ts
     import { SpanProcessor } from '@opentelemetry/sdk-trace-web';
     import { UAParser } from 'ua-parser-js';
 
@@ -579,7 +579,7 @@ To do so, you need to write a custom implementation of `SpanProcessor` which wil
 
   </TabItem>
   <TabItem value="js" label="JavaScript" default>
-    ```js
+    ```js:custom-processor.js
     import { UAParser } from 'ua-parser-js';
 
     export const CONSTANTS = {
@@ -690,6 +690,6 @@ export async function eventHandler() {
 Check out this [full-stack application](https://github.com/SigNoz/frontend-monitoring-examples/tree/main/sending-traces) that demonstrates sending traces from both frontend and backend to SigNoz.
 
 ## Next Steps
-- [Sending metrics](/docs/frontend-monitoring/sending-logs-with-opentelemetry)
-- [Sending traces](/docs/frontend-monitoring/sending-traces-with-opentelemetry)
+- [Sending metrics](/docs/frontend-monitoring/sending-metrics-with-opentelemetry)
+- [Sending logs](/docs/frontend-monitoring/sending-logs-with-opentelemetry)
 - [Sending web vitals](/docs/frontend-monitoring/opentelemetry-web-vitals)
