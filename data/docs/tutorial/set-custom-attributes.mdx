@@ -1,6 +1,6 @@
 ---
 date: 2025-11-04
-title: Guide on Setting Custom Attributes
+title: How to set custom Attributes in OpenTelemetry Traces, Logs and Metrics
 id: set-custom-attributes
 description: Guide on setting custom attributes and resource attributes in OpenTelemetry. Learn how to add contextual information to your telemetry data at both the collector and SDK level across traces, metrics, and logs.
 ---
@@ -15,9 +15,9 @@ Attributes/Resource attributes provide additional contextual information about t
 
 Before you begin, ensure you have the following prerequisites in place:
 
+- **OpenTelemetry Setup**: Your application should be instrumented with OpenTelemetry. For detailed instructions, refer to our [instrumentation documentation](https://signoz.io/docs/instrumentation/).
+- **OpenTelemetry Collector**: If you are using a collector, ensure it is properly configured. You can learn more about [OpenTelemetry Collector configuration here](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration).
 - **A SigNoz deployment**: Either [SigNoz Cloud](https://signoz.io/teams/) or a [self-hosted](https://signoz.io/docs/install/self-host/) version.
-- **An instrumented application**: Checkout this [documentation](https://signoz.io/docs/instrumentation/) for more information on how to instrument an application in different programming languages.
-- **An OpenTelemetry Collector**: OpenTelemetry Collector to receive data from your instrumented application.
 
 ## Attributes vs Resource Attributes
 
@@ -794,7 +794,7 @@ This .NET configuration uses the ResourceBuilder to create custom resource attri
 
 ## Using Environment Variables
 
-You can also set the resource attributes using [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration) by the following ways:
+You can also set the resource attributes using [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration) by setting the `OTEL_RESOURCE_ATTRIBUTES` environment variable:
 
 ### Multiple attributes
 
@@ -803,7 +803,7 @@ You can also set the resource attributes using [environment variables](https://o
 export OTEL_RESOURCE_ATTRIBUTES="service.name=my-log-service,service.version=1.0.0,deployment.environment=production,custom.team=backend"
 ```
 
-### Single attribute
+### Setting Service Name Separately
 
 ```bash
 # Set service name separately
