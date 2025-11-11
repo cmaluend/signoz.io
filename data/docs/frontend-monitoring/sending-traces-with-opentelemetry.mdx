@@ -191,7 +191,7 @@ The instrumentation file is required to setup the `OTLPTraceExporter` and `WebTr
   <a href="/docs/ingestion/cloud-vs-self-hosted#cloud-to-self-hosted">Cloud → Self-Hosted</a>. 
 </Admonition>
 
-```yaml
+```yaml:config.yaml
 receivers:
   otlp:
     protocols:
@@ -204,6 +204,8 @@ receivers:
             - <YOUR_FRONTEND_URL>
           allowed_headers: ['*']
 ```
+
+- `<YOUR_FRONTEND_URL>` is the url pointing to your frontend application
 
 Going through each of the 3 instrumentations set up:
 
@@ -244,21 +246,6 @@ Going through each of the 3 instrumentations set up:
   <TabItem value="nextjs-app" label="Next.js (App Router)">
     Next.js (App Router) supports instrumentation through a special `instrumentation.ts` file at the root of your project (or inside `src/` if using the `src` directory).
 
-    Create `instrumentation.ts` (or `.js`) at the project root:
-
-    ```ts:instrumentation.ts
-    export async function register() {
-      if (process.env.NEXT_RUNTIME === 'nodejs') {
-        // This runs on the server - you can optionally skip client instrumentation here
-        // We'll handle client-side instrumentation separately
-      }
-
-      if (process.env.NEXT_RUNTIME === 'edge') {
-        // This runs on edge runtime
-      }
-    }
-    ```
-
     For **client-side instrumentation**, create a separate file and import it in your root layout:
 
     ```ts:app/instrumentation-client.ts
@@ -280,7 +267,7 @@ Going through each of the 3 instrumentations set up:
     }
     ```
 
-    **Note:** Make sure to enable instrumentation in `next.config.js`:
+    **Note:** Make sure to enable instrumentation in `next.config.js` (Only required when using NextJs 14 and below):
 
     ```js:next.config.js
     module.exports = {
@@ -289,11 +276,6 @@ Going through each of the 3 instrumentations set up:
       },
     };
     ```
-
-    <Admonition>
-    This step is only needed when using NextJs 14 and below
-    </Admonition>
-
   </TabItem>
 
   <TabItem value="nextjs-pages" label="Next.js (Pages Router)">
@@ -319,7 +301,7 @@ Going through each of the 3 instrumentations set up:
     }
     ```
 
-    And enable it in `next.config.js`:
+    And enable it in `next.config.js` (Only required when using NextJs 14 and below):
 
     ```js:next.config.js
     module.exports = {
@@ -328,10 +310,6 @@ Going through each of the 3 instrumentations set up:
       },
     };
     ```
-
-    <Admonition>
-    This step is only needed when using NextJs 14 and below
-    </Admonition>
 
   </TabItem>
 

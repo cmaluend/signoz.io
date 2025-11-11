@@ -152,6 +152,8 @@ receivers:
           allowed_headers: ['*']
 ```
 
+- `<YOUR_FRONTEND_URL>` is the url pointing to your frontend application
+
 ### Step 3: Importing the instrumentation file
 
 <Admonition type="info">
@@ -182,21 +184,6 @@ receivers:
   <TabItem value="nextjs-app" label="Next.js (App Router)">
     Next.js (App Router) supports instrumentation through a special `instrumentation.ts` file at the root of your project (or inside `src/` if using the `src` directory).
 
-    Create `instrumentation.ts` (or `.js`) at the project root:
-
-    ```ts:instrumentation.ts
-    export async function register() {
-      if (process.env.NEXT_RUNTIME === 'nodejs') {
-        // This runs on the server - you can optionally skip client instrumentation here
-        // We'll handle client-side instrumentation separately
-      }
-
-      if (process.env.NEXT_RUNTIME === 'edge') {
-        // This runs on edge runtime
-      }
-    }
-    ```
-
     For **client-side instrumentation**, create a separate file and import it in your root layout:
 
     ```ts:app/instrumentation-client.ts
@@ -218,7 +205,7 @@ receivers:
     }
     ```
 
-    **Note:** Make sure to enable instrumentation in `next.config.js`:
+    **Note:** Make sure to enable instrumentation in `next.config.js` (Only required when using NextJs 14 and below):
 
     ```js:next.config.js
     module.exports = {
@@ -227,11 +214,6 @@ receivers:
       },
     };
     ```
-
-    <Admonition>
-    This step is only needed when using NextJs 14 and below
-    </Admonition>
-
   </TabItem>
 
   <TabItem value="nextjs-pages" label="Next.js (Pages Router)">
@@ -257,7 +239,7 @@ receivers:
     }
     ```
 
-    And enable it in `next.config.js`:
+    And enable it in `next.config.js` (Only required when using NextJs 14 and below):
 
     ```js:next.config.js
     module.exports = {
@@ -266,10 +248,6 @@ receivers:
       },
     };
     ```
-
-    <Admonition>
-    This step is only needed when using NextJs 14 and below
-    </Admonition>
 
   </TabItem>
 
