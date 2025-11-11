@@ -136,23 +136,23 @@ The instrumentation file is required to setup the `LoggerProvider` which is used
   For self-hosted deployments, add the following CORS configuration to your OpenTelemetry Collector
   config file to allow browser requests from your frontend domain. Also, update the endpoint and remove the ingestion key header as shown in  
   <a href="/docs/ingestion/cloud-vs-self-hosted#cloud-to-self-hosted">Cloud → Self-Hosted</a>. 
+
+  ```yaml:config.yaml
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+          cors:
+            allowed_origins:
+              - <YOUR_FRONTEND_URL>
+            allowed_headers: ['*']
+  ```
+
+  - `<YOUR_FRONTEND_URL>` is the url pointing to your frontend application
 </Admonition>
-
-```yaml:config.yaml
-receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
-      http:
-        endpoint: 0.0.0.0:4318
-        cors:
-          allowed_origins:
-            - <YOUR_FRONTEND_URL>
-          allowed_headers: ['*']
-```
-
-- `<YOUR_FRONTEND_URL>` is the url pointing to your frontend application
 
 ### Step 3: Importing the instrumentation file
 
