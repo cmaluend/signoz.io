@@ -1,8 +1,12 @@
 #!/usr/bin/env sh
 set -e
 
-echo 'husky (pre-commit): running lint-staged'
-yarn lint-staged
+if [ "${HUSKY_SKIP_LINT:-}" = "1" ] || [ "${HUSKY_SKIP_LINT:-}" = "true" ]; then
+  echo 'husky (pre-commit): skipping lint-staged because HUSKY_SKIP_LINT is set'
+else
+  echo 'husky (pre-commit): running lint-staged'
+  yarn lint-staged
+fi
 
 STAGED_FILES=$(git diff --cached --name-only)
 
