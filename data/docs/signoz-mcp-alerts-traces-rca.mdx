@@ -1,0 +1,111 @@
+---
+date: 2025-11-20
+id: mcp-alerts-to-traces-rca
+title: MCP Alerts to Traces Root Cause Analysis with SigNoz
+description: Learn how to use SigNoz for root cause analysis by correlating Model Context Protocol (MCP) alerts with distributed traces for faster debugging and incident resolution
+doc_type: tutorial
+---
+
+## Overview
+
+This guide demonstrates how to perform effective root cause analysis by correlating Model Context Protocol (MCP) alerts with distributed traces in SigNoz. When MCP systems generate alerts due to performance issues, errors, or anomalies, this tutorial shows you how to quickly navigate from alert notifications to the underlying distributed traces to identify the root cause of problems.
+
+By connecting MCP alerts to traces, you can dramatically reduce mean time to resolution (MTTR) for incidents. Instead of manually searching through traces, you'll learn how to use SigNoz's correlation capabilities to automatically surface relevant traces when alerts fire, enabling faster debugging and more efficient incident response for your MCP-based applications and services.
+
+## Prerequisites
+
+- A [SigNoz Cloud account](https://signoz.io/teams/)
+- [SigNoz MCP Server](https://signoz.io/docs/signoz-mcp-server/) configured and connected to your SigNoz instance
+- An LLM client connected to the MCP server (we'll be using Claude Desktop in this tutorial)
+- Basic understanding of distributed tracing concepts and alert management
+- Alerts configured and traces being send to your SigNoz instance
+
+## Correlating Alerts with Traces for Root Cause Analysis
+
+When an alert fires in your MCP system, SigNoz MCP allows you to quickly navigate from the alert notification to the relevant distributed traces. This correlation helps identify the root cause of the triggered alert, reducing incident resolution time.
+
+For this tutorial purpose, we will be focusing on the **Trace-based Alert** Non 2xx Status Code alert which has been recently triggered in our SigNoz instance.
+
+<Figure
+  src="/img/docs/llm/mcp/mcp-alert.webp"
+  alt="SigNoz Alert View"
+  caption="SigNoz Non 2xx Status Code Alert View"
+/>
+
+**Step 1:** Query Claude Desktop about the Alert
+
+Start by asking Claude Desktop to investigate the specific alert using the SigNoz MCP server. Open Claude Desktop and use a query like this to get detailed information about the Non 2xx Status Code alert:
+
+"***The '[Trace-based Alert] Non 2xx Status Code' alert has been firing recently. Can you find the associated service name that is triggering this alert?***"
+
+<Figure
+  src="/img/docs/llm/mcp/mcp-first-response.webp"
+  alt="Claude Desktop First Response"
+  caption="Claude Desktop Response Showing Alert Investigation Results"
+/>
+
+According to the response, Claude Desktop identifies two possible primary services triggering the alert: `loadgenerator` and `frontend-web`. It determines that `loadgenerator` is the primary service experiencing issues with non-2xx status codes, which we can confirm based on the most recent activity in the alert trigger history page shown in the image below:
+
+<Figure
+  src="/img/docs/llm/mcp/alert-triggers.webp"
+  alt="SigNoz Alert Triggers"
+  caption="Alert Trigger History for non 2xx alert"
+/>
+
+
+**Step 2:** Drill Down into Specific Traces and Spans
+
+Once you have identified the services associated with the alert, you need to investigate the specific traces to find the exact error. Ask Claude Desktop to examine the traces associated to the services which triggered the alert:
+
+"***Let's focus on the loadgenerator service for now. Can you retrieve a trace from that service which is triggering the alert and identify the specific span along with error details? If there are no correlated logs, just continue.***"
+
+This follow-up query will help you:
+- Examine individual spans within the problematic traces
+- Identify the exact span that contains the error or non-2xx response
+- View detailed error messages, stack traces, or exception information
+- Understand the service topology and which specific service/operation is failing
+- Analyze span attributes like HTTP status codes, error messages, and custom tags
+- See the complete request flow to understand how the error propagated through your system
+
+<Figure
+  src="/img/docs/llm/mcp/mcp-second-response.webp"
+  alt="Claude Desktop Second Response"
+  caption="Detailed Span Analysis Showing Root Cause Investigation"
+/>
+
+Claude Desktop correctly identifies the span hierarchy: the loadgenerator client span (503 error) calling the frontend-proxy ingress span, which then calls the frontend-proxy egress span. This hierarchy can be verified in the SigNoz UI below:
+
+<Figure
+  src="/img/docs/llm/mcp/mcp-alert-trace.webp"
+  alt="Loadgenrator Trace"
+  caption="Loadgenerator trace which triggered the non 2xx response alert"
+/>
+
+Claude Desktop additionally identifies the problematic URL: `http://app-demo-frontendproxy:8080/api/recommendations?productIds=0PUK6V6EV0`. This URL and the 503 status code can be verified in the SigNoz trace details:
+
+<Figure
+  src="/img/docs/llm/mcp/trace-url.webp"
+  alt="Loadgenrator Trace Details"
+  caption="Loadgenrator Trace URL and Status Code"
+/>
+
+From a developer's perspective, this workflow demonstrates the power of MCP-powered root cause analysis: starting from just a triggered alert, you were able to pinpoint the exact issue—the specific URL (`/api/recommendations?productIds=0PUK6V6EV0`) returning a 503 status code. This level of detail dramatically accelerates troubleshooting, allowing you to immediately focus on the failing endpoint rather than searching through multiple services and traces.
+
+## Benefits of MCP-Powered Root Cause Analysis
+
+This MCP-powered approach to correlating alerts with traces provides several key advantages:
+
+- **Faster Resolution**: Directly correlate alerts to specific traces and spans
+- **Contextual Understanding**: Get comprehensive context about the alert conditions and related traces
+- **Automated Investigation**: Use natural language queries to explore complex distributed systems
+- **Reduced MTTR**: Minimize the time between alert firing and issue resolution
+- **Pattern Recognition**: Identify recurring issues and system bottlenecks
+
+## Conclusion
+
+The SigNoz MCP server enables direct correlation between alerts and traces through natural language queries. This workflow reduces manual investigation time and helps you quickly identify root causes in distributed systems.
+
+Key takeaways:
+- Use conversational queries to investigate alerts and drill down into specific traces
+- Leverage span-level analysis to pinpoint exact failure points
+- Reduce MTTR by automating the alert-to-trace correlation process
