@@ -202,6 +202,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            label: 'Deploying to Hashicorp Nomad',
+            route: '/docs/setup/nomad',
+          },
+          {
+            type: 'doc',
             label: 'Deploying to Azure Container Apps',
             route: '/docs/install/azure-container-apps',
           },
