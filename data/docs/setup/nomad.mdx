@@ -7,13 +7,7 @@ id: nomad
 slug: /setup/nomad
 ---
 
-Deploy the complete [SigNoz](https://signoz.io) observability stack on HashiCorp
-Nomad. This pack includes ClickHouse, ZooKeeper, the SigNoz application, and the
-OpenTelemetry Collector, all running as Docker containers via Nomad's [Docker
-driver](https://www.nomadproject.io/docs/drivers/docker). For background on the
-pack itself, see the upstream [SigNoz Nomad Pack](https://github.com/hashicorp/nomad-pack-community-registry/blob/main/packs/signoz/README.md),
-and review HashiCorp's [Nomad Pack guide](https://developer.hashicorp.com/nomad/tools/nomad-pack) if you need help installing or operating the `nomad-pack`
-CLI.
+Deploy the complete [SigNoz](https://signoz.io) observability stack on HashiCorp Nomad. This pack includes ClickHouse, ZooKeeper, the SigNoz application, and the OpenTelemetry Collector, all running as Docker containers via Nomad's [Docker driver](https://www.nomadproject.io/docs/drivers/docker). For background on the pack itself, see the upstream [SigNoz Nomad Pack](https://github.com/hashicorp/nomad-pack-community-registry/blob/main/packs/signoz/README.md), and review HashiCorp's [Nomad Pack guide](https://developer.hashicorp.com/nomad/tools/nomad-pack) if you need help installing or operating the `nomad-pack` CLI.
 
 ## Prerequisites
 
@@ -26,9 +20,7 @@ Ensure your environment has:
 
 ## Install SigNoz on Nomad
 
-There's a `setup.sh` script in the <a href="https://github.com/hashicorp/nomad-pack-community-registry/blob/main/packs/signoz/setup.sh" target="_blank" rel="noopener noreferrer nofollow">Pack directory</a> 
-that can automatically perform the required setup steps. Set the `RELEASE`, `NAMESPACE`, and `CLICKHOUSE_PASSWORD` environment variables and it will make the appropriate
-changes. If you prefer to run the same steps manually, follow the sequence below.
+There's a `setup.sh` script in the <a href="https://github.com/hashicorp/nomad-pack-community-registry/blob/main/packs/signoz/setup.sh" target="_blank" rel="noopener noreferrer nofollow">Pack directory</a> that can automatically perform the required setup steps. Set the `RELEASE`, `NAMESPACE`, and `CLICKHOUSE_PASSWORD` environment variables and it will make the appropriate changes. If you prefer to run the same steps manually, follow the sequence below.
 
 ### Step 1: Configure ClickHouse Password
 
@@ -66,9 +58,7 @@ namespace "<your-shared-namespace>" {
 }
 ```
 
-Apply the policy to each job that this pack deploys. Every job name is
-automatically prefixed with `<your-release-name>` (for example,
-`<release-name>_<job-name>`). The pack creates the following jobs:
+Apply the policy to each job that this pack deploys. Every job name is automatically prefixed with `<your-release-name>` (for example, `<release-name>_<job-name>`). The pack creates the following jobs:
 
 * signoz
 * clickhouse
@@ -90,8 +80,7 @@ Replace `<your-release-name>_job_name` with each job name from the list above.
 
 ### Step 3: Create Persistent Volumes
 
-The pack requires three separate host volumes for data persistence. Here's an
-example volume configuration:
+The pack requires three separate host volumes for data persistence. Here's an example volume configuration:
 
 ```hcl
 # signoz-volume.hcl
@@ -124,16 +113,14 @@ You'll reference these volume names when deploying the pack.
 
 #### Fetch or Update the SigNoz Pack
 
-Ensure the SigNoz pack from the community registry is available (or refreshed to
-the latest version) before you deploy:
+Ensure the SigNoz pack from the community registry is available (or refreshed to the latest version) before you deploy:
 
 ```bash
 nomad-pack registry add community github.com/hashicorp/nomad-pack-community-registry
 nomad-pack info signoz --registry=community
 ```
 
-Whenever you need to pull updates, rerun the `registry add` command above to
-refresh the cached registry and then redeploy the pack.
+Whenever you need to pull updates, rerun the `registry add` command above to refresh the cached registry and then redeploy the pack.
 
 #### Deploy with Volume Names
 
@@ -148,12 +135,10 @@ nomad-pack run signoz \
   --var=zookeeper_volume_name=<ZOOKEEPER_VOLUME>
 ```
 
+After deployment, access SigNoz through its registered Consul service endpoint and begin collecting observability data from your applications.
+
 <Admonition type="warning">
-If a job under this pack fails due to a "Failed Validation" error for
-ClickHouse variables (this can occur if ClickHouse is not yet available and the
-variables do not exist), it automatically retries. If all retry attempts are
-exhausted, check the job status using `nomad job status <job-name>` or in the
-Nomad UI, then re-run the job manually.
+If a job under this pack fails due to a "Failed Validation" error for ClickHouse variables (this can occur if ClickHouse is not yet available and the variables do not exist), it automatically retries. If all retry attempts are exhausted, check the job status using `nomad job status <job-name>` or in the Nomad UI, then re-run the job manually.
 </Admonition>
 
 #### Preview Before Deploying
@@ -166,15 +151,9 @@ nomad-pack render signoz
 
 ## Verify the Installation
 
-1. Use `nomad job status <your-release-name>_signoz` (and the other jobs listed
-   earlier) to ensure each job reaches the `running` state. Investigate any
-   allocations stuck in `pending` or `dead` with `nomad alloc status
-   <allocation-id>`.
-2. Confirm that ClickHouse, ZooKeeper, and SigNoz appear in Consul with healthy
-   checks before routing traffic through them.
-3. After the `signoz` job reports healthy allocations, access the UI via the
-   Consul service endpoint or by forwarding port `8080` and opening
-   `http://<sigNoz-host>:8080/` in your browser.
+1. Use `nomad job status <your-release-name>_signoz` (and the other jobs listed earlier) to ensure each job reaches the `running` state. Investigate any allocations stuck in `pending` or `dead` with `nomad alloc status <allocation-id>`.
+2. Confirm that ClickHouse, ZooKeeper, and SigNoz appear in Consul with healthy checks before routing traffic through them.
+3. After the `signoz` job reports healthy allocations, access the UI via the Consul service endpoint or by forwarding port `8080` and opening `http://<sigNoz-host>:8080/` in your browser.
 
 ## Service Discovery
 
@@ -192,14 +171,11 @@ These registrations enable inter-service communication and monitoring through Co
 
 ## Configuration Reference
 
-Customize your deployment by modifying `variables.hcl` or passing variables via
-the pack's `--var` argument.
+Customize your deployment by modifying `variables.hcl` or passing variables via the pack's `--var` argument.
 
 ### Required
 
-* `config`: A path on disk where the Clickhouse and Signoz configuration files
-  live. You'll need this directory tree to match the one in the `config`
-  directory of this Pack.
+* `config`: A path on disk where the Clickhouse and Signoz configuration files live. You'll need this directory tree to match the one in the `config` directory of this Pack.
 
 ### General Configuration
 
@@ -233,7 +209,4 @@ the pack's `--var` argument.
 ### Scaling
 * `otel_collector_count`: Number of collector replicas
 
-## Next Steps
 
-After deployment, access SigNoz through its registered Consul service endpoint
-and begin collecting observability data from your applications.
