@@ -202,7 +202,7 @@ const docsSideNav = [
           },
           {
             type: 'doc',
-            label: 'Deploying to Hashicorp Nomad',
+            label: 'Deploying to HashiCorp Nomad',
             route: '/docs/setup/nomad',
           },
           {

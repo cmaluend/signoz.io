@@ -26,11 +26,9 @@ Ensure your environment has:
 
 ## Install SigNoz on Nomad
 
-There's a `setup.sh` script in the [Pack directory](https://github.com/hashicorp/nomad-pack-community-registry/blob/main/packs/signoz/setup.sh) that can automatically
-perform the required setup steps. Set the `RELEASE`, `NAMESPACE`, and
-`CLICKHOUSE_PASSWORD` environment variables and it will make the appropriate
-changes. If you prefer to run the same steps manually, follow the sequence
-below.
+There's a `setup.sh` script in the <a href="https://github.com/hashicorp/nomad-pack-community-registry/blob/main/packs/signoz/setup.sh" target="_blank" rel="noopener noreferrer nofollow">Pack directory</a> 
+that can automatically perform the required setup steps. Set the `RELEASE`, `NAMESPACE`, and `CLICKHOUSE_PASSWORD` environment variables and it will make the appropriate
+changes. If you prefer to run the same steps manually, follow the sequence below.
 
 ### Step 1: Configure ClickHouse Password
 
@@ -45,6 +43,7 @@ items {
   clickhouse_password = "your_clickhouse_password"  # Change this
 }
 ```
+Replace `<your_release_name>` with your chosen release name (e.g., `signoz-prod`). This should match the release name you'll use when deploying the pack
 
 Load the variables:
 
