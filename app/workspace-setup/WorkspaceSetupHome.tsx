@@ -36,6 +36,8 @@ function WorkspaceSetupHome() {
       }),
     })
 
+    console.log('verify response res', res)
+
     const data = await res.json()
 
     console.log('verify response data', data)
