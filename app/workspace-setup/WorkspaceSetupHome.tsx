@@ -47,9 +47,11 @@ function WorkspaceSetupHome() {
       data.type !== 'already-exists' &&
       !data.error?.toLocaleLowerCase()?.startsWith('cannot assign more than')
     ) {
+      console.log('verify response data is error and not already exists', data)
       setIsEmailVerified(false)
       setVerificationError(data.error || 'Email verification failed')
     } else if (data.status === 'success') {
+      console.log('verify response data is success', data)
       setVerificationError(null)
       setIsEmailVerified(true)
       setIsPollingEnabled(true)
@@ -58,6 +60,12 @@ function WorkspaceSetupHome() {
       (data.type === 'already-exists' ||
         data.error?.toLocaleLowerCase()?.startsWith('cannot assign more than'))
     ) {
+      console.log('verify response data is error and already exists', data)
+      setVerificationError(null)
+      setIsEmailVerified(true)
+      setIsPollingEnabled(true)
+    } else {
+      console.log('verify response data is else', data)
       setVerificationError(null)
       setIsEmailVerified(true)
       setIsPollingEnabled(true)
