@@ -21,54 +21,77 @@ function WorkspaceSetupHome() {
   const region = searchParams.get('region')
 
   const verifyEmail = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_CONTROL_PLANE_URL}/users/verify`, {
-      cache: 'no-store',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'PUT',
-      body: JSON.stringify({
-        code: code,
-        email: decodeURIComponent(email || ''),
-        region: {
-          name: region,
-        },
-      }),
-    })
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_CONTROL_PLANE_URL}/users/verify`, {
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json' },
+        method: 'PUT',
+        body: JSON.stringify({
+          code: code,
+          email: decodeURIComponent(email || ''),
+          region: { name: region },
+        }),
+      })
 
-    console.log('verify response res', res)
+      console.log('verify response res', res)
 
-    const data = await res.json()
+      // empty response handling for 204
+      let data: any = null
+      const isJsonResponse =
+        res.headers.get('content-type') &&
+        res?.headers?.get('content-type')?.includes('application/json')
+      if (res.status !== 204 && isJsonResponse) {
+        const text = await res.text()
+        data = text ? JSON.parse(text) : null
+      }
+      // If 204, treat as success without body
+      if (res.status === 204 || (res.ok && data && data?.status === 'success')) {
+        setIsEmailVerified(true)
+        setIsPollingEnabled(true)
+        setVerificationError(null)
+        console.log('verify response success response', { data, res })
+        return
+      }
 
-    console.log('verify response data', data)
+      // If there's JSON, process error/special logic
+      if (data) {
+        console.log('verify response error response', data)
 
-    if (
-      data.status === 'error' &&
-      data.type !== 'already-exists' &&
-      !data.error?.toLocaleLowerCase()?.startsWith('cannot assign more than')
-    ) {
-      console.log('verify response data is error and not already exists', data)
+        if (
+          data.status === 'error' &&
+          data.type !== 'already-exists' &&
+          !data.error?.toLocaleLowerCase()?.startsWith('cannot assign more than')
+        ) {
+          setIsEmailVerified(false)
+          setVerificationError(data.error || 'Email verification failed')
+        } else if (data.status === 'success') {
+          setVerificationError(null)
+          setIsEmailVerified(true)
+          setIsPollingEnabled(true)
+        } else if (
+          data.status === 'error' &&
+          (data.type === 'already-exists' ||
+            data.error?.toLocaleLowerCase()?.startsWith('cannot assign more than'))
+        ) {
+          setVerificationError(null)
+          setIsEmailVerified(true)
+          setIsPollingEnabled(true)
+        } else {
+          setVerificationError(null)
+          setIsEmailVerified(true)
+          setIsPollingEnabled(true)
+        }
+      } else {
+        // unhandled or non-json error, fallback
+        setIsEmailVerified(false)
+        setIsPollingEnabled(false)
+        setVerificationError('Unexpected verification response')
+      }
+    } catch (err) {
+      console.error('verifyEmail error:', err)
       setIsEmailVerified(false)
-      setVerificationError(data.error || 'Email verification failed')
-    } else if (data.status === 'success') {
-      console.log('verify response data is success', data)
-      setVerificationError(null)
-      setIsEmailVerified(true)
-      setIsPollingEnabled(true)
-    } else if (
-      data.status === 'error' &&
-      (data.type === 'already-exists' ||
-        data.error?.toLocaleLowerCase()?.startsWith('cannot assign more than'))
-    ) {
-      console.log('verify response data is error and already exists', data)
-      setVerificationError(null)
-      setIsEmailVerified(true)
-      setIsPollingEnabled(true)
-    } else {
-      console.log('verify response data is else', data)
-      setVerificationError(null)
-      setIsEmailVerified(true)
-      setIsPollingEnabled(true)
+      setIsPollingEnabled(false)
+      setVerificationError('Unexpected error during email verification')
     }
   }
 
