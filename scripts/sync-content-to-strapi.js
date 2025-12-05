@@ -223,6 +223,14 @@ async function getOrCreateStrapiFolder(folderPath) {
         console.log(`    ✅ Created folder "${part}" (ID: ${parentId})`)
       }
     } catch (error) {
+      // Gracefully handle Folder API unavailability (e.g. 404 Not Found or 403 Forbidden)
+      // This happens if the API Token doesn't have permissions or the Folder API is not exposed via /api
+      if (error.response && (error.response.status === 404 || error.response.status === 403)) {
+        console.warn(
+          `    ⚠️ Folder API not accessible (Status ${error.response.status}). Skipping folder creation and uploading to root.`
+        )
+        return null
+      }
       console.error(`    ❌ Error handling folder "${part}": ${error.message}`)
       throw error
     }
