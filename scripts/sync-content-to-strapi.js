@@ -266,6 +266,13 @@ async function findAssetInStrapi(filename, folderId) {
 async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
   try {
     const fileName = path.basename(filePath)
+
+    // Sanitize filename: Replace problematic characters with safe alternatives
+    // Strapi can be strict about characters in filenames during upload
+    // We keep the original name in metadata but send a safe name for the file itself if needed
+    // But here we just ensure the upload name is clean.
+    const safeFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_')
+
     const stats = fs.statSync(filePath)
     const fileSizeInBytes = stats.size
     const fileStream = fs.createReadStream(filePath)
@@ -274,6 +281,7 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
     const formData = new FormData()
     formData.append('files', fileStream, {
       filepath: filePath,
+      filename: safeFileName, // Send sanitized filename
       contentType: mimeType,
       knownLength: fileSizeInBytes,
     })
@@ -282,6 +290,8 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
     const fileInfo = {
       name: fileName,
       folder: folderId,
+      alternativeText: fileName, // Add alternative text for better accessibility
+      caption: fileName, // Add caption as fallback
     }
     if (existingId) {
       // Strapi doesn't support "update file content" easily via simple upload endpoint
@@ -295,11 +305,16 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
 
     formData.append('fileInfo', JSON.stringify(fileInfo))
 
+    // Remove problematic headers from form-data that might cause issues with axios
+    const formHeaders = formData.getHeaders()
+
     const response = await axios.post(`${CMS_API_URL}/api/upload`, formData, {
       headers: {
         Authorization: `Bearer ${CMS_API_TOKEN}`,
-        ...formData.getHeaders(),
+        ...formHeaders,
       },
+      maxBodyLength: Infinity, // Allow large file uploads
+      maxContentLength: Infinity,
     })
 
     return response.data[0] // Returns array of uploaded files
