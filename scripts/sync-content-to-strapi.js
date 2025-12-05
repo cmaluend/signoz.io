@@ -1,6 +1,9 @@
 const fs = require('fs')
+const path = require('path')
 const matter = require('gray-matter')
 const axios = require('axios')
+const FormData = require('form-data')
+const mime = require('mime-types')
 
 // Configuration
 const CMS_API_URL = process.env.CMS_API_URL
@@ -181,6 +184,258 @@ async function fetchAllEntities(endpoint) {
   }
 }
 
+// ASSET MANAGEMENT
+
+// Helper: Get or Create Folder in Strapi
+async function getOrCreateStrapiFolder(folderPath) {
+  // folderPath example: "img/blog/2023" (relative to public)
+  const parts = folderPath.split('/').filter((p) => p)
+  let parentId = null
+
+  for (const part of parts) {
+    try {
+      // Search for folder with this name and parent
+      const params = {
+        filters: {
+          name: { $eq: part },
+          parent: { id: parentId ? { $eq: parentId } : { $null: true } },
+        },
+      }
+
+      const response = await axios.get(`${CMS_API_URL}/api/upload/folders`, {
+        params,
+        headers: { Authorization: `Bearer ${CMS_API_TOKEN}` },
+      })
+
+      const folders = response.data.data
+      if (folders && folders.length > 0) {
+        parentId = folders[0].id
+        console.log(`    📂 Found folder "${part}" (ID: ${parentId})`)
+      } else {
+        // Create folder
+        console.log(`    📂 Creating folder "${part}" under parent ${parentId}...`)
+        const createRes = await axios.post(
+          `${CMS_API_URL}/api/upload/folders`,
+          { name: part, parent: parentId },
+          { headers: { Authorization: `Bearer ${CMS_API_TOKEN}` } }
+        )
+        parentId = createRes.data.data.id
+        console.log(`    ✅ Created folder "${part}" (ID: ${parentId})`)
+      }
+    } catch (error) {
+      console.error(`    ❌ Error handling folder "${part}": ${error.message}`)
+      throw error
+    }
+  }
+  return parentId
+}
+
+// Helper: Find asset by name and folder
+async function findAssetInStrapi(filename, folderId) {
+  try {
+    const params = {
+      filters: {
+        name: { $eq: filename },
+        folder: { id: folderId ? { $eq: folderId } : { $null: true } },
+      },
+    }
+    const response = await axios.get(`${CMS_API_URL}/api/upload/files`, {
+      params,
+      headers: { Authorization: `Bearer ${CMS_API_TOKEN}` },
+    })
+
+    if (response.data && response.data.length > 0) {
+      return response.data[0]
+    }
+    return null
+  } catch (error) {
+    console.error(`    ❌ Error finding asset: ${error.message}`)
+    return null
+  }
+}
+
+// Helper: Upload asset to Strapi
+async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
+  try {
+    const fileName = path.basename(filePath)
+    const stats = fs.statSync(filePath)
+    const fileSizeInBytes = stats.size
+    const fileStream = fs.createReadStream(filePath)
+    const mimeType = mime.lookup(filePath) || 'application/octet-stream'
+
+    const formData = new FormData()
+    formData.append('files', fileStream, {
+      filepath: filePath,
+      contentType: mimeType,
+      knownLength: fileSizeInBytes,
+    })
+
+    // Add file info
+    const fileInfo = {
+      name: fileName,
+      folder: folderId,
+    }
+    if (existingId) {
+      // Strapi doesn't support "update file content" easily via simple upload endpoint
+      // So we delete and re-upload
+      // For safety and simplicity in V4, we'll delete the old one and upload new one,
+      // this means the ID will change.
+      // we replace URLs in content, so changing ID/URL is acceptable as long as we update the content references
+      console.log(`    🔄 Re-uploading (delete old + upload new) for ${fileName}`)
+      await deleteAssetFromStrapi(existingId)
+    }
+
+    formData.append('fileInfo', JSON.stringify(fileInfo))
+
+    const response = await axios.post(`${CMS_API_URL}/api/upload`, formData, {
+      headers: {
+        Authorization: `Bearer ${CMS_API_TOKEN}`,
+        ...formData.getHeaders(),
+      },
+    })
+
+    return response.data[0] // Returns array of uploaded files
+  } catch (error) {
+    console.error(`    ❌ Upload failed for ${filePath}: ${error.message}`)
+    if (error.response) {
+      console.error(`      Response: ${JSON.stringify(error.response.data)}`)
+    }
+    throw error
+  }
+}
+
+// Helper: Delete asset from Strapi
+async function deleteAssetFromStrapi(fileId) {
+  try {
+    await axios.delete(`${CMS_API_URL}/api/upload/files/${fileId}`, {
+      headers: { Authorization: `Bearer ${CMS_API_TOKEN}` },
+    })
+    console.log(`    🗑️ Deleted asset ID ${fileId}`)
+  } catch (error) {
+    console.warn(`    ⚠️ Failed to delete asset ID ${fileId}: ${error.message}`)
+  }
+}
+
+// Main Asset Sync Function
+async function syncAsset(filePath) {
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Asset file not found locally: ${filePath}`)
+  }
+
+  // Calculate relative path from 'public' to determine folder structure
+  // filePath is like "public/img/blog/foo.png"
+  const relPath = path.relative('public', filePath) // "img/blog/foo.png"
+  const dirName = path.dirname(relPath) // "img/blog"
+  const fileName = path.basename(filePath)
+
+  console.log(`  🖼️ Syncing asset: ${relPath}`)
+
+  // 1. folder structure
+  let folderId = null
+  if (dirName !== '.') {
+    folderId = await getOrCreateStrapiFolder(dirName)
+  }
+
+  // 2. Check if exists
+  const existingAsset = await findAssetInStrapi(fileName, folderId)
+
+  // 3. Upload or Update
+  if (existingAsset) {
+    console.log(`    ✅ Found existing asset ID: ${existingAsset.id}`)
+
+    const isChanged = CHANGED_FILES.includes(filePath)
+    if (isChanged) {
+      console.log(`    🔄 File changed in git, updating in CMS...`)
+      const newAsset = await uploadAssetToStrapi(filePath, folderId, existingAsset.id)
+      return newAsset
+    }
+    return existingAsset
+  } else {
+    console.log(`    ➕ Asset not found in CMS, uploading...`)
+    const newAsset = await uploadAssetToStrapi(filePath, folderId)
+    return newAsset
+  }
+}
+
+// Helper: Replace local paths with Strapi URLs in content/frontmatter
+async function processContentAssets(content, frontmatter) {
+  let newContent = content
+  let newFrontmatter = { ...frontmatter }
+
+  // Regex to find potential asset paths
+  // Matches: /img/..., /videos/..., etc. (assuming they start with / and are in public)
+  // We look for common patterns in MDX: ](/path), src="/path", src='/path', "image": "/path"
+  const assetPathRegex = /(\/img\/[^\s"')]+|\/videos\/[^\s"')]+|\/files\/[^\s"')]+)/g
+
+  const matches = new Set()
+
+  // Scan content
+  let match
+  while ((match = assetPathRegex.exec(content)) !== null) {
+    matches.add(match[1])
+  }
+
+  // Scan frontmatter (values only)
+  Object.values(frontmatter).forEach((val) => {
+    if (typeof val === 'string' && (val.startsWith('/img/') || val.startsWith('/videos/'))) {
+      matches.add(val)
+    }
+  })
+
+  if (matches.size === 0) return { content, frontmatter }
+
+  console.log(`  🔍 Found ${matches.size} asset references. Resolving...`)
+
+  for (const assetPath of matches) {
+    // assetPath is like "/img/blog/foo.png"
+    // local path is "public/img/blog/foo.png"
+    const localPath = path.join('public', assetPath)
+
+    if (fs.existsSync(localPath)) {
+      try {
+        const asset = await syncAsset(localPath)
+        if (asset && asset.url) {
+          const strapiUrl = asset.url // Should be full URL if provider is cloud, or relative if local
+          // If relative, prepend CMS_API_URL
+          const fullUrl = strapiUrl.startsWith('http') ? strapiUrl : `${CMS_API_URL}${strapiUrl}`
+
+          console.log(`    🔗 Replacing ${assetPath} -> ${fullUrl}`)
+
+          // Replace in content
+          // Escape special regex chars in assetPath for replacement
+          const escapedPath = assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          const replaceRegex = new RegExp(escapedPath, 'g')
+
+          console.log(`    🔗 Initial content: ${newContent}`)
+          console.log(`    🔗 Replace regex: ${replaceRegex}`)
+          console.log(`    🔗 Replace with: ${fullUrl}`)
+
+          newContent = newContent.replace(replaceRegex, fullUrl)
+
+          console.log(`    🔗 Final content: ${newContent}`)
+
+          // Replace in frontmatter
+          Object.keys(newFrontmatter).forEach((key) => {
+            if (newFrontmatter[key] === assetPath) {
+              newFrontmatter[key] = fullUrl
+            }
+          })
+
+          console.log(`    🔗 Replaced ${assetPath} -> ${fullUrl}`)
+        }
+      } catch (err) {
+        console.error(`    ⚠️ Failed to sync asset ${assetPath}: ${err.message}`)
+      }
+    } else {
+      console.warn(`    ⚠️ Referenced asset not found locally: ${localPath}`)
+    }
+  }
+
+  return { content: newContent, frontmatter: newFrontmatter }
+}
+
+// CONTENT MANAGEMENT
+
 // Helper: Create a tag or keyword entry
 async function createTagOrKeyword(endpoint, value, folderName) {
   try {
@@ -347,17 +602,22 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
     throw new Error(`No schema defined for folder: ${folderName}`)
   }
 
+  // 1. Process Assets in Content and Frontmatter
+  // This will upload referenced assets and replace paths with CMS URLs
+  const { content: processedContent, frontmatter: processedFrontmatter } =
+    await processContentAssets(content, frontmatter)
+
   // Base data
   const data = {
     path: pathField,
-    content: content,
+    content: processedContent,
     deployment_status: DEPLOYMENT_STATUS,
-    ...frontmatter,
+    ...processedFrontmatter,
   }
 
   // Resolve relations
   console.log(`  🔍 Resolving relations...`)
-  const { relations, warnings } = await resolveRelations(folderName, frontmatter)
+  const { relations, warnings } = await resolveRelations(folderName, processedFrontmatter)
 
   // Remove raw frontmatter relation fields
   if (schema.relations) {
@@ -365,22 +625,13 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
     for (const [relationName, relationConfig] of Object.entries(schema.relations)) {
       const fieldName = relationConfig.frontmatterField
       if (data[fieldName]) {
-        console.log(
-          `    🗑️ [DEBUG] Removing raw frontmatter field: ${fieldName} = ${JSON.stringify(data[fieldName])}`
-        )
         delete data[fieldName]
       }
     }
   }
 
   if (Object.keys(relations).length > 0) {
-    console.log(
-      `  ➕ [DEBUG] Adding resolved relations to data:`,
-      Object.keys(relations).join(', ')
-    )
     Object.assign(data, relations)
-  } else {
-    console.log(`  ℹ️ [DEBUG] No relations were successfully resolved, none will be added`)
   }
 
   // Check for missing required fields
@@ -399,10 +650,6 @@ async function mapToStrapiSchema(folderName, frontmatter, content, pathField) {
 async function findEntryByPath(folderName, pathField) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
-    console.log(
-      `  🔍 [DEBUG] Searching for entry: endpoint=${schema.endpoint}, path=${pathField}, deployment_status=${DEPLOYMENT_STATUS}`
-    )
-
     const response = await axios.get(`${CMS_API_URL}/api/${schema.endpoint}`, {
       params: {
         filters: { path: { $eq: pathField }, deployment_status: { $eq: DEPLOYMENT_STATUS } },
@@ -414,23 +661,12 @@ async function findEntryByPath(folderName, pathField) {
       },
     })
 
-    console.log(`  🔍 [DEBUG] Response status: ${response.status}`)
-    console.log(`  🔍 [DEBUG] Response data:`, JSON.stringify(response.data, null, 2))
-
     if (response.data.data && response.data.data.length > 0) {
-      const entry = response.data.data[0]
-      console.log(`  ✅ [DEBUG] Entry found:`, JSON.stringify(entry, null, 2))
-      return entry
+      return response.data.data[0]
     }
-
-    console.log(`  ℹ️ [DEBUG] No entry found`)
     return null
   } catch (error) {
     console.error(`  ❌ [DEBUG] Error in findEntryByPath:`, error.message)
-    if (error.response) {
-      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
-      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
-    }
     throw new Error(`Failed to find entry by path: ${error.message}`)
   }
 }
@@ -439,10 +675,6 @@ async function findEntryByPath(folderName, pathField) {
 async function createEntry(folderName, data) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
-    console.log(`  📝 [DEBUG] Creating entry in ${schema.endpoint}`)
-    console.log(`  📝 [DEBUG] Data keys:`, Object.keys(data).join(', '))
-    console.log(`  📝 [DEBUG] Full data:`, JSON.stringify(data, null, 2))
-
     const response = await axios.post(
       `${CMS_API_URL}/api/${schema.endpoint}`,
       { data },
@@ -453,20 +685,10 @@ async function createEntry(folderName, data) {
         },
       }
     )
-
-    console.log(`  ✅ [DEBUG] Create response:`, JSON.stringify(response.data, null, 2))
     return response.data
   } catch (error) {
     const errorMsg = error.response?.data?.error?.message || error.message
-    const errorDetails = error.response?.data?.error?.details || {}
     console.error(`  ❌ [DEBUG] Create failed: ${errorMsg}`)
-    if (Object.keys(errorDetails).length > 0) {
-      console.error(`  ❌ [DEBUG] Error details:`, JSON.stringify(errorDetails, null, 2))
-    }
-    if (error.response) {
-      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
-      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
-    }
     throw error
   }
 }
@@ -475,12 +697,6 @@ async function createEntry(folderName, data) {
 async function updateEntry(folderName, documentId, data) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
-    console.log(`  🔄 [DEBUG] Updating entry in ${schema.endpoint}`)
-    console.log(`  🔄 [DEBUG] Document ID: ${documentId}`)
-    console.log(`  🔄 [DEBUG] Update URL: ${CMS_API_URL}/api/${schema.endpoint}/${documentId}`)
-    console.log(`  🔄 [DEBUG] Data keys:`, Object.keys(data).join(', '))
-    console.log(`  🔄 [DEBUG] Full data:`, JSON.stringify(data, null, 2))
-
     const response = await axios.put(
       `${CMS_API_URL}/api/${schema.endpoint}/${documentId}`,
       { data },
@@ -491,20 +707,10 @@ async function updateEntry(folderName, documentId, data) {
         },
       }
     )
-
-    console.log(`  ✅ [DEBUG] Update response:`, JSON.stringify(response.data, null, 2))
     return response.data
   } catch (error) {
     const errorMsg = error.response?.data?.error?.message || error.message
-    const errorDetails = error.response?.data?.error?.details || {}
     console.error(`  ❌ [DEBUG] Update failed: ${errorMsg}`)
-    if (Object.keys(errorDetails).length > 0) {
-      console.error(`  ❌ [DEBUG] Error details:`, JSON.stringify(errorDetails, null, 2))
-    }
-    if (error.response) {
-      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
-      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
-    }
     throw error
   }
 }
@@ -513,50 +719,26 @@ async function updateEntry(folderName, documentId, data) {
 async function deleteEntry(folderName, documentId) {
   const schema = COLLECTION_SCHEMAS[folderName]
   try {
-    console.log(`  🗑️ [DEBUG] Deleting entry from ${schema.endpoint}`)
-    console.log(`  🗑️ [DEBUG] Document ID: ${documentId}`)
-    console.log(`  🗑️ [DEBUG] Delete URL: ${CMS_API_URL}/api/${schema.endpoint}/${documentId}`)
-
     const response = await axios.delete(`${CMS_API_URL}/api/${schema.endpoint}/${documentId}`, {
       headers: {
         Authorization: `Bearer ${CMS_API_TOKEN}`,
         'Content-Type': 'application/json',
       },
     })
-
-    console.log(`  ✅ [DEBUG] Delete response status: ${response.status}`)
-    console.log(`  ✅ [DEBUG] Delete response:`, JSON.stringify(response.data, null, 2))
     return response.data
   } catch (error) {
     const errorMsg = error.response?.data?.error?.message || error.message
     console.error(`  ❌ [DEBUG] Delete failed: ${errorMsg}`)
-    if (error.response) {
-      console.error(`  ❌ [DEBUG] Response status:`, error.response.status)
-      console.error(`  ❌ [DEBUG] Response data:`, JSON.stringify(error.response.data, null, 2))
-    }
     throw new Error(`Failed to delete entry: ${errorMsg}`)
   }
 }
 
 // Helper: Detect operation type
 function detectOperationType(filePath, isDeletedFile = false) {
-  console.log(`  🔍 [DEBUG] detectOperationType called for: ${filePath}`)
-  console.log(`  🔍 [DEBUG] isDeletedFile flag: ${isDeletedFile}`)
+  if (isDeletedFile) return 'delete'
 
-  if (isDeletedFile) {
-    console.log(`  🔍 [DEBUG] File is marked as deleted by GitHub`)
-    return 'delete'
-  }
+  if (!fs.existsSync(filePath)) return 'delete'
 
-  const exists = fs.existsSync(filePath)
-  console.log(`  🔍 [DEBUG] File exists on disk: ${exists}`)
-
-  if (!exists) {
-    console.log(`  🔍 [DEBUG] File does not exist, operation: delete`)
-    return 'delete'
-  }
-
-  console.log(`  🔍 [DEBUG] File exists, operation: create_or_update`)
   return 'create_or_update'
 }
 
@@ -567,13 +749,9 @@ async function syncToStrapi() {
   console.log(`🔗 CMS API URL: ${CMS_API_URL}`)
   console.log(`📁 Sync Folders: ${SYNC_FOLDERS.join(', ')}`)
   console.log(`\n📄 Changed Files (${CHANGED_FILES.length}):`)
-  CHANGED_FILES.forEach((file, idx) => {
-    console.log(`   ${idx + 1}. ${file}`)
-  })
+  CHANGED_FILES.forEach((file, idx) => console.log(`   ${idx + 1}. ${file}`))
   console.log(`\n🗑️ Deleted Files (${DELETED_FILES.length}):`)
-  DELETED_FILES.forEach((file, idx) => {
-    console.log(`   ${idx + 1}. ${file}`)
-  })
+  DELETED_FILES.forEach((file, idx) => console.log(`   ${idx + 1}. ${file}`))
   console.log('')
 
   const results = {
@@ -582,48 +760,76 @@ async function syncToStrapi() {
     deleted: [],
     skipped: [],
     errors: [],
-    relationWarnings: [], // Track unmatched relations
+    relationWarnings: [],
+    assets: { synced: [], deleted: [], errors: [] },
   }
 
-  // Combine changed and deleted files with a flag to indicate deletion
+  // Combine changed and deleted files with a flag
   const allFiles = [
     ...CHANGED_FILES.map((file) => ({ path: file, isDeleted: false })),
     ...DELETED_FILES.map((file) => ({ path: file, isDeleted: true })),
   ]
 
-  console.log(`\n📊 [DEBUG] Total files to process: ${allFiles.length}`)
-  console.log(`  - Changed/Modified: ${CHANGED_FILES.length}`)
-  console.log(`  - Deleted: ${DELETED_FILES.length}`)
-  console.log('')
-
   for (const { path: filePath, isDeleted } of allFiles) {
     console.log(`\n${'='.repeat(80)}`)
     console.log(`📄 Processing: ${filePath}`)
-    console.log(`  🏷️ [DEBUG] File marked as deleted: ${isDeleted}`)
-    console.log(`${'='.repeat(80)}`)
+
+    // Check if it's an asset (in public folder)
+    if (filePath.startsWith('public/')) {
+      console.log(`  🖼️ Detected asset file`)
+      try {
+        if (isDeleted) {
+          const fileName = path.basename(filePath)
+          const relPath = path.relative('public', filePath)
+          const dirName = path.dirname(relPath)
+
+          // Try to find folder ID to narrow down deletion
+          let folderId = null
+          if (dirName !== '.') {
+            // This might fail if the folder itself was deleted locally,
+            // but in Strapi it might still exist or we search without folder if strict check fails.
+            // For safety, we search by name and path structure if possible.
+            // If we can't find folder, we might risk deleting wrong file if names are duplicate.
+            // best effort only.
+            try {
+              folderId = await getOrCreateStrapiFolder(dirName)
+            } catch (e) {}
+          }
+
+          const asset = await findAssetInStrapi(fileName, folderId)
+          if (asset) {
+            await deleteAssetFromStrapi(asset.id)
+            results.assets.deleted.push(filePath)
+          } else {
+            console.log(`  ℹ️ Asset not found in CMS, nothing to delete.`)
+          }
+        } else {
+          // Sync asset (create/update)
+          await syncAsset(filePath)
+          results.assets.synced.push(filePath)
+        }
+      } catch (error) {
+        console.error(`  ❌ Error syncing asset ${filePath}: ${error.message}`)
+        results.assets.errors.push({ file: filePath, error: error.message })
+      }
+      continue
+    }
 
     try {
-      console.log(`  🔍 [DEBUG] Extracting folder name...`)
       const folderName = getFolderName(filePath)
-      console.log(`  🔍 [DEBUG] Folder name: ${folderName}`)
 
       if (!folderName || !SYNC_FOLDERS.includes(folderName)) {
         console.log(`⏭️ Skipped: Folder '${folderName}' not in sync list`)
-        console.log(`  ℹ️ [DEBUG] Sync folders: ${SYNC_FOLDERS.join(', ')}`)
         results.skipped.push(filePath)
         continue
       }
 
-      console.log(`  🛣️ [DEBUG] Generating path field...`)
       const pathField = generatePathField(filePath, folderName)
-      console.log(`  🛣️ [DEBUG] Path field: ${pathField}`)
-
       if (!pathField) {
         throw new Error('Could not generate path field')
       }
 
       const operationType = detectOperationType(filePath, isDeleted)
-      console.log(`  🔧 [DEBUG] Operation type: ${operationType}`)
 
       if (operationType === 'delete') {
         console.log(`🗑️ Deleting from CMS: ${pathField}`)
@@ -660,22 +866,14 @@ async function syncToStrapi() {
           })
         }
 
-        console.log(`  🔎 [DEBUG] Checking if entry exists in CMS...`)
+        console.log(`  🔎 Checking if entry exists in CMS...`)
         const existingEntry = await findEntryByPath(folderName, pathField)
-        console.log(`  🔎 [DEBUG] Existing entry result:`, existingEntry ? 'FOUND' : 'NOT FOUND')
 
         if (existingEntry) {
           console.log(`🔄 Updating in CMS: ${pathField}`)
-          console.log(
-            `  📋 [DEBUG] Entry details: id=${existingEntry.id}, documentId=${existingEntry.documentId}`
-          )
-
           if (!existingEntry.documentId) {
-            throw new Error(
-              `Entry found but has no documentId. Entry keys: ${Object.keys(existingEntry).join(', ')}`
-            )
+            throw new Error(`Entry found but has no documentId`)
           }
-
           await updateEntry(folderName, existingEntry.documentId, strapiData)
           console.log(`✅ Updated successfully`)
           results.updated.push({ file: filePath, path: pathField })
@@ -715,6 +913,8 @@ async function syncToStrapi() {
       console.error(`❌ [DEBUG] =========================================\n`)
 
       console.error(`❌ Error processing ${filePath}: ${error.message}`)
+      // Log full stack for debugging
+      console.error(error.stack)
       results.errors.push({ file: filePath, error: error.message })
     }
   }
@@ -723,9 +923,12 @@ async function syncToStrapi() {
   console.log('\n' + '='.repeat(60))
   console.log('📊 SYNC SUMMARY')
   console.log('='.repeat(60))
-  console.log(`✅ Created: ${results.created.length}`)
-  console.log(`🔄 Updated: ${results.updated.length}`)
-  console.log(`🗑️ Deleted: ${results.deleted.length}`)
+  console.log(`✅ Content Created: ${results.created.length}`)
+  console.log(`🔄 Content Updated: ${results.updated.length}`)
+  console.log(`🗑️ Content Deleted: ${results.deleted.length}`)
+  console.log(`🖼️ Assets Synced:  ${results.assets.synced.length}`)
+  console.log(`🗑️ Assets Deleted: ${results.assets.deleted.length}`)
+  console.log(`❌ Assets Errors:  ${results.assets.errors.length}`)
   console.log(`⏭️ Skipped: ${results.skipped.length}`)
   console.log(`❌ Errors: ${results.errors.length}`)
   console.log(`⚠️ Relation Warnings: ${results.relationWarnings.length}`)

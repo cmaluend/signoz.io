@@ -11,6 +11,7 @@ on:
     paths:
       - 'data/**/*.mdx'
       - 'data/**/*.md'
+      - 'public/**/*'
   push:
     branches:
       - test/cms-with-isr  # Configurable: Change to your production branch
@@ -18,6 +19,7 @@ on:
     paths:
       - 'data/**/*.mdx'
       - 'data/**/*.md'
+      - 'public/**/*'
 
 env:
   # Configurable: Array of folders to sync to CMS
@@ -61,6 +63,7 @@ jobs:
           files: |
             data/**/*.mdx
             data/**/*.md
+            public/**/*
           json: true
           escape_json: false
 
@@ -139,7 +142,9 @@ jobs:
           npm install --no-save \
             gray-matter \
             axios \
-            js-yaml
+            js-yaml \
+            form-data \
+            mime-types
 
       - name: Sync Content to Strapi
         id: sync
