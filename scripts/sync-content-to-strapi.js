@@ -273,10 +273,16 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
     // But here we just ensure the upload name is clean.
     const safeFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_')
 
+    console.log(`    📝 [DEBUG] Original filename: "${fileName}"`)
+    console.log(`    📝 [DEBUG] Safe filename: "${safeFileName}"`)
+
     const stats = fs.statSync(filePath)
     const fileSizeInBytes = stats.size
     const fileStream = fs.createReadStream(filePath)
     const mimeType = mime.lookup(filePath) || 'application/octet-stream'
+
+    console.log(`    📝 [DEBUG] MIME type: "${mimeType}"`)
+    console.log(`    📝 [DEBUG] File size: ${fileSizeInBytes} bytes`)
 
     const formData = new FormData()
     formData.append('files', fileStream, {
@@ -293,6 +299,9 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
       alternativeText: fileName, // Add alternative text for better accessibility
       caption: fileName, // Add caption as fallback
     }
+
+    console.log(`    📝 [DEBUG] File info:`, JSON.stringify(fileInfo))
+
     if (existingId) {
       // Strapi doesn't support "update file content" easily via simple upload endpoint
       // So we delete and re-upload
@@ -308,6 +317,14 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
     // Remove problematic headers from form-data that might cause issues with axios
     const formHeaders = formData.getHeaders()
 
+    console.log(
+      `    📝 [DEBUG] Request Headers:`,
+      JSON.stringify({
+        Authorization: 'Bearer ***',
+        ...formHeaders,
+      })
+    )
+
     const response = await axios.post(`${CMS_API_URL}/api/upload`, formData, {
       headers: {
         Authorization: `Bearer ${CMS_API_TOKEN}`,
@@ -317,11 +334,16 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
       maxContentLength: Infinity,
     })
 
+    console.log(`    ✅ [DEBUG] Upload response status: ${response.status}`)
+    console.log(`    ✅ [DEBUG] Upload response data:`, JSON.stringify(response.data))
+
     return response.data[0] // Returns array of uploaded files
   } catch (error) {
     console.error(`    ❌ Upload failed for ${filePath}: ${error.message}`)
     if (error.response) {
-      console.error(`      Response: ${JSON.stringify(error.response.data)}`)
+      console.error(`      Response status: ${error.response.status}`)
+      console.error(`      Response data: ${JSON.stringify(error.response.data)}`)
+      console.error(`      Response headers: ${JSON.stringify(error.response.headers)}`)
     }
     throw error
   }
