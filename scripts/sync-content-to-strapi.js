@@ -293,11 +293,17 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
     })
 
     // Add file info
+    // Strapi expects 'refId', 'ref', 'field' to be empty for direct media library upload
+    // 'path' is also not typically supported in the upload root
+    // We just send 'fileInfo' with 'name', 'alternativeText', 'caption', 'folder'
     const fileInfo = {
-      name: fileName,
-      folder: folderId,
-      alternativeText: fileName, // Add alternative text for better accessibility
-      caption: fileName, // Add caption as fallback
+      name: fileName, // Keep original name for display in Strapi
+      alternativeText: fileName,
+      caption: fileName,
+    }
+
+    if (folderId) {
+      fileInfo.folder = folderId
     }
 
     console.log(`    📝 [DEBUG] File info:`, JSON.stringify(fileInfo))
@@ -325,11 +331,15 @@ async function uploadAssetToStrapi(filePath, folderId, existingId = null) {
       })
     )
 
+    // Add 'content-length' header explicitly based on knownLength
+    // Strapi / Form-Data sometimes needs this if not automatically calculated correctly in some environments
+    const headers = {
+      Authorization: `Bearer ${CMS_API_TOKEN}`,
+      ...formHeaders,
+    }
+
     const response = await axios.post(`${CMS_API_URL}/api/upload`, formData, {
-      headers: {
-        Authorization: `Bearer ${CMS_API_TOKEN}`,
-        ...formHeaders,
-      },
+      headers,
       maxBodyLength: Infinity, // Allow large file uploads
       maxContentLength: Infinity,
     })
