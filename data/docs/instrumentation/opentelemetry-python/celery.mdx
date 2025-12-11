@@ -1,0 +1,333 @@
+---
+date: 2025-12-11
+id: celery
+title: Celery OpenTelemetry Instrumentation
+description: Learn how to instrument your Celery workers with OpenTelemetry and send traces to SigNoz
+tags: [SigNoz Cloud, Self-Host]
+doc_type: howto
+---
+
+Instrument your Celery workers with OpenTelemetry to capture traces from task execution, including task publishing, execution time, and downstream calls. Celery uses a prefork worker model by default, which requires special handling to ensure OpenTelemetry initializes correctly in each worker process.
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud to Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+- Python 3.8 or later
+- A Celery application with a configured message broker (Redis, RabbitMQ, etc.)
+- A SigNoz Cloud account or self-hosted SigNoz instance
+
+## Send traces to SigNoz
+
+<Tabs entityName="deployment">
+<TabItem value="vm" label="VM" default>
+<KeyPointCallout title="What classifies as VM?" defaultCollapsed={true}>
+A VM is a virtual computer that runs on physical hardware. This includes:
+- **Cloud VMs**: AWS EC2, Google Compute Engine, Azure VMs, DigitalOcean Droplets
+- **On-premise VMs**: VMware, VirtualBox, Hyper-V, KVM
+- **Bare metal servers**: Physical servers running Linux/Unix directly
+
+Use this section if you're running your Celery workers directly on a server or VM without containerization.
+</KeyPointCallout>
+
+### Step 1. Set environment variables
+
+Set the following environment variables to configure the OpenTelemetry exporter:
+
+```bash
+export OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+export OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+export OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your Celery service (e.g., `celery-worker`).
+
+### Step 2. Install OpenTelemetry packages
+
+```bash
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+```
+
+Run the bootstrap command to install instrumentation packages:
+
+```bash
+opentelemetry-bootstrap --action=install
+```
+
+This installs `opentelemetry-instrumentation-celery` along with other instrumentation libraries for your dependencies.
+
+### Step 3. Run your Celery worker
+
+Start your Celery worker with the `opentelemetry-instrument` wrapper:
+
+```bash
+opentelemetry-instrument celery -A your_app worker --loglevel=info
+```
+
+Replace `your_app` with your Celery application module.
+
+<Admonition type="info">
+The `opentelemetry-instrument` command automatically instruments task execution, task publishing, and broker interactions.
+</Admonition>
+
+</TabItem>
+
+<TabItem value="k8s" label="Kubernetes">
+
+### Step 1. Set environment variables
+
+Add these environment variables to your Celery worker deployment manifest:
+
+```yaml
+env:
+- name: OTEL_RESOURCE_ATTRIBUTES
+  value: 'service.name=<service-name>'
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: 'https://ingest.<region>.signoz.cloud:443'
+- name: OTEL_EXPORTER_OTLP_HEADERS
+  value: 'signoz-ingestion-key=<your-ingestion-key>'
+- name: OTEL_EXPORTER_OTLP_PROTOCOL
+  value: 'grpc'
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your Celery service (e.g., `celery-worker`).
+
+### Step 2. Install OpenTelemetry packages
+
+Add to your `requirements.txt`:
+
+```text
+opentelemetry-distro
+opentelemetry-exporter-otlp
+```
+
+### Step 3. Update your Dockerfile
+
+```dockerfile
+RUN pip install -r requirements.txt
+RUN opentelemetry-bootstrap --action=install
+
+CMD ["opentelemetry-instrument", "celery", "-A", "your_app", "worker", "--loglevel=info"]
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+### Step 1. Set environment variables (PowerShell)
+
+```powershell
+$env:OTEL_RESOURCE_ATTRIBUTES = "service.name=<service-name>"
+$env:OTEL_EXPORTER_OTLP_ENDPOINT = "https://ingest.<region>.signoz.cloud:443"
+$env:OTEL_EXPORTER_OTLP_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
+$env:OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your Celery service.
+
+### Step 2. Install OpenTelemetry packages
+
+```powershell
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Run your Celery worker
+
+```powershell
+opentelemetry-instrument celery -A your_app worker --loglevel=info
+```
+
+</TabItem>
+
+<TabItem value="docker" label="Docker">
+
+### Step 1. Set environment variables in Dockerfile
+
+```dockerfile:Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Install OpenTelemetry packages
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+RUN opentelemetry-bootstrap --action=install
+
+COPY . .
+
+# Set OpenTelemetry environment variables
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+ENV OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+
+CMD ["opentelemetry-instrument", "celery", "-A", "your_app", "worker", "--loglevel=info"]
+```
+
+Or pass environment variables at runtime:
+
+```bash
+docker run -e OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>" \
+    -e OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443" \
+    -e OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
+    -e OTEL_EXPORTER_OTLP_PROTOCOL="grpc" \
+    your-celery-image:latest
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your Celery service (e.g., `celery-worker`).
+
+</TabItem>
+</Tabs>
+
+## Manual instrumentation (alternative)
+
+If you need more control or encounter issues with the automatic approach, use manual instrumentation with the `worker_process_init` signal. This is particularly useful for Celery's prefork worker model, where each worker process needs its own OpenTelemetry SDK instance.
+
+Add this to your Celery application file:
+
+```python:tasks.py
+from celery import Celery
+from celery.signals import worker_process_init
+
+from opentelemetry.instrumentation.celery import CeleryInstrumentor
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+app = Celery('tasks', broker='redis://localhost:6379/0')
+
+@worker_process_init.connect(weak=False)
+def init_celery_tracing(*args, **kwargs):
+    CeleryInstrumentor().instrument()
+
+    resource = Resource.create({})
+    trace.set_tracer_provider(TracerProvider(resource=resource))
+    span_processor = BatchSpanProcessor(OTLPSpanExporter())
+    trace.get_tracer_provider().add_span_processor(span_processor)
+
+@app.task
+def add(x, y):
+    return x + y
+```
+
+When using manual instrumentation, run the worker without the `opentelemetry-instrument` wrapper:
+
+```bash
+celery -A tasks worker --loglevel=info
+```
+
+<Admonition type="warning">
+Manual instrumentation is only needed for worker processes. If you're also instrumenting a web application that publishes tasks, use standard auto-instrumentation for the web app.
+</Admonition>
+
+## Task context propagation
+
+OpenTelemetry automatically propagates trace context between task producers and workers. When a task is published from an instrumented application, the trace context is included in task headers and extracted by the worker during execution. This creates connected traces spanning the entire request lifecycle.
+
+For proper end-to-end tracing:
+
+1. Instrument both your web application (task producer) and Celery workers
+2. Use different service names to distinguish them in traces (e.g., `myapp-api` for the web app and `myapp-worker` for Celery)
+
+## Validate
+
+After running your instrumented Celery worker, verify traces appear in SigNoz:
+
+1. Trigger some tasks by calling them from your application or a Python shell:
+   ```python
+   from your_app import add
+   add.delay(4, 4)
+   ```
+2. Open SigNoz and navigate to **Services**.
+3. Click **Refresh** and look for your Celery service in the list.
+4. Navigate to **Traces** to see individual task executions.
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Why don't traces appear in SigNoz?
+
+**Check environment variables are set:**
+
+```bash
+echo $OTEL_EXPORTER_OTLP_ENDPOINT
+echo $OTEL_RESOURCE_ATTRIBUTES
+```
+
+**Verify network connectivity:**
+
+```bash
+curl -v https://ingest.<region>.signoz.cloud:443/v1/traces
+```
+
+### Why do worker processes not report traces?
+
+Celery uses a prefork model where worker processes are forked from a parent process. If traces aren't appearing:
+
+1. Try the manual instrumentation approach with `worker_process_init`
+2. Ensure `opentelemetry-instrumentation-celery` is installed
+3. Check that the worker is starting with `opentelemetry-instrument`
+
+### Why are task spans disconnected from the parent trace?
+
+Ensure both the task producer (web application) and Celery workers are instrumented. Trace context propagates through Celery task headers, so both sides need instrumentation for connected traces.
+
+### Console debugging
+
+Enable console exporter to see spans being generated:
+
+```bash
+OTEL_TRACES_EXPORTER=console opentelemetry-instrument celery -A your_app worker --loglevel=info
+```
+
+</details>
+
+<details>
+<ToggleHeading>
+## Setup OpenTelemetry Collector (Optional)
+</ToggleHeading>
+
+### What is the OpenTelemetry Collector?
+
+The OTel Collector acts as a middleman between your application and SigNoz. Instead of sending data directly to SigNoz, your application sends telemetry to the Collector, which then forwards it.
+
+### Why use it?
+
+- **Cleaning up data**: Filter out noisy traces or remove sensitive information before it leaves your servers.
+- **Keeping your app lightweight**: Let the Collector handle batching, retries, and compression.
+- **Adding context automatically**: Tag your data with infrastructure info like Kubernetes pod or cloud region.
+- **Future flexibility**: Send data to multiple backends without changing your application.
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions.
+
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
+
+</details>
+
+## Next steps
+
+- [Instrument your Python web application](https://signoz.io/docs/instrumentation/opentelemetry-python/overview/) to get end-to-end traces from HTTP requests to Celery task execution
+- [Correlate traces with logs](https://signoz.io/docs/traces-management/guides/correlate-traces-and-logs/) to accelerate debugging
+- [Set up alerts](https://signoz.io/docs/alerts-management/notification-channel/slack/) for failed tasks or slow task execution
+- [Create dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize Celery task metrics

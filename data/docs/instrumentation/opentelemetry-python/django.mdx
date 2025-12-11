@@ -1,0 +1,320 @@
+---
+date: 2025-12-11
+id: django
+title: Django OpenTelemetry Instrumentation
+description: Learn how to instrument your Django application with OpenTelemetry and send traces to SigNoz
+tags: [SigNoz Cloud, Self-Host]
+doc_type: howto
+---
+
+This guide shows you how to instrument your Django application with OpenTelemetry and send traces to SigNoz. The OpenTelemetry Python distro provides automatic instrumentation for Django, meaning you can start collecting traces with minimal code changes.
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud to Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+- Python 3.8 or later
+- A Django project
+- `DJANGO_SETTINGS_MODULE` environment variable configured (e.g., `export DJANGO_SETTINGS_MODULE=mysite.settings`). See [Django settings docs](https://docs.djangoproject.com/en/5.0/topics/settings/#designating-the-settings).
+- A SigNoz Cloud account or self-hosted SigNoz instance
+
+## Send traces to SigNoz
+
+<Tabs entityName="deployment">
+<TabItem value="vm" label="VM" default>
+<KeyPointCallout title="What classifies as VM?" defaultCollapsed={true}>
+A VM is a virtual computer that runs on physical hardware. This includes:
+- **Cloud VMs**: AWS EC2, Google Compute Engine, Azure VMs, DigitalOcean Droplets
+- **On-premise VMs**: VMware, VirtualBox, Hyper-V, KVM
+- **Bare metal servers**: Physical servers running Linux/Unix directly
+
+Use this section if you're deploying your Django application directly on a server or VM without containerization.
+</KeyPointCallout>
+
+### Step 1. Set environment variables
+
+Set the following environment variables to configure the OpenTelemetry exporter:
+
+```bash
+export OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+export OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+export OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+export DJANGO_SETTINGS_MODULE="<your-project>.settings"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `django-api`).
+- `<your-project>`: Your Django project name (e.g., `mysite`).
+
+### Step 2. Install OpenTelemetry packages
+
+Create and activate a virtual environment, then install the required packages:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+```
+
+Run the bootstrap command to install Django-specific instrumentation:
+
+```bash
+opentelemetry-bootstrap --action=install
+```
+
+<Admonition>
+Run `opentelemetry-bootstrap` after installing all your project dependencies. It detects installed packages and installs the corresponding instrumentation libraries.
+</Admonition>
+
+### Step 3. Run your application
+
+Start your Django application with the OpenTelemetry instrumentation wrapper:
+
+```bash
+opentelemetry-instrument python manage.py runserver --noreload
+```
+
+<Admonition type="warning">
+Do not use `--reload` or hot-reload modes during development with OpenTelemetry. The auto-reload mechanism breaks instrumentation. Always use `--noreload` when testing traces.
+</Admonition>
+
+</TabItem>
+
+<TabItem value="k8s" label="Kubernetes">
+
+### Step 1. Set environment variables
+
+Add these environment variables to your deployment manifest:
+
+```yaml
+env:
+- name: OTEL_RESOURCE_ATTRIBUTES
+  value: 'service.name=<service-name>'
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: 'https://ingest.<region>.signoz.cloud:443'
+- name: OTEL_EXPORTER_OTLP_HEADERS
+  value: 'signoz-ingestion-key=<your-ingestion-key>'
+- name: OTEL_EXPORTER_OTLP_PROTOCOL
+  value: 'grpc'
+- name: DJANGO_SETTINGS_MODULE
+  value: '<your-project>.settings'
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `django-api`).
+- `<your-project>`: Your Django project name.
+
+### Step 2. Install OpenTelemetry packages
+
+Add the following to your Dockerfile:
+
+```dockerfile
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+RUN opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Run your application
+
+Update your container command to use the instrumentation wrapper:
+
+```yaml
+command: ["opentelemetry-instrument", "gunicorn", "mysite.wsgi:application", "--bind", "0.0.0.0:8000"]
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+### Step 1. Set environment variables (PowerShell)
+
+```powershell
+$env:OTEL_RESOURCE_ATTRIBUTES = "service.name=<service-name>"
+$env:OTEL_EXPORTER_OTLP_ENDPOINT = "https://ingest.<region>.signoz.cloud:443"
+$env:OTEL_EXPORTER_OTLP_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
+$env:OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"
+$env:DJANGO_SETTINGS_MODULE = "<your-project>.settings"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service.
+- `<your-project>`: Your Django project name.
+
+### Step 2. Install OpenTelemetry packages
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Run your application
+
+```powershell
+opentelemetry-instrument python manage.py runserver --noreload
+```
+
+</TabItem>
+
+<TabItem value="docker" label="Docker">
+
+### Step 1. Set environment variables in Dockerfile
+
+Add environment variables and OpenTelemetry setup to your Dockerfile:
+
+```dockerfile:Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install OpenTelemetry packages
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+RUN opentelemetry-bootstrap --action=install
+
+COPY . .
+
+# Set OpenTelemetry environment variables
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+ENV OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+ENV DJANGO_SETTINGS_MODULE="<your-project>.settings"
+
+EXPOSE 8000
+
+CMD ["opentelemetry-instrument", "gunicorn", "mysite.wsgi:application", "--bind", "0.0.0.0:8000"]
+```
+
+Or pass them at runtime using `docker run`:
+
+```bash
+docker run \
+    -e OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>" \
+    -e OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443" \
+    -e OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
+    -e OTEL_EXPORTER_OTLP_PROTOCOL="grpc" \
+    -e DJANGO_SETTINGS_MODULE="<your-project>.settings" \
+    -p 8000:8000 \
+    your-django-image:latest
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `django-api`).
+- `<your-project>`: Your Django project name.
+
+</TabItem>
+</Tabs>
+
+## Running with Gunicorn or uWSGI
+
+For production deployments using pre-fork servers like Gunicorn or uWSGI, you need to configure a post-fork hook to properly initialize OpenTelemetry in each worker process.
+
+See the [OpenTelemetry fork process documentation](https://opentelemetry-python.readthedocs.io/en/latest/examples/fork-process-model/README.html) for configuration details.
+
+Example Gunicorn command:
+
+```bash
+opentelemetry-instrument gunicorn mysite.wsgi:application --bind 0.0.0.0:8000 --workers 4
+```
+
+## Validate
+
+After running your instrumented application, verify traces appear in SigNoz:
+
+1. Generate some traffic by making requests to your Django application.
+2. Open SigNoz and navigate to **Services**.
+3. Click **Refresh** and look for your service name in the list.
+4. Navigate to **Traces** and filter by your service to view trace details.
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Why don't traces appear in SigNoz?
+
+**Check environment variables are set:**
+
+```bash
+echo $OTEL_EXPORTER_OTLP_ENDPOINT
+echo $OTEL_RESOURCE_ATTRIBUTES
+echo $DJANGO_SETTINGS_MODULE
+```
+
+**Enable debug output to verify spans are being created:**
+
+```bash
+OTEL_TRACES_EXPORTER=console opentelemetry-instrument python manage.py runserver --noreload
+```
+
+This prints spans to the console so you can confirm instrumentation is working.
+
+### Why do I see "ModuleNotFoundError" for Django instrumentation?
+
+Run `opentelemetry-bootstrap --action=install` after installing Django and all other dependencies. The bootstrap command only installs instrumentation for packages it detects.
+
+### Why does instrumentation break with auto-reload?
+
+Django's auto-reload mechanism spawns a new process when code changes, which breaks the OpenTelemetry instrumentation setup. Always use `--noreload` when testing traces:
+
+```bash
+opentelemetry-instrument python manage.py runserver --noreload
+```
+
+### Why do OTLP exports fail with `connection refused`?
+
+- **VM**: Verify the endpoint URL and that your firewall allows outbound HTTPS on port 443
+- **Kubernetes**: Ensure the OTel Collector service is running and accessible
+- **Self-hosted**: Confirm the collector is listening on the expected port (4317 for gRPC, 4318 for HTTP)
+
+</details>
+
+<details>
+<ToggleHeading>
+## Setup OpenTelemetry Collector (Optional)
+</ToggleHeading>
+
+### What is the OpenTelemetry Collector?
+
+The OTel Collector acts as a middleman between your Django application and SigNoz. Instead of sending data directly to SigNoz, your application sends everything to the Collector, which then forwards it along.
+
+### Why use it?
+
+- **Cleaning up data** - Filter out noisy traces or remove sensitive information before it leaves your servers.
+- **Keeping your app lightweight** - Let the Collector handle batching, retries, and compression instead of your application.
+- **Adding context automatically** - The Collector can tag your data with useful info like which Kubernetes pod or cloud region it came from.
+- **Future flexibility** - Want to send data to multiple backends later? The Collector makes that easy without changing your app.
+
+When using a Collector, update your endpoint to point to the Collector instead of SigNoz Cloud:
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
+```
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions.
+
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
+
+</details>
+
+## Next steps
+
+- [Send logs from Django](https://signoz.io/docs/logs-management/send-logs/python-logs-to-signoz/) to correlate with your traces
+- [Correlate traces with logs](https://signoz.io/docs/traces-management/guides/correlate-traces-and-logs/) to accelerate debugging
+- [Set up alerts](https://signoz.io/docs/alerts-management/notification-channel/slack/) for your Django application
+- [Create dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize metrics
+- Explore the [sample Django application](https://github.com/SigNoz/sample-django) for a complete working example

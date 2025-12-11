@@ -1,0 +1,364 @@
+---
+date: 2025-12-11
+id: flask
+title: Flask OpenTelemetry Instrumentation
+description: Learn how to instrument your Flask application with OpenTelemetry and send traces to SigNoz
+tags: [SigNoz Cloud, Self-Host]
+doc_type: howto
+---
+
+Instrument your Flask application with OpenTelemetry to capture traces from incoming requests, database queries, and outgoing HTTP calls. OpenTelemetry provides automatic instrumentation that wraps Flask's request handling without modifying your route handlers.
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud to Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+- Python 3.8 or later
+- A Flask application
+- A SigNoz Cloud account or self-hosted SigNoz instance
+
+## Send traces to SigNoz
+
+<Tabs entityName="deployment">
+<TabItem value="vm" label="VM" default>
+<KeyPointCallout title="What classifies as VM?" defaultCollapsed={true}>
+A VM is a virtual computer that runs on physical hardware. This includes:
+- **Cloud VMs**: AWS EC2, Google Compute Engine, Azure VMs, DigitalOcean Droplets
+- **On-premise VMs**: VMware, VirtualBox, Hyper-V, KVM
+- **Bare metal servers**: Physical servers running Linux/Unix directly
+
+Use this section if you're deploying your Flask application directly on a server or VM without containerization.
+</KeyPointCallout>
+
+### Step 1. Set environment variables
+
+Set the following environment variables to configure the OpenTelemetry exporter:
+
+```bash
+export OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+export OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+export OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `flask-api`).
+
+### Step 2. Install OpenTelemetry packages
+
+```bash
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+```
+
+Run the bootstrap command to install instrumentation packages for your dependencies:
+
+```bash
+opentelemetry-bootstrap --action=install
+```
+
+<Admonition>
+Run bootstrap after installing all your application dependencies. It detects packages like Flask, requests, and SQLAlchemy, then installs the corresponding instrumentation libraries.
+</Admonition>
+
+### Step 3. Run your application with opentelemetry-instrument
+
+```bash
+opentelemetry-instrument flask run --no-reload
+```
+
+Or if you run your app directly:
+
+```bash
+opentelemetry-instrument python app.py
+```
+
+<Admonition type="warning">
+Flask's reloader spawns a child process that breaks OpenTelemetry instrumentation. Always use `--no-reload` with `flask run` or set `use_reloader=False` in `app.run()` when tracing.
+</Admonition>
+
+If you use the `FLASK_APP` environment variable:
+
+```bash
+export FLASK_APP=app.py
+opentelemetry-instrument flask run --no-reload
+```
+
+</TabItem>
+
+<TabItem value="k8s" label="Kubernetes">
+
+### Step 1. Set environment variables
+
+Add these environment variables to your deployment manifest:
+
+```yaml
+env:
+- name: OTEL_RESOURCE_ATTRIBUTES
+  value: 'service.name=<service-name>'
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: 'https://ingest.<region>.signoz.cloud:443'
+- name: OTEL_EXPORTER_OTLP_HEADERS
+  value: 'signoz-ingestion-key=<your-ingestion-key>'
+- name: OTEL_EXPORTER_OTLP_PROTOCOL
+  value: 'grpc'
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `flask-api`).
+
+### Step 2. Install OpenTelemetry packages
+
+Add to your `requirements.txt`:
+
+```text
+opentelemetry-distro
+opentelemetry-exporter-otlp
+```
+
+In your Dockerfile, run the bootstrap command after installing dependencies:
+
+```dockerfile
+RUN pip install -r requirements.txt
+RUN opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Update your container command
+
+Update your Dockerfile CMD or Kubernetes command:
+
+```dockerfile
+CMD ["opentelemetry-instrument", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+```
+
+Or in your deployment manifest:
+
+```yaml
+command: ["opentelemetry-instrument"]
+args: ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+### Step 1. Set environment variables (PowerShell)
+
+```powershell
+$env:OTEL_RESOURCE_ATTRIBUTES = "service.name=<service-name>"
+$env:OTEL_EXPORTER_OTLP_ENDPOINT = "https://ingest.<region>.signoz.cloud:443"
+$env:OTEL_EXPORTER_OTLP_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
+$env:OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service.
+
+### Step 2. Install OpenTelemetry packages
+
+```powershell
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Run your application with opentelemetry-instrument
+
+```powershell
+opentelemetry-instrument flask run --no-reload
+```
+
+Or if you run your app directly:
+
+```powershell
+opentelemetry-instrument python app.py
+```
+
+</TabItem>
+
+<TabItem value="docker" label="Docker">
+
+### Step 1. Set environment variables in Dockerfile
+
+```dockerfile:Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# Install OpenTelemetry packages
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+RUN opentelemetry-bootstrap --action=install
+
+COPY . .
+
+# Set OpenTelemetry environment variables
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+ENV OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+
+# Run with opentelemetry-instrument
+CMD ["opentelemetry-instrument", "gunicorn", "--bind", "0.0.0.0:8000", "app:app"]
+```
+
+Or pass environment variables at runtime:
+
+```bash
+docker run -e OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>" \
+    -e OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443" \
+    -e OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
+    -e OTEL_EXPORTER_OTLP_PROTOCOL="grpc" \
+    your-image:latest
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `flask-api`).
+
+</TabItem>
+</Tabs>
+
+## Running with Gunicorn or uWSGI
+
+For production deployments using Gunicorn or uWSGI (pre-fork process models), you need to configure a post-fork hook to ensure each worker process initializes tracing correctly.
+
+### Gunicorn configuration
+
+Create a `gunicorn.conf.py` file:
+
+```python:gunicorn.conf.py
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+
+def post_fork(server, worker):
+    trace.set_tracer_provider(TracerProvider())
+```
+
+Run with:
+
+```bash
+opentelemetry-instrument gunicorn -c gunicorn.conf.py --bind 0.0.0.0:8000 app:app
+```
+
+See the [OpenTelemetry fork process model documentation](https://opentelemetry-python.readthedocs.io/en/latest/examples/fork-process-model/README.html) for details.
+
+## Validate
+
+After running your instrumented application, verify traces appear in SigNoz:
+
+1. Generate some traffic by making requests to your Flask application.
+2. Open SigNoz and navigate to **Services**.
+3. Click **Refresh** and look for your service name in the list.
+4. Navigate to **Traces** and filter by your service to see individual traces.
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Why don't traces appear in SigNoz?
+
+**Check environment variables are set:**
+
+```bash
+echo $OTEL_EXPORTER_OTLP_ENDPOINT
+echo $OTEL_RESOURCE_ATTRIBUTES
+```
+
+**Verify the bootstrap command ran successfully:**
+
+```bash
+opentelemetry-bootstrap --action=requirements
+```
+
+This shows which instrumentation packages would be installed. If Flask isn't listed, ensure Flask is installed before running bootstrap.
+
+**Enable debug logging:**
+
+```bash
+OTEL_TRACES_EXPORTER=console opentelemetry-instrument python app.py
+```
+
+This prints spans to the console so you can verify instrumentation is working.
+
+### Why are spans missing or incomplete?
+
+**Check if reloader is disabled:**
+
+Flask's reloader breaks instrumentation. Ensure you're using `--no-reload`:
+
+```bash
+opentelemetry-instrument flask run --no-reload
+```
+
+Or in your code:
+
+```python
+if __name__ == "__main__":
+    app.run(use_reloader=False)
+```
+
+### Why do OTLP exports fail with `connection refused`?
+
+- **VM**: Verify the endpoint URL and that your firewall allows outbound HTTPS on port 443
+- **Kubernetes**: Ensure the OTel Collector service is running and accessible
+- **Self-hosted**: Confirm the collector is listening on the expected port (4317 for gRPC, 4318 for HTTP)
+
+### gRPC installation issues
+
+If `grpcio` fails to install, use the HTTP exporter instead:
+
+```bash
+pip install opentelemetry-exporter-otlp-proto-http
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+```
+
+</details>
+
+<details>
+<ToggleHeading>
+## Setup OpenTelemetry Collector (Optional)
+</ToggleHeading>
+
+### What is the OpenTelemetry Collector?
+
+The OTel Collector acts as a middleman between your application and SigNoz. Instead of sending data directly to SigNoz, your application sends telemetry to the Collector, which then forwards it.
+
+### Why use it?
+
+- **Cleaning up data**: Filter out noisy traces or remove sensitive information before it leaves your servers.
+- **Keeping your app lightweight**: Let the Collector handle batching, retries, and compression.
+- **Adding context automatically**: Tag your data with infrastructure info like Kubernetes pod or cloud region.
+- **Future flexibility**: Send data to multiple backends without changing your application.
+
+### Using the Collector
+
+When using the Collector, update your environment variables to point to the local Collector:
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
+unset OTEL_EXPORTER_OTLP_HEADERS
+```
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions.
+
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
+
+</details>
+
+## Next steps
+
+- [Instrument other Python frameworks](https://signoz.io/docs/instrumentation/opentelemetry-python/overview/) like Django, FastAPI, or Falcon
+- [Send logs from Python](https://signoz.io/docs/logs-management/send-logs/python-logs-to-signoz/) and correlate them with traces
+- [Set up alerts](https://signoz.io/docs/alerts-management/notification-channel/slack/) for your Flask application
+- [Create dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize metrics
+- Try the [sample Flask application](https://github.com/SigNoz/sample-flask-app) for a working example

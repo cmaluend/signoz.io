@@ -1,0 +1,343 @@
+---
+date: 2025-12-11
+id: falcon
+title: Falcon OpenTelemetry Instrumentation
+description: Learn how to instrument your Falcon application with OpenTelemetry and send traces to SigNoz
+tags: [SigNoz Cloud, Self-Host]
+doc_type: howto
+---
+
+This guide shows you how to instrument your Falcon application with OpenTelemetry and send traces to SigNoz. Falcon is a minimalist WSGI framework for building high-performance APIs, and OpenTelemetry's auto-instrumentation makes it straightforward to add observability without modifying your application code.
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud to Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+- Python 3.8 or later
+- A Falcon application
+- A SigNoz Cloud account or self-hosted SigNoz instance
+- A WSGI server (gunicorn, waitress, or similar)
+
+## Send traces to SigNoz
+
+<Tabs entityName="deployment">
+<TabItem value="vm" label="VM" default>
+<KeyPointCallout title="What classifies as a VM?" defaultCollapsed={true}>
+A VM is a virtual computer that runs on physical hardware. This includes:
+- **Cloud VMs**: AWS EC2, Google Compute Engine, Azure VMs, DigitalOcean Droplets
+- **On-premise VMs**: VMware, VirtualBox, Hyper-V, KVM
+- **Bare metal servers**: Physical servers running Linux/Unix directly
+
+Use this section if you're deploying your Falcon application directly on a server or VM without containerization.
+</KeyPointCallout>
+
+### Step 1. Set environment variables
+
+Set the following environment variables to configure the OpenTelemetry exporter:
+
+```bash
+export OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+export OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+export OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `falcon-api`).
+
+### Step 2. Install OpenTelemetry packages
+
+Create a virtual environment and install the required packages:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+```
+
+Then run the bootstrap command to install instrumentation for your dependencies:
+
+```bash
+opentelemetry-bootstrap --action=install
+```
+
+<Admonition type="note">
+Run the bootstrap command after installing all your application dependencies. It detects installed packages and installs the corresponding OpenTelemetry instrumentation libraries.
+</Admonition>
+
+### Step 3. Run with opentelemetry-instrument
+
+Falcon applications typically run with a WSGI server like gunicorn. Wrap your run command with `opentelemetry-instrument`:
+
+```bash
+opentelemetry-instrument gunicorn app:app --bind 0.0.0.0:8000
+```
+
+If you're using waitress:
+
+```bash
+opentelemetry-instrument waitress-serve --port=8000 app:app
+```
+
+<Admonition type="warning">
+Don't run your application in reloader/hot-reload mode as it breaks instrumentation. For gunicorn, avoid the `--reload` flag in production.
+</Admonition>
+
+</TabItem>
+
+<TabItem value="k8s" label="Kubernetes">
+
+### Step 1. Set environment variables
+
+Add these environment variables to your deployment manifest:
+
+```yaml
+env:
+- name: OTEL_RESOURCE_ATTRIBUTES
+  value: 'service.name=<service-name>'
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: 'https://ingest.<region>.signoz.cloud:443'
+- name: OTEL_EXPORTER_OTLP_HEADERS
+  value: 'signoz-ingestion-key=<your-ingestion-key>'
+- name: OTEL_EXPORTER_OTLP_PROTOCOL
+  value: 'grpc'
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `falcon-api`).
+
+### Step 2. Install OpenTelemetry packages
+
+Add the following to your Dockerfile:
+
+```dockerfile
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+
+# Run after installing your application dependencies
+RUN opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Run with opentelemetry-instrument
+
+Update your Dockerfile CMD to use the instrumentation wrapper:
+
+```dockerfile
+CMD ["opentelemetry-instrument", "gunicorn", "app:app", "--bind", "0.0.0.0:8000"]
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+### Step 1. Set environment variables (PowerShell)
+
+```powershell
+$env:OTEL_RESOURCE_ATTRIBUTES = "service.name=<service-name>"
+$env:OTEL_EXPORTER_OTLP_ENDPOINT = "https://ingest.<region>.signoz.cloud:443"
+$env:OTEL_EXPORTER_OTLP_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
+$env:OTEL_EXPORTER_OTLP_PROTOCOL = "grpc"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service.
+
+### Step 2. Install OpenTelemetry packages
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap --action=install
+```
+
+### Step 3. Run with opentelemetry-instrument
+
+```powershell
+opentelemetry-instrument waitress-serve --port=8000 app:app
+```
+
+</TabItem>
+
+<TabItem value="docker" label="Docker">
+
+### Step 1. Set environment variables in Dockerfile
+
+Here's a complete Dockerfile example for a Falcon application:
+
+```dockerfile:Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install OpenTelemetry packages
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+
+# Install instrumentation for all dependencies
+RUN opentelemetry-bootstrap --action=install
+
+COPY . .
+
+# Set OpenTelemetry environment variables
+ENV OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+ENV OTEL_EXPORTER_OTLP_PROTOCOL="grpc"
+
+EXPOSE 8000
+
+CMD ["opentelemetry-instrument", "gunicorn", "app:app", "--bind", "0.0.0.0:8000"]
+```
+
+Or pass environment variables at runtime using `docker run`:
+
+```bash
+docker run -e OTEL_RESOURCE_ATTRIBUTES="service.name=<service-name>" \
+    -e OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443" \
+    -e OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
+    -e OTEL_EXPORTER_OTLP_PROTOCOL="grpc" \
+    -p 8000:8000 \
+    your-falcon-app:latest
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `falcon-api`).
+
+</TabItem>
+</Tabs>
+
+## Running with gunicorn (pre-fork model)
+
+Falcon applications commonly run with gunicorn, which uses a pre-fork worker model. For proper instrumentation with multiple workers, you need to configure a `post_fork` hook.
+
+Create a `gunicorn.conf.py` file:
+
+```python:gunicorn.conf.py
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+def post_fork(server, worker):
+    # Initialize tracing in each worker process
+    provider = TracerProvider()
+    processor = BatchSpanProcessor(OTLPSpanExporter())
+    provider.add_span_processor(processor)
+    trace.set_tracer_provider(provider)
+```
+
+Then run gunicorn with the config file:
+
+```bash
+opentelemetry-instrument gunicorn app:app --config gunicorn.conf.py --workers 4 --bind 0.0.0.0:8000
+```
+
+For more details, see the [OpenTelemetry Python fork model documentation](https://opentelemetry-python.readthedocs.io/en/latest/examples/fork-process-model/README.html).
+
+## Validate
+
+After running your instrumented application, verify traces appear in SigNoz:
+
+1. Generate some traffic by making requests to your Falcon API endpoints.
+2. Open SigNoz and navigate to **Services**.
+3. Click **Refresh** and look for your service name in the list.
+4. Go to **Traces** and filter by your service to see individual trace details.
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Why don't traces appear in SigNoz?
+
+**Check environment variables are set:**
+
+```bash
+echo $OTEL_EXPORTER_OTLP_ENDPOINT
+echo $OTEL_RESOURCE_ATTRIBUTES
+```
+
+**Enable debug logging to see what's being exported:**
+
+```bash
+OTEL_TRACES_EXPORTER=console opentelemetry-instrument gunicorn app:app --bind 0.0.0.0:8000
+```
+
+This outputs trace data to the console so you can verify instrumentation is working.
+
+### Why do traces fail with `grpcio` installation errors?
+
+The gRPC exporter depends on `grpcio`, which can be difficult to install on some platforms. Use the HTTP exporter instead:
+
+```bash
+pip install opentelemetry-exporter-otlp-proto-http
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+```
+
+### Why are database calls not appearing in traces?
+
+Make sure you've installed all application dependencies before running `opentelemetry-bootstrap`. The bootstrap command only installs instrumentation for packages already present.
+
+```bash
+pip install -r requirements.txt
+opentelemetry-bootstrap --action=install
+```
+
+### Why do I get duplicate traces with gunicorn workers?
+
+If you're using multiple gunicorn workers without the `post_fork` hook, each worker may initialize its own tracer incorrectly. See the [Running with gunicorn](#running-with-gunicorn-pre-fork-model) section above.
+
+</details>
+
+<details>
+<ToggleHeading>
+## Setup OpenTelemetry Collector (Optional)
+</ToggleHeading>
+
+### What is the OpenTelemetry Collector?
+
+Think of the OTel Collector as a middleman between your app and SigNoz. Instead of your application sending data directly to SigNoz, it sends everything to the Collector first, which then forwards it along.
+
+### Why use it?
+
+- **Cleaning up data** - Filter out noisy traces you don't care about, or remove sensitive info before it leaves your servers.
+- **Keeping your app lightweight** - Let the Collector handle batching, retries, and compression instead of your application code.
+- **Adding context automatically** - The Collector can tag your data with useful info like which Kubernetes pod or cloud region it came from.
+- **Future flexibility** - Want to send data to multiple backends later? The Collector makes that easy without changing your app.
+
+### Using with a local collector
+
+When sending to a local collector, update your environment variables:
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
+# Remove the headers since the collector handles authentication
+unset OTEL_EXPORTER_OTLP_HEADERS
+```
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions to convert your setup.
+
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
+
+</details>
+
+## Next steps
+
+- [Correlate traces with logs](https://signoz.io/docs/traces-management/guides/correlate-traces-and-logs/) to accelerate triage across signals
+- [Set up alerts](https://signoz.io/docs/alerts-management/notification-channel/slack/) for your Falcon application
+- [Create dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize metrics
+- Explore other [Python framework instrumentations](https://signoz.io/docs/instrumentation/overview/)

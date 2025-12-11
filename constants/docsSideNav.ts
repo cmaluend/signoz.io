@@ -887,44 +887,37 @@ const docsSideNav = [
             type: 'category',
             isExpanded: false,
             label: 'Python',
-            route: '/docs/instrumentation/opentelemetry-python',
-            // link: {
-            // type: 'doc',
-            // route: '/docs/instrumentation/opentelemetry-python',
-            // title: 'Python',
-            // description: 'Learn how to instrument Python applications with OpenTelemetry',
-            // slug: 'instrumentation/python',
-            // },
+            route: '/docs/instrumentation/opentelemetry-python/overview',
             items: [
               {
                 type: 'doc',
-                route: '/docs/instrumentation/opentelemetry-django',
-                label: 'Django ',
+                route: '/docs/instrumentation/opentelemetry-python/django',
+                label: 'Django',
               },
               {
                 type: 'doc',
-                route: '/docs/instrumentation/opentelemetry-fastapi',
-                label: 'FastAPI ',
+                route: '/docs/instrumentation/opentelemetry-python/flask',
+                label: 'Flask',
               },
               {
                 type: 'doc',
-                route: '/docs/instrumentation/opentelemetry-flask',
-                label: 'Flask ',
+                route: '/docs/instrumentation/opentelemetry-python/fastapi',
+                label: 'FastAPI',
               },
               {
                 type: 'doc',
-                route: '/docs/instrumentation/opentelemetry-falcon',
-                label: 'Falcon ',
+                route: '/docs/instrumentation/opentelemetry-python/falcon',
+                label: 'Falcon',
               },
               {
                 type: 'doc',
-                route: '/docs/instrumentation/opentelemetry-hypercorn-unicorn-support',
-                label: 'Hypercorn/Unicorn ',
+                route: '/docs/instrumentation/opentelemetry-python/celery',
+                label: 'Celery',
               },
               {
                 type: 'doc',
-                route: '/docs/instrumentation/opentelemetry-celery',
-                label: 'Celery Worker OpenTelemetry Setup',
+                route: '/docs/instrumentation/manual-instrumentation/python/manual-instrumentation',
+                label: 'Manual Instrumentation',
               },
             ],
           },
@@ -1100,6 +1093,19 @@ const docsSideNav = [
                     label: 'Enable/disable Instrumentation',
                     route:
                       '/docs/instrumentation/manual-instrumentation/javascript/nodejs-selective-instrumentation',
+                  },
+                ],
+              },
+              {
+                type: 'category',
+                isExpanded: false,
+                label: 'Python',
+                items: [
+                  {
+                    type: 'doc',
+                    label: 'Manual Instrumentation',
+                    route:
+                      '/docs/instrumentation/manual-instrumentation/python/manual-instrumentation',
                   },
                 ],
               },

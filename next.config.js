@@ -367,12 +367,12 @@ module.exports = () => {
         },
         {
           source: '/docs/instrumentation/celery/',
-          destination: '/docs/instrumentation/opentelemetry-celery/',
+          destination: '/docs/instrumentation/opentelemetry-python/celery/',
           permanent: true,
         },
         {
           source: '/docs/instrumentation/django/',
-          destination: '/docs/instrumentation/opentelemetry-django/',
+          destination: '/docs/instrumentation/opentelemetry-python/django/',
           permanent: true,
         },
         {
@@ -392,17 +392,17 @@ module.exports = () => {
         },
         {
           source: '/docs/instrumentation/falcon/',
-          destination: '/docs/instrumentation/opentelemetry-falcon/',
+          destination: '/docs/instrumentation/opentelemetry-python/falcon/',
           permanent: true,
         },
         {
           source: '/docs/instrumentation/fastapi/',
-          destination: '/docs/instrumentation/opentelemetry-fastapi/',
+          destination: '/docs/instrumentation/opentelemetry-python/fastapi/',
           permanent: true,
         },
         {
           source: '/docs/instrumentation/flask/',
-          destination: '/docs/instrumentation/opentelemetry-flask/',
+          destination: '/docs/instrumentation/opentelemetry-python/flask/',
           permanent: true,
         },
         {
@@ -497,7 +497,37 @@ module.exports = () => {
         },
         {
           source: '/docs/instrumentation/python/',
-          destination: '/docs/instrumentation/opentelemetry-python/',
+          destination: '/docs/instrumentation/opentelemetry-python/overview/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-python/',
+          destination: '/docs/instrumentation/opentelemetry-python/overview/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-django/',
+          destination: '/docs/instrumentation/opentelemetry-python/django/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-flask/',
+          destination: '/docs/instrumentation/opentelemetry-python/flask/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-fastapi/',
+          destination: '/docs/instrumentation/opentelemetry-python/fastapi/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-falcon/',
+          destination: '/docs/instrumentation/opentelemetry-python/falcon/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-celery/',
+          destination: '/docs/instrumentation/opentelemetry-python/celery/',
           permanent: true,
         },
         {

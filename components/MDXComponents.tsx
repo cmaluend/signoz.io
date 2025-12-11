@@ -39,6 +39,7 @@ import TrackingLink from './TrackingLink'
 import APMQuickStartOverview from './APM/APMQuickStartOverview'
 import APMInstrumentationListicle from './APM/APMInstrumentationListicle'
 import JavascriptInstrumentationListicle from './APM/JavascriptInstrumentationListicle'
+import PythonInstrumentationListicle from './APM/PythonInstrumentationListicle'
 import LibraryTabs from './LibraryTabs/LibraryTabs'
 import LibraryTab from './LibraryTabs/LibraryTab'
 import MDXButton from './MDXButton/MDXButton'
@@ -113,6 +114,7 @@ export const components: MDXComponents = {
   APMQuickStartOverview,
   APMInstrumentationListicle,
   JavascriptInstrumentationListicle,
+  PythonInstrumentationListicle,
   LibraryTabs,
   LibraryTab,
   MDXButton,
