@@ -14,7 +14,7 @@ on:
   push:
     branches:
       - main  # Configurable: Change to your production branch
-      - staging  # Configurable: Change to your staging branch
+      - test/cms-asset-mgmt  # Configurable: Change to your staging branch
     paths:
       - 'data/**/*.mdx'
       - 'data/**/*.md'
