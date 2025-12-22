@@ -191,13 +191,13 @@ function extractAssetPaths(content, frontmatter) {
 
   let match
   while ((match = mdImageRegex.exec(content)) !== null) {
-    if (match[1] && !match[1].startsWith('http')) {
+    if (match[1] && !match[1].startsWith('http') && !match[1].startsWith('https')) {
       paths.add(match[1])
     }
   }
 
   while ((match = htmlTagRegex.exec(content)) !== null) {
-    if (match[1] && !match[1].startsWith('http')) {
+    if (match[1] && !match[1].startsWith('http') && !match[1].startsWith('https')) {
       paths.add(match[1])
     }
   }
@@ -207,7 +207,13 @@ function extractAssetPaths(content, frontmatter) {
     if (typeof value === 'string') {
       // Check if string looks like a local asset path
       // Criteria: Starts with /, does not start with http, has file extension
-      if (value.startsWith('/') && !value.startsWith('http') && /\.[a-zA-Z0-9]+$/.test(value)) {
+      // Also explicitly ignore strings starting with http or https
+      if (
+        value.startsWith('/') &&
+        !value.startsWith('http') &&
+        !value.startsWith('https') &&
+        /\.[a-zA-Z0-9]+$/.test(value)
+      ) {
         paths.add(value)
       }
     } else if (Array.isArray(value)) {
