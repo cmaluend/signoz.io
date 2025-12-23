@@ -2500,6 +2500,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/temporal-monitoring',
+        label: 'Temporal',
+        type: 'doc',
+      },
+      {
         route: '/docs/vercel-ai-sdk-observability',
         label: 'Vercel AI SDK',
         type: 'doc',
