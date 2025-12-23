@@ -317,10 +317,17 @@ function replaceAssetPaths(content, frontmatter, assets) {
     const cleanPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath
     const cdnUrl = `${CDN_URL}/${cleanPath}`
 
-    // Replace in content (global replace)
-    // We need to escape the asset path for regex
-    // But simplest is string replace all
-    newContent = newContent.split(assetPath).join(cdnUrl)
+    // Escape special regex characters in the asset path
+    const escapedAssetPath = assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+    // Create a regex that matches the asset path enclosed in quotes or parentheses
+    // Capture groups:
+    // $1: Opening delimiter (quote or parenthesis)
+    // $2: Closing delimiter (quote or parenthesis)
+    const regex = new RegExp(`(["'(])${escapedAssetPath}(["')])`, 'g')
+
+    // Replace in content using the regex
+    newContent = newContent.replace(regex, `$1${cdnUrl}$2`)
 
     // Replace in frontmatter
     Object.keys(newFrontmatter).forEach((key) => {
