@@ -889,8 +889,36 @@ async function syncToStrapi() {
 
     // Save results for PR comment (failed state)
     try {
+      // Extract relation types even on error for PR comment
+      const usedSchemas = new Set()
+      const allRelationNames = new Set()
+
+      // Look at all files processed so far (including those that failed if possible,
+      // but strictly we look at created/updated/pending.
+      // For Phase 1 failure, we might not have created/updated yet.
+      // We can scan ALL files in CHANGED_FILES to guess potential relations to show context.
+      const filesToScan = [...CHANGED_FILES]
+
+      filesToScan.forEach((filePath) => {
+        const folderName = getFolderName(filePath)
+        if (folderName && COLLECTION_SCHEMAS[folderName]) {
+          usedSchemas.add(folderName)
+          const schema = COLLECTION_SCHEMAS[folderName]
+          if (schema.relations) {
+            Object.keys(schema.relations).forEach((relationName) => {
+              allRelationNames.add(relationName)
+            })
+          }
+        }
+      })
+
+      results.relationTypes = Array.from(allRelationNames)
+      results.deploymentStatus = DEPLOYMENT_STATUS
+
       fs.writeFileSync('sync-results.json', JSON.stringify(results, null, 2))
-    } catch (e) {}
+    } catch (e) {
+      console.error('Failed to save error results:', e.message)
+    }
 
     process.exit(1)
   }
@@ -988,8 +1016,29 @@ async function syncToStrapi() {
 
     // Save results and exit
     try {
+      // Extract relation types
+      const allRelationNames = new Set()
+      const filesToScan = [...CHANGED_FILES]
+
+      filesToScan.forEach((filePath) => {
+        const folderName = getFolderName(filePath)
+        if (folderName && COLLECTION_SCHEMAS[folderName]) {
+          const schema = COLLECTION_SCHEMAS[folderName]
+          if (schema.relations) {
+            Object.keys(schema.relations).forEach((relationName) => {
+              allRelationNames.add(relationName)
+            })
+          }
+        }
+      })
+
+      results.relationTypes = Array.from(allRelationNames)
+      results.deploymentStatus = DEPLOYMENT_STATUS
+
       fs.writeFileSync('sync-results.json', JSON.stringify(results, null, 2))
-    } catch (e) {}
+    } catch (e) {
+      console.error('Failed to save error results:', e.message)
+    }
     process.exit(1)
   }
 
