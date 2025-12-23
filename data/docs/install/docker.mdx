@@ -1,5 +1,5 @@
 ---
-date: 2024-06-06
+date: 2025-12-23
 title: Docker Standalone
 tags : [Self-Host]
 description:  Learn how to install SigNoz on Docker Standalone. Follow our detailed, step-by-step guide to set up SigNoz on macOS or Linux. Ensure smooth installation and start monitoring your applications effectively.
@@ -40,18 +40,6 @@ before you run the install script. The install script automatically installs Doc
 - [Git client](https://desktop.github.com/)
 - Ensure that the ports `8080`, `4317` and `4318` are open on the machine where you install SigNoz.
 
-## Install SigNoz Using the Install Script
-
-<Admonition type="info">
-Please use non-root user (mainly for Git repository cloning), otherwise you may end up seeing file system permissions errors after the installation.
-</Admonition>
-
-1. <CloneRepo />
-
-2. Run the `install.sh` script:
-   ```bash
-   ./install.sh
-   ```
 
 ## Install SigNoz Using Docker Compose
 
@@ -107,20 +95,6 @@ How is this helpful? I suggest we create something similar to the Kubernetes sec
 
 <RetentionInfo />
 
-## Install specific version of SigNoz
-
-1. <CloneRepo />
-
-2. Checkout to the specific version tag. For example, to install SigNoz version `v0.6.1`:
-	```
-	git checkout v0.6.1
-	```
-
-3. Run the `install.sh` script:
-
-	```bash
-	./install.sh
-	```
 
 ## Next Steps
 - [Collect Telemetry from your Docker Clusters](/docs/collection-agents/docker/install/)
