@@ -1,6 +1,9 @@
 const fs = require('fs')
+const path = require('path')
 const matter = require('gray-matter')
 const axios = require('axios')
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3')
+const mime = require('mime-types')
 
 // Configuration
 const CMS_API_URL = process.env.CMS_API_URL
@@ -9,6 +12,21 @@ const SYNC_FOLDERS = JSON.parse(process.env.SYNC_FOLDERS)
 const DEPLOYMENT_STATUS = process.env.DEPLOYMENT_STATUS
 const CHANGED_FILES = JSON.parse(process.env.CHANGED_FILES || '[]')
 const DELETED_FILES = JSON.parse(process.env.DELETED_FILES || '[]')
+const CHANGED_ASSETS = JSON.parse(process.env.CHANGED_ASSETS || '[]')
+
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME
+const S3_REGION = process.env.S3_REGION
+const CDN_URL = process.env.CDN_URL
+const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID
+const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY
+
+const s3Client = new S3Client({
+  region: S3_REGION,
+  credentials: {
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  },
+})
 
 // Strapi Collection Type Schemas
 const COLLECTION_SCHEMAS = {
@@ -159,6 +177,154 @@ function parseMDXFile(filePath) {
   } catch (error) {
     throw new Error(`Failed to parse file ${filePath}: ${error.message}`)
   }
+}
+
+// Helper: Extract asset paths from content and frontmatter
+function extractAssetPaths(content, frontmatter) {
+  const paths = new Set()
+
+  // Matches: ![alt](url) and <(img|video|source) ... src="url" ... />
+  const mdImageRegex = /!\[.*?\]\((.*?)\)/g
+  const htmlTagRegex = /<(?:img|video|source|Image|Figure).*?src=["'](.*?)["']/g
+
+  let match
+  while ((match = mdImageRegex.exec(content)) !== null) {
+    if (match[1] && !match[1].startsWith('http') && !match[1].startsWith('https')) {
+      paths.add(match[1])
+    }
+  }
+
+  while ((match = htmlTagRegex.exec(content)) !== null) {
+    if (match[1] && !match[1].startsWith('http') && !match[1].startsWith('https')) {
+      paths.add(match[1])
+    }
+  }
+
+  // Recursively check frontmatter fields for potential asset paths
+  function checkValue(value) {
+    if (typeof value === 'string') {
+      // Check if string looks like a local asset path
+      // Criteria: Starts with /, does not start with http, has file extension
+      // Ignores strings starting with http/https
+      if (
+        value.startsWith('/') &&
+        !value.startsWith('http') &&
+        !value.startsWith('https') &&
+        /\.[a-zA-Z0-9]+$/.test(value)
+      ) {
+        paths.add(value)
+      }
+    } else if (Array.isArray(value)) {
+      value.forEach(checkValue)
+    } else if (typeof value === 'object' && value !== null) {
+      Object.values(value).forEach(checkValue)
+    }
+  }
+
+  checkValue(frontmatter)
+
+  return Array.from(paths)
+}
+
+// Helper: Check if asset exists on CDN
+async function checkCDN(assetPath) {
+  const url = `${CDN_URL}${assetPath.startsWith('/') ? '' : '/'}${assetPath}`
+  try {
+    await axios.head(url)
+    return true
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return false
+    }
+
+    console.warn(`    ⚠️ Error checking CDN for ${url}: ${error.message}`)
+    return false
+  }
+}
+
+// Helper: Upload asset to S3
+async function uploadToS3(localPath, s3Key) {
+  try {
+    const fileContent = fs.readFileSync(localPath)
+    const contentType = mime.lookup(localPath) || 'application/octet-stream'
+
+    console.log(`    ⬆️ Uploading to S3: ${s3Key}`)
+
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: S3_BUCKET_NAME,
+        Key: s3Key,
+        Body: fileContent,
+        ContentType: contentType,
+      })
+    )
+
+    console.log(`    ✅ Uploaded successfully`)
+  } catch (error) {
+    throw new Error(`Failed to upload ${s3Key} to S3: ${error.message}`)
+  }
+}
+
+// Helper: Sync single asset
+async function syncAsset(assetPath) {
+  const cleanPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath
+  const localPath = path.join('data-assets', cleanPath)
+  const s3Key = `web/${cleanPath}`
+
+  console.log(`  🖼️ Processing asset: ${assetPath}`)
+  console.log(`     • Local: ${localPath}`)
+  console.log(`     • S3 Key: ${s3Key}`)
+
+  const localExists = fs.existsSync(localPath)
+  const onCDN = await checkCDN(cleanPath)
+
+  const isChangedInPR = CHANGED_ASSETS.includes(localPath)
+
+  if (!localExists && !onCDN) {
+    throw new Error(
+      `❌ Asset Sync Failed: The asset "${assetPath}" was referenced but does not exist in 'data-assets' and was not found on the CDN. \n` +
+        `   Please ensure the asset exists at "${localPath}" or remove the reference.`
+    )
+  }
+
+  if (localExists) {
+    if (!onCDN || isChangedInPR) {
+      console.log(`    Triggering upload: onCDN=${onCDN}, changed=${isChangedInPR}`)
+      await uploadToS3(localPath, s3Key)
+    } else {
+      console.log(`    ⏭️ Asset already on CDN and not changed, skipping upload`)
+    }
+  } else {
+    // Local doesn't exist but it's on CDN
+    console.log(`    ⚠️ Asset not found locally but exists on CDN, using existing version`)
+  }
+}
+
+// Helper: Replace asset paths with CDN URLs
+function replaceAssetPaths(content, frontmatter, assets) {
+  let newContent = content
+  const newFrontmatter = { ...frontmatter }
+
+  assets.forEach((assetPath) => {
+    const cleanPath = assetPath.startsWith('/') ? assetPath.slice(1) : assetPath
+    const cdnUrl = `${CDN_URL}/${cleanPath}`
+
+    const escapedAssetPath = assetPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+    const regex = new RegExp(`(["'(])${escapedAssetPath}(["')])`, 'g')
+
+    // Replace in content using the regex
+    newContent = newContent.replace(regex, `$1${cdnUrl}$2`)
+
+    // Replace in frontmatter
+    Object.keys(newFrontmatter).forEach((key) => {
+      if (newFrontmatter[key] === assetPath) {
+        newFrontmatter[key] = cdnUrl
+      }
+    })
+  })
+
+  return { content: newContent, frontmatter: newFrontmatter }
 }
 
 // Helper: Fetch all entities from Strapi endpoint
@@ -607,6 +773,10 @@ async function syncToStrapi() {
   DELETED_FILES.forEach((file, idx) => {
     console.log(`   ${idx + 1}. ${file}`)
   })
+  console.log(`\n🖼️ Changed Assets (${CHANGED_ASSETS.length}):`)
+  CHANGED_ASSETS.forEach((file, idx) => {
+    console.log(`   ${idx + 1}. ${file}`)
+  })
   console.log('')
 
   const results = {
@@ -629,11 +799,15 @@ async function syncToStrapi() {
   console.log(`  - Deleted: ${DELETED_FILES.length}`)
   console.log('')
 
+  const pendingOperations = []
+
+  console.log('\n' + '='.repeat(80))
+  console.log('🔄 PHASE 1: Asset Synchronization and Validation')
+  console.log('='.repeat(80))
+
   for (const { path: filePath, isDeleted } of allFiles) {
-    console.log(`\n${'='.repeat(80)}`)
-    console.log(`📄 Processing: ${filePath}`)
+    console.log(`\n📄 Analyzing: ${filePath}`)
     console.log(`  🏷️ [DEBUG] File marked as deleted: ${isDeleted}`)
-    console.log(`${'='.repeat(80)}`)
 
     try {
       console.log(`  🔍 [DEBUG] Extracting folder name...`)
@@ -642,7 +816,6 @@ async function syncToStrapi() {
 
       if (!folderName || !SYNC_FOLDERS.includes(folderName)) {
         console.log(`⏭️ Skipped: Folder '${folderName}' not in sync list`)
-        console.log(`  ℹ️ [DEBUG] Sync folders: ${SYNC_FOLDERS.join(', ')}`)
         results.skipped.push(filePath)
         continue
       }
@@ -659,6 +832,80 @@ async function syncToStrapi() {
       console.log(`  🔧 [DEBUG] Operation type: ${operationType}`)
 
       if (operationType === 'delete') {
+        // For delete, we just need to store the intent
+        pendingOperations.push({
+          type: 'delete',
+          folderName,
+          pathField,
+          filePath,
+        })
+      } else {
+        console.log(`  📖 [DEBUG] Parsing MDX file...`)
+        const { frontmatter, content } = parseMDXFile(filePath)
+        console.log(`  📖 [DEBUG] Frontmatter keys:`, Object.keys(frontmatter).join(', '))
+
+        // --- ASSET HANDLING START ---
+        console.log(`  🖼️ [DEBUG] Analyzing assets...`)
+        const assetPaths = extractAssetPaths(content, frontmatter)
+        console.log(`  🖼️ [DEBUG] Found ${assetPaths.length} assets:`, assetPaths)
+
+        for (const assetPath of assetPaths) {
+          await syncAsset(assetPath)
+        }
+
+        console.log(`  🖼️ [DEBUG] Replacing asset URLs with CDN links...`)
+        const { content: updatedContent, frontmatter: updatedFrontmatter } = replaceAssetPaths(
+          content,
+          frontmatter,
+          assetPaths
+        )
+
+        // Store data for Phase 2
+        pendingOperations.push({
+          type: 'update',
+          folderName,
+          pathField,
+          filePath,
+          frontmatter: updatedFrontmatter,
+          content: updatedContent,
+        })
+      }
+    } catch (error) {
+      console.error(`❌ Error processing ${filePath}: ${error.message}`)
+      results.errors.push({ file: filePath, error: error.message })
+    }
+  }
+
+  // Check if any errors occurred in Phase 1
+  if (results.errors.length > 0) {
+    console.error('\n' + '='.repeat(80))
+    console.error('❌ PHASE 1 FAILED: Asset synchronization or validation failed.')
+    console.error('⛔ Stopping workflow to prevent partial or invalid content sync.')
+    console.error('='.repeat(80))
+
+    results.errors.forEach(({ file, error }) => {
+      console.error(`  • ${file}: ${error}`)
+    })
+
+    // Save results for PR comment (failed state)
+    try {
+      fs.writeFileSync('sync-results.json', JSON.stringify(results, null, 2))
+    } catch (e) {}
+
+    process.exit(1)
+  }
+
+  // PHASE 2: CMS Synchronization
+  console.log('\n' + '='.repeat(80))
+  console.log('🔄 PHASE 2: CMS Content Synchronization')
+  console.log('='.repeat(80))
+
+  for (const op of pendingOperations) {
+    const { type, folderName, pathField, filePath } = op
+    console.log(`\n📄 Syncing: ${filePath} (${type})`)
+
+    try {
+      if (type === 'delete') {
         console.log(`🗑️ Deleting from CMS: ${pathField}`)
         const existingEntry = await findEntryByPath(folderName, pathField)
 
@@ -671,9 +918,7 @@ async function syncToStrapi() {
           results.skipped.push(filePath)
         }
       } else {
-        console.log(`  📖 [DEBUG] Parsing MDX file...`)
-        const { frontmatter, content } = parseMDXFile(filePath)
-        console.log(`  📖 [DEBUG] Frontmatter keys:`, Object.keys(frontmatter).join(', '))
+        const { frontmatter, content } = op
 
         console.log(`  🗺️ [DEBUG] Mapping to Strapi schema...`)
         const { data: strapiData, warnings } = await mapToStrapiSchema(
@@ -682,7 +927,6 @@ async function syncToStrapi() {
           content,
           pathField
         )
-        console.log(`  🗺️ [DEBUG] Mapped data keys:`, Object.keys(strapiData).join(', '))
 
         // Track relation warnings
         if (warnings && warnings.length > 0) {
@@ -695,20 +939,12 @@ async function syncToStrapi() {
 
         console.log(`  🔎 [DEBUG] Checking if entry exists in CMS...`)
         const existingEntry = await findEntryByPath(folderName, pathField)
-        console.log(`  🔎 [DEBUG] Existing entry result:`, existingEntry ? 'FOUND' : 'NOT FOUND')
 
         if (existingEntry) {
           console.log(`🔄 Updating in CMS: ${pathField}`)
-          console.log(
-            `  📋 [DEBUG] Entry details: id=${existingEntry.id}, documentId=${existingEntry.documentId}`
-          )
-
           if (!existingEntry.documentId) {
-            throw new Error(
-              `Entry found but has no documentId. Entry keys: ${Object.keys(existingEntry).join(', ')}`
-            )
+            throw new Error(`Entry found but has no documentId`)
           }
-
           await updateEntry(folderName, existingEntry.documentId, strapiData)
           console.log(`✅ Updated successfully`)
           results.updated.push({ file: filePath, path: pathField })
@@ -720,34 +956,14 @@ async function syncToStrapi() {
         }
       }
     } catch (error) {
-      console.error(`\n❌ [DEBUG] ============ ERROR DETAILS ============`)
-      console.error(`❌ [DEBUG] File: ${filePath}`)
-      console.error(`❌ [DEBUG] Error message: ${error.message}`)
-      console.error(`❌ [DEBUG] Error name: ${error.name}`)
-      console.error(`❌ [DEBUG] Error stack:`, error.stack)
-
+      console.error(`❌ Error syncing ${filePath}: ${error.message}`)
+      // Detailed error logging...
       if (error.response) {
-        console.error(`❌ [DEBUG] HTTP Response status: ${error.response.status}`)
-        console.error(
-          `❌ [DEBUG] HTTP Response headers:`,
-          JSON.stringify(error.response.headers, null, 2)
-        )
         console.error(
           `❌ [DEBUG] HTTP Response data:`,
           JSON.stringify(error.response.data, null, 2)
         )
       }
-
-      if (error.config) {
-        console.error(`❌ [DEBUG] Request config:`)
-        console.error(`  - URL: ${error.config.url}`)
-        console.error(`  - Method: ${error.config.method}`)
-        console.error(`  - Data: ${error.config.data}`)
-      }
-
-      console.error(`❌ [DEBUG] =========================================\n`)
-
-      console.error(`❌ Error processing ${filePath}: ${error.message}`)
       results.errors.push({ file: filePath, error: error.message })
     }
   }
@@ -765,39 +981,15 @@ async function syncToStrapi() {
   console.log('='.repeat(60) + '\n')
 
   if (results.errors.length > 0) {
-    console.error('\n❌ SYNC FAILED - The following errors occurred:\n')
+    console.error('\n❌ SYNC FAILED - The following errors occurred in Phase 2:\n')
     results.errors.forEach(({ file, error }) => {
       console.error(`  • ${file}: ${error}`)
     })
 
-    // Extract relation types even on error for PR comment
-    const usedSchemas = new Set()
-    const allRelationNames = new Set()
-
-    ;[...results.created, ...results.updated].forEach((item) => {
-      const folderName = getFolderName(item.file)
-      if (folderName && COLLECTION_SCHEMAS[folderName]) {
-        usedSchemas.add(folderName)
-        const schema = COLLECTION_SCHEMAS[folderName]
-        if (schema.relations) {
-          Object.keys(schema.relations).forEach((relationName) => {
-            allRelationNames.add(relationName)
-          })
-        }
-      }
-    })
-
-    results.relationTypes = Array.from(allRelationNames)
-    results.deploymentStatus = DEPLOYMENT_STATUS
-
-    // Save results to file even on error for PR comment
+    // Save results and exit
     try {
       fs.writeFileSync('sync-results.json', JSON.stringify(results, null, 2))
-      console.log('📝 Results saved to sync-results.json')
-    } catch (writeError) {
-      console.error('Failed to save results:', writeError.message)
-    }
-
+    } catch (e) {}
     process.exit(1)
   }
 
