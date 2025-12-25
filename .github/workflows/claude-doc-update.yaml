@@ -11,14 +11,14 @@ permissions:
   id-token: write
 
 concurrency:
-  group: doc-update-${{ github.event.issue.number }}
+  group: doc-automation-${{ github.event.issue.number }}
   cancel-in-progress: true
 
 jobs:
   doc_update:
-    # Only run when the issue has label "doc-update" and the author is trusted
+    # Only run when the issue has label "doc-automation" and the author is trusted
     if: >-
-      contains(github.event.issue.labels.*.name, 'doc-update') &&
+      contains(github.event.issue.labels.*.name, 'doc-automation') &&
       (
         github.event.issue.author_association == 'OWNER' ||
         github.event.issue.author_association == 'MEMBER' ||
@@ -30,7 +30,7 @@ jobs:
 
     env:
       DOCS_ROOT: data/docs
-      BRANCH_NAME: claude/doc-update-${{ github.event.issue.number }}
+      BRANCH_NAME: claude/doc-automation-${{ github.event.issue.number }}
       BASE_BRANCH: ${{ github.event.repository.default_branch }}
 
     steps:
