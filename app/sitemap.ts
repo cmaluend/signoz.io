@@ -60,14 +60,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }))
 
-  const opentelemetryRoutes = allOpentelemetries
-    .filter((post) => !post.draft)
-    .map((post) => ({
-      url: `${siteUrl}/${post.path}/`,
-      lastModified: post.lastmod || post.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.5,
-    }))
+  // const opentelemetryRoutes = allOpentelemetries
+  //   .filter((post) => !post.draft)
+  //   .map((post) => ({
+  //     url: `${siteUrl}/${post.path}/`,
+  //     lastModified: post.lastmod || post.date,
+  //     changeFrequency: mapChangeFrequency('weekly'),
+  //     priority: 0.5,
+  //   }))
 
   // New section for guides
   const guideRoutes = allGuides
@@ -118,6 +118,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   } catch (error) {
     console.error('Error fetching case studies for sitemap:', error)
+    // Return empty array if fetching fails
+  }
+
+  let opentelemetryRoutes: MetadataRoute.Sitemap = []
+  try {
+    const opentelemetryRoutesResponse = (await fetchMDXContentByPath(
+      'opentelemetry',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+
+    opentelemetryRoutes = opentelemetryRoutesResponse.data.map((opentelemetry) => ({
+      url: `${siteUrl}/${opentelemetry.path}/`,
+      lastModified: opentelemetry.updatedAt || opentelemetry.publishedAt,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.5,
+    }))
+  } catch (error) {
+    console.error('Error fetching opentelemetry routes for sitemap:', error)
     // Return empty array if fetching fails
   }
 

@@ -128,6 +128,32 @@ const COLLECTION_SCHEMAS = {
       },
     },
   },
+  opentelemetry: {
+    apiPath: 'api::opentelemetry.opentelemetry',
+    endpoint: 'opentelemetries',
+    fields: ['title', 'description', 'image', 'path', 'content', 'deployment_status', 'date'],
+    relations: {
+      authors: {
+        endpoint: 'authors',
+        matchField: 'key', // Match against author.key
+        frontmatterField: 'authors', // Array of author keys in frontmatter
+      },
+      tags: {
+        endpoint: 'tags',
+        matchField: 'key', // Match against tag.key
+        frontmatterField: 'tags', // Array of tag values in frontmatter
+        filterKey: true, // Also check if tag.key contains 'faq' or 'faqs'
+        matchValue: true, // Match against tag.value (case insensitive)
+      },
+      keywords: {
+        endpoint: 'keywords',
+        matchField: 'key', // Match against keyword.key
+        frontmatterField: 'keywords', // Array of keyword values in frontmatter
+        filterKey: true, // Also check if keyword.key contains 'comparison' or 'comparisons'
+        matchValue: true, // Match against keyword.value (case insensitive)
+      },
+    },
+  },
   authors: {
     apiPath: 'api::author.author',
     endpoint: 'authors',
