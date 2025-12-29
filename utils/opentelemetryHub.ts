@@ -3,11 +3,11 @@ import {
   allBlogs,
   allComparisons,
   allGuides,
-  allOpentelemetries,
+  // allOpentelemetries,
   type Blog,
   type Comparison,
   type Guide,
-  type Opentelemetry,
+  // type Opentelemetry,
 } from 'contentlayer/generated'
 
 type RawHubPath = {
@@ -84,20 +84,20 @@ let memoizedHubIndex: HubIndex | null = null
 const contentIndex = [
   {
     prefix: '/blog/',
-    collection: allBlogs as Array<Blog | Comparison | Guide | Opentelemetry>,
+    collection: allBlogs as Array<Blog | Comparison | Guide>,
   },
   {
     prefix: '/comparisons/',
-    collection: allComparisons as Array<Blog | Comparison | Guide | Opentelemetry>,
+    collection: allComparisons as Array<Blog | Comparison | Guide>,
   },
   {
     prefix: '/guides/',
-    collection: allGuides as Array<Blog | Comparison | Guide | Opentelemetry>,
+    collection: allGuides as Array<Blog | Comparison | Guide>,
   },
-  {
-    prefix: '/opentelemetry/',
-    collection: allOpentelemetries as Array<Blog | Comparison | Guide | Opentelemetry>,
-  },
+  // {
+  //   prefix: '/opentelemetry/',
+  //   collection: allOpentelemetries as Array<Blog | Comparison | Guide | Opentelemetry>,
+  // },
 ]
 
 function normalizeRoute(route: string) {

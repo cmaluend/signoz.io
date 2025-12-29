@@ -4,11 +4,11 @@ import {
   allBlogs,
   allComparisons,
   allGuides,
-  allOpentelemetries,
+  // allOpentelemetries,
   type Blog,
   type Comparison,
   type Guide,
-  type Opentelemetry,
+  // type Opentelemetry,
 } from 'contentlayer/generated'
 import { coreContent, type CoreContent } from 'pliny/utils/contentlayer'
 import BlogPostCard from '../Shared/BlogPostCard'
@@ -17,7 +17,7 @@ import React from 'react'
 import { filterData } from 'app/utils/common'
 import { Frown } from 'lucide-react'
 
-type HubDoc = CoreContent<Blog | Comparison | Guide | Opentelemetry>
+type HubDoc = CoreContent<Blog | Comparison | Guide> | any
 
 type HubChapterGroup = {
   key: string
@@ -55,8 +55,8 @@ const docCollections = [
   ...allBlogs,
   ...allComparisons,
   ...allGuides,
-  ...allOpentelemetries,
-] as Array<Blog | Comparison | Guide | Opentelemetry>
+  // ...allOpentelemetries,
+] as Array<Blog | Comparison | Guide>
 
 const normalizedDocMap = new Map<string, HubDoc>()
 const docLanguageMap = new Map<string, string>()

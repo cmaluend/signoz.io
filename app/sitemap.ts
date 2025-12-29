@@ -1,12 +1,5 @@
 import { MetadataRoute } from 'next'
-import {
-  allBlogs,
-  allAuthors,
-  allOpentelemetries,
-  allDocs,
-  allGuides,
-  allComparisons,
-} from 'contentlayer/generated'
+import { allBlogs, allAuthors, allDocs, allGuides, allComparisons } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 

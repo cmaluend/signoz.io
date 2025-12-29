@@ -2,7 +2,7 @@ import { sortPosts } from 'pliny/utils/contentlayer.js'
 import {
   allBlogs,
   allDocs,
-  allOpentelemetries,
+  // allOpentelemetries,
   allComparisons,
   allGuides,
 } from 'contentlayer/generated'
@@ -30,6 +30,23 @@ const mapFaqEntries = (faqs: MDXContentApiResponse | undefined) => {
   }))
 }
 
+const buildOpentelemetrySlug = (path = '') => {
+  const cleanedPath = path.startsWith('/') ? path : `/${path}`
+  return normaliseSlug(`opentelemetry${cleanedPath}`)
+}
+
+const mapOpentelemetryEntries = (opentelemetries: MDXContentApiResponse | undefined) => {
+  return opentelemetries?.data.map((opentelemetry) => ({
+    ...opentelemetry,
+    slug: buildOpentelemetrySlug(opentelemetry.path),
+    date:
+      opentelemetry.date ??
+      opentelemetry.publishedAt ??
+      opentelemetry.updatedAt ??
+      opentelemetry.createdAt,
+  }))
+}
+
 export const loadPublishedPosts = async () => {
   const deploymentStatus = getDeploymentStatus()
   const allFaqs = (await fetchMDXContentByPath('faqs', undefined, deploymentStatus, true)) as
@@ -38,10 +55,19 @@ export const loadPublishedPosts = async () => {
 
   const faqPosts = mapFaqEntries(allFaqs)
 
+  const allOpentelemetries = (await fetchMDXContentByPath(
+    'opentelemetries',
+    undefined,
+    deploymentStatus,
+    true
+  )) as MDXContentApiResponse | undefined
+
+  const opentelemetryPosts = mapOpentelemetryEntries(allOpentelemetries)
+
   const combinedPosts = [
     ...faqPosts,
     ...allBlogs,
-    ...allOpentelemetries,
+    ...(opentelemetryPosts || []),
     ...allDocs,
     ...allComparisons,
     ...allGuides,
