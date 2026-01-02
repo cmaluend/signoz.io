@@ -2,6 +2,9 @@ import OpenTelemetryClient from './OpenTelemetryClient'
 import { Metadata } from 'next'
 import { fetchMDXContentByPath } from '@/utils/strapi'
 
+export const revalidate = 3600
+export const dynamicParams = true
+
 export const metadata: Metadata = {
   title: 'OpenTelemetry Learning Track | SigNoz',
   description:
