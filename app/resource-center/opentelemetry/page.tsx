@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 export default async function OpenTelemetryHome() {
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deployment_status = isProduction ? 'live' : 'staging'
-  let articles = []
+  let articles: any[] = []
 
   try {
     const response = await fetchMDXContentByPath(
