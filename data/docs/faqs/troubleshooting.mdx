@@ -49,16 +49,41 @@ If logging out and back in does not resolve the issue, contact support for furth
 
 ### My services are not showing up in the Service Map section (but present in the services and traces tab), what should I do?
 
-A. You might need to zoom out a bit to see your service.  
+A. You might need to zoom out a bit to see your service.
 **Note:** Standalone services (without dependencies/calls to other services) are not shown in the Service Map. Only services with interdependencies (i.e., calls to other services) are visualized. For more details, refer to our [Service Map documentation](https://signoz.io/docs/userguide/service-map/).
 
 <details>
 
 <summary> Show detailed steps </summary>
 
-1. Zoom out on the Service Map to ensure the service isn't off-screen.  
-2. Confirm your services have inter-service calls (spans) — the Service Map visualizes dependencies, not standalone services.  
-3. Verify instrumentation is sending spans with proper service.name and relevant span attributes.  
+1. Zoom out on the Service Map to ensure the service isn't off-screen.
+2. Confirm your services have inter-service calls (spans) — the Service Map visualizes dependencies, not standalone services.
+3. Verify instrumentation is sending spans with proper service.name and relevant span attributes.
 4. If needed, inspect traces in the Traces tab to confirm calls between services are present.
+
+</details>
+
+### Why am I seeing "503 Service Temporarily Unavailable" or "Something went wrong" errors in SigNoz?
+
+Users may occasionally encounter "503 Service Temporarily Unavailable" errors or "Something went wrong" messages when accessing the SigNoz UI. These errors can appear across different parts of the application including logs, traces, and metrics views.
+
+<details>
+
+<summary> Show detailed steps </summary>
+
+These errors typically occur due to one of the following reasons:
+
+**Common Causes**
+
+1. **System Upgrades**: During planned system upgrades, the UI may experience brief periods of downtime. While the UI is temporarily unavailable, data ingestion continues to work, ensuring no data loss.
+2. **Temporary Service Disruptions**: Occasional brief service interruptions may occur due to automatic system maintenance or resource scaling events.
+
+**Resolution Steps**
+
+1. **Wait and Refresh**: Most temporary disruptions resolve automatically within a few minutes. Try refreshing your browser after 5-10 minutes.
+2. **Check Status Page**: For real-time service status updates, visit [https://status.signoz.io/](https://status.signoz.io/)
+3. **Contact Support**: If the issue persists for more than 10 minutes, contact SigNoz support for assistance.
+
+**Note:** While the UI may be temporarily unavailable during these incidents, the data ingestion system typically remains unaffected, ensuring no data loss occurs during these periods.
 
 </details>
