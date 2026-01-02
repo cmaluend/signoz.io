@@ -227,8 +227,8 @@ function extractAssetPaths(content, frontmatter) {
   const paths = new Set()
 
   // Matches: ![alt](url) and <(img|video|source) ... src="url" ... />
-  const mdImageRegex = /!\[.*?\]\((.*?)\)/g
-  const htmlTagRegex = /<(?:img|video|source|Image|Figure).*?src=["'](.*?)["']/g
+  const mdImageRegex = /!\[[^\]]*?\]\((.*?)\)/g
+  const htmlTagRegex = /<(?:img|video|source|Image|Figure)[^>]*?src=["'](.*?)["']/g
 
   let match
   while ((match = mdImageRegex.exec(content)) !== null) {
