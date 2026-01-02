@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allAuthors, allDocs, allGuides, allComparisons } from 'contentlayer/generated'
+import { allBlogs, allDocs, allGuides, allComparisons } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -52,15 +52,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
     }))
-
-  // const opentelemetryRoutes = allOpentelemetries
-  //   .filter((post) => !post.draft)
-  //   .map((post) => ({
-  //     url: `${siteUrl}/${post.path}/`,
-  //     lastModified: post.lastmod || post.date,
-  //     changeFrequency: mapChangeFrequency('weekly'),
-  //     priority: 0.5,
-  //   }))
 
   // New section for guides
   const guideRoutes = allGuides
@@ -148,6 +139,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'teams',
     'guides', // Add the main guides page
     'faqs', // Add the main FAQs page
+    'opentelemetry',
   ].map((route) => ({
     url: `${siteUrl}/${route}${route ? '/' : ''}`,
     lastModified: new Date().toISOString().split('T')[0],

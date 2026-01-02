@@ -3,11 +3,9 @@ import {
   allBlogs,
   allComparisons,
   allGuides,
-  // allOpentelemetries,
   type Blog,
   type Comparison,
   type Guide,
-  // type Opentelemetry,
 } from 'contentlayer/generated'
 
 type RawHubPath = {
@@ -94,10 +92,6 @@ const contentIndex = [
     prefix: '/guides/',
     collection: allGuides as Array<Blog | Comparison | Guide>,
   },
-  // {
-  //   prefix: '/opentelemetry/',
-  //   collection: allOpentelemetries as Array<Blog | Comparison | Guide | Opentelemetry>,
-  // },
 ]
 
 function normalizeRoute(route: string) {

@@ -45,7 +45,6 @@ const rss = () => {
     ...allBlogs,
     ...allComparisons,
     ...allGuides,
-    // ...allOpentelemetries,
     ...allDocs,
   ])
   console.log('RSS feed generated...')

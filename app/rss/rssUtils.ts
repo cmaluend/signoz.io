@@ -1,11 +1,5 @@
 import { sortPosts } from 'pliny/utils/contentlayer.js'
-import {
-  allBlogs,
-  allDocs,
-  // allOpentelemetries,
-  allComparisons,
-  allGuides,
-} from 'contentlayer/generated'
+import { allBlogs, allDocs, allComparisons, allGuides } from 'contentlayer/generated'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '../../utils/strapi'
 import { normaliseSlug } from '../../scripts/rssFeed.mjs'
 
