@@ -10,9 +10,26 @@ const CMS_API_URL = process.env.CMS_API_URL
 const CMS_API_TOKEN = process.env.CMS_API_TOKEN
 const SYNC_FOLDERS = JSON.parse(process.env.SYNC_FOLDERS)
 const DEPLOYMENT_STATUS = process.env.DEPLOYMENT_STATUS
-const CHANGED_FILES = JSON.parse(process.env.CHANGED_FILES || '[]')
-const DELETED_FILES = JSON.parse(process.env.DELETED_FILES || '[]')
-const CHANGED_ASSETS = JSON.parse(process.env.CHANGED_ASSETS || '[]')
+
+function getAssetsListFromEnv(envName, pathEnvName) {
+  if (process.env[pathEnvName] && fs.existsSync(process.env[pathEnvName])) {
+    try {
+      const content = fs.readFileSync(process.env[pathEnvName], 'utf8')
+      // If the file content is empty or just whitespace, return empty array
+      if (!content || !content.trim()) return []
+      return JSON.parse(content)
+    } catch (e) {
+      console.warn(`⚠️ Failed to read or parse file from ${pathEnvName}: ${e.message}`)
+      // Fallback to empty array if file reading fails
+      return []
+    }
+  }
+  return JSON.parse(process.env[envName] || '[]')
+}
+
+const CHANGED_FILES = getAssetsListFromEnv('CHANGED_FILES', 'CHANGED_FILES_PATH')
+const DELETED_FILES = getAssetsListFromEnv('DELETED_FILES', 'DELETED_FILES_PATH')
+const CHANGED_ASSETS = getAssetsListFromEnv('CHANGED_ASSETS', 'CHANGED_ASSETS_PATH')
 
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME
 const S3_REGION = process.env.S3_REGION
