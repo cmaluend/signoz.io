@@ -1,0 +1,112 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - datadog</title>
+      <link>https://signoz.io/tags/datadog</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Tue, 04 Nov 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/datadog/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/comparisons/coralogix-vs-datadog</guid>
+    <title>Coralogix vs Datadog - A 2025 Comparison on Pricing, Features, and Architecture</title>
+    <link>https://signoz.io/comparisons/coralogix-vs-datadog</link>
+    <description>An in-depth, objective comparison of Coralogix vs Datadog, breaking down the critical differences in pricing, data handling, features, and TCO for 2025.</description>
+    <pubDate>Tue, 04 Nov 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>coralogix</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/comparisons/logz-vs-datadog</guid>
+    <title>Logz.io vs Datadog (2025) - OpenSearch/Prometheus vs Proprietary</title>
+    <link>https://signoz.io/comparisons/logz-vs-datadog</link>
+    <description>An unbiased 2025 comparison of Logz.io and Datadog—pricing models, APM depth, SIEM, OTel support, and integrations.</description>
+    <pubDate>Mon, 03 Nov 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>observability</category><category>datadog</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/comparisons/datadog-vs-zabbix</guid>
+    <title>Datadog vs Zabbix in 2025 - Features, Pricing, On-prem vs SaaS, and More</title>
+    <link>https://signoz.io/comparisons/datadog-vs-zabbix</link>
+    <description>A no-nonsense comparison of Datadog and Zabbix. We cover pricing, APM vs. SNMP, on-prem vs. SaaS, and a decision framework to help you choose.</description>
+    <pubDate>Wed, 29 Oct 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>zabbix</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/datadog-vs-grafana</guid>
+    <title>Datadog vs Grafana (2025) - Costs, Use Cases, and Key Differences</title>
+    <link>https://signoz.io/datadog-vs-grafana</link>
+    <description>“A practical comparison of Datadog vs Grafana in 2025, breaking down cost models, setup effort, TCO, and ideal use cases.”</description>
+    <pubDate>Tue, 28 Oct 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>grafana</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/cost-effective-datadog-alternative</guid>
+    <title>SigNoz - The Cost-Effective Datadog Alternative (And Why Others Don&#39;t Make the Cut)</title>
+    <link>https://signoz.io/cost-effective-datadog-alternative</link>
+    <description>Tired of unpredictable Datadog bills? We analyze cost-effective Datadog alternatives like Grafana, New Relic, and ELK, and show why SigNoz is the best choice.</description>
+    <pubDate>Thu, 23 Oct 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>cost-optimization</category><category>observability</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/comparisons/chronosphere-vs-datadog</guid>
+    <title>Chronosphere vs Datadog: Which Observability Platform is Right for You in 2025?</title>
+    <link>https://signoz.io/comparisons/chronosphere-vs-datadog</link>
+    <description>An in-depth comparison of Chronosphere and Datadog on cost, architecture, open-source compatibility, and ease of use to help you choose the right observability tool.</description>
+    <pubDate>Mon, 13 Oct 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>observability-tools</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/guides/datadog-apm</guid>
+    <title>Datadog APM: A Deep Dive on Limitations and an Open Source Alternative</title>
+    <link>https://signoz.io/guides/datadog-apm</link>
+    <description>Explore Datadog APM&#39;s pricing, trace sampling, and vendor lock-in challenges, and discover how an open-source alternative like SigNoz with OpenTelemetry offers a better solution.</description>
+    <pubDate>Thu, 09 Oct 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>apm</category><category>datadog</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/comparisons/datadog-vs-dynatrace</guid>
+    <title>Datadog vs Dynatrace: Which is Better in 2025? [Hands-On Testing]</title>
+    <link>https://signoz.io/comparisons/datadog-vs-dynatrace</link>
+    <description>Compare Datadog vs Dynatrace with hands-on testing results. Real pricing examples, AI capabilities, and honest recommendations.</description>
+    <pubDate>Thu, 11 Sep 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>dynatrace</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/datadog-pricing</guid>
+    <title>Datadog Pricing Main Caveats Explained [Updated for 2025]</title>
+    <link>https://signoz.io/datadog-pricing</link>
+    <description>Datadog is a powerful observability platform, but its complex pricing model often leads to surprise bills. Learn about the key pricing caveats, breakdown of core costs, and why SigNoz offers a simpler, more transparent alternative built on OpenTelemetry.</description>
+    <pubDate>Tue, 24 Jun 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Datadog</category><category>Pricing</category><category>Observability</category><category>SigNoz</category><category>OpenTelemetry</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/comparisons/honeycomb-vs-datadog</guid>
+    <title>Honeycomb vs Datadog - Choosing the Right Observability Tool</title>
+    <link>https://signoz.io/comparisons/honeycomb-vs-datadog</link>
+    <description>Compare Honeycomb and Datadog for observability. Learn key features, use cases, and how to choose the best tool for your organization&#39;s needs.</description>
+    <pubDate>Tue, 11 Feb 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>observability</category><category>honeycomb</category><category>datadog</category>
+    }
+  </item>
+    </channel>
+  </rss>

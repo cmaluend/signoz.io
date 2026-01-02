@@ -1,0 +1,24 @@
+
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz</title>
+      <link>https://signoz.io/blog</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Tue, 14 Oct 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/comparison/feed.xml" rel="self" type="application/rss+xml"/>
+      
+  <item>
+    <guid>https://signoz.io/comparisons/sumo-logic-vs-datadog</guid>
+    <title>Sumo Logic vs. Datadog: The Definitive Comparison for 2025</title>
+    <link>https://signoz.io/comparisons/sumo-logic-vs-datadog</link>
+    <description>A definitive comparison of Sumo Logic and Datadog, covering features, pricing, data pipeline control, security, and a senior engineer&#39;s POC checklist.</description>
+    <pubDate>Tue, 14 Oct 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>observability</category><category>comparison</category>
+  </item>
+
+    </channel>
+  </rss>

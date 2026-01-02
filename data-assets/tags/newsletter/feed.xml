@@ -1,0 +1,32 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - newsletter</title>
+      <link>https://signoz.io/tags/newsletter</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Tue, 02 Dec 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/newsletter/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/opentelemetry-deployment-patterns</guid>
+    <title>Patterns for Deploying OpenTelemetry Collector at Scale</title>
+    <link>https://signoz.io/opentelemetry-deployment-patterns</link>
+    <description>Learn about the different patterns for deploying OpenTelemetry Collector at scale.</description>
+    <pubDate>Tue, 02 Dec 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Newsletter</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/what-is-ebpf-and-what-does-it-mean-for-observability</guid>
+    <title>What is eBPF and What does it mean for Observability?</title>
+    <link>https://signoz.io/what-is-ebpf-and-what-does-it-mean-for-observability</link>
+    <description>eBPF has emerged as a game-changer in the field of observability, offering unprecedented insights into system performance and behavior. In this blog post, we explore what eBPF is, how it works, and its transformative impact on observability practices.</description>
+    <pubDate>Tue, 18 Nov 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Newsletter</category>
+    }
+  </item>
+    </channel>
+  </rss>

@@ -1,0 +1,432 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - signoz</title>
+      <link>https://signoz.io/tags/signoz</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Wed, 03 Sep 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/signoz/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/claude-code-monitoring-with-opentelemetry</guid>
+    <title>Bringing Observability to Claude Code: OpenTelemetry in Action</title>
+    <link>https://signoz.io/claude-code-monitoring-with-opentelemetry</link>
+    <description>Monitor Claude Code usage with OpenTelemetry and SigNoz. This blog walks you through implementing comprehensive observability for your Claude Code activity using OpenTelemetry and SigNoz.</description>
+    <pubDate>Wed, 03 Sep 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>Claude Code</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/langchain-observability-with-opentelemetry</guid>
+    <title>LangChain Observability: How to Monitor LLM Apps with OpenTelemetry (With Demo App)</title>
+    <link>https://signoz.io/langchain-observability-with-opentelemetry</link>
+    <description>Struggling to debug your LLM app? This guide provides step-by-step instructions for implementing LangChain observability and monitoring using OpenTelemetry and SigNoz. Trace every agent step, from tool calls to LLM reasoning. We explain it with a demo LLM app.</description>
+    <pubDate>Wed, 27 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>Monitoring</category><category>LangChain</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/monitoring-langchain-agent-querying-signoz-mcp-server</guid>
+    <title>Full-Circle Observability: Using SigNoz to monitor a LangChain agent that queries SigNoz MCP</title>
+    <link>https://signoz.io/monitoring-langchain-agent-querying-signoz-mcp-server</link>
+    <description>Monitoring and Observability for LangChain agent apps with SigNoz and OpenTelemetry. This blog takes you through a practical implementation of OTel in a MCP agent app built using LangChain.</description>
+    <pubDate>Wed, 27 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>Monitoring</category><category>LangChain</category><category>SigNoz</category><category>MCP</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-llamaindex</guid>
+    <title>Observing LlamaIndex Apps with OpenTelemetry + SigNoz</title>
+    <link>https://signoz.io/opentelemetry-llamaindex</link>
+    <description>Monitor LlamaIndex apps with SigNoz and OpenTelemetry. This blog takes takes you through a practical implementation of OTel in an app built using LlamaIndex.</description>
+    <pubDate>Fri, 08 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>LlamaIndex</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/developer-marketing-at-signoz</guid>
+    <title>How We Think About “Developer Marketing” at SigNoz</title>
+    <link>https://signoz.io/developer-marketing-at-signoz</link>
+    <description>Developers hate marketing. Or do they, really? The reason developers are hard to “market” to is that they are also the builders of the stuff you want to sell.</description>
+    <pubDate>Sun, 03 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Team</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-vercel-ai-sdk</guid>
+    <title>Observing Vercel AI SDK with OpenTelemetry + SigNoz</title>
+    <link>https://signoz.io/opentelemetry-vercel-ai-sdk</link>
+    <description>Monitor Vercel AI SDK apps with SigNoz and OpenTelemetry. This blog takes takes you through a practical implementation of OTel in an app built using Vercel AI SDK.</description>
+    <pubDate>Mon, 28 Jul 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>Vercel AI SDK</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/open-source-datadog-alternative</guid>
+    <title>SigNoz - Open-Source Alternative to DataDog</title>
+    <link>https://signoz.io/open-source-datadog-alternative</link>
+    <description>If you’re looking for an open-source alternative of Datadog then you’ve come to the right place. SigNoz is the top choice for anyone looking for an open-source Datadog alternative.</description>
+    <pubDate>Thu, 03 Jul 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/datadog-pricing</guid>
+    <title>Datadog Pricing Main Caveats Explained [Updated for 2025]</title>
+    <link>https://signoz.io/datadog-pricing</link>
+    <description>Datadog is a powerful observability platform, but its complex pricing model often leads to surprise bills. Learn about the key pricing caveats, breakdown of core costs, and why SigNoz offers a simpler, more transparent alternative built on OpenTelemetry.</description>
+    <pubDate>Tue, 24 Jun 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Datadog</category><category>Pricing</category><category>Observability</category><category>SigNoz</category><category>OpenTelemetry</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-nextjs-production</guid>
+    <title>Deploying and Scaling OpenTelemetry in Production NextJS Apps</title>
+    <link>https://signoz.io/opentelemetry-nextjs-production</link>
+    <description>Learn how to deploy OpenTelemetry-instrumented Next.js apps to production with Vercel or self-hosted infra. This guide covers collector vs direct exporter setups, alerting, sampling, and data sanitization best practices.</description>
+    <pubDate>Mon, 23 Jun 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>NextJS</category><category>Observability</category><category>SigNoz</category><category>JavaScript</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-nextjs-use-cases</guid>
+    <title>NextJS OpenTelemetry Use Cases - Monitoring 404s, External APIs, Exceptions &amp; More</title>
+    <link>https://signoz.io/opentelemetry-nextjs-use-cases</link>
+    <description>Explore powerful real-world observability patterns in your Next.js application using OpenTelemetry and SigNoz—from tracking 404s to monitoring third-party APIs, capturing exceptions, analyzing cache hit/miss, and more.</description>
+    <pubDate>Mon, 23 Jun 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>NextJS</category><category>Observability</category><category>SigNoz</category><category>JavaScript</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-nextjs-web-vitals</guid>
+    <title>Tracking Web Vitals &amp; Widget Performance in Next.js with OpenTelemetry</title>
+    <link>https://signoz.io/opentelemetry-nextjs-web-vitals</link>
+    <description>Learn how to instrument your Next.js frontend to track Web Vitals and third-party widget performance using OpenTelemetry and send the data to SigNoz for visualization and analysis.</description>
+    <pubDate>Mon, 23 Jun 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>NextJS</category><category>Web Vitals</category><category>SigNoz</category><category>JavaScript</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/cloud-teams-plan-now-at-49usd</guid>
+    <title>SigNoz Cloud Now Starts at $49/Month - Democratizing Observability for the AI Era</title>
+    <link>https://signoz.io/cloud-teams-plan-now-at-49usd</link>
+    <description>New monthly base fee starts at $49/month (earlier $199). Usage-based pricing for each signal(logs, metrics and traces) remains the same as before. $49 base fee includes usage up to that amount, just like before.</description>
+    <pubDate>Tue, 20 May 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>signoz</category><category>product</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/comparisons/graylog-vs-splunk</guid>
+    <title>Graylog vs. Splunk - The Ultimate Log Management Showdown</title>
+    <link>https://signoz.io/comparisons/graylog-vs-splunk</link>
+    <description>Explore the key differences between Graylog and Splunk, two powerful log management tools, to determine the best fit for your organization.</description>
+    <pubDate>Thu, 13 Mar 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>log management</category><category>graylog</category><category>splunk</category><category>signoz</category><category>observability</category><category>cloud-native</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/logs-to-life-building-at-signoz</guid>
+    <title>Logs, Life, and Going Viral on HackerNews - A 2 Year Journey at SigNoz</title>
+    <link>https://signoz.io/logs-to-life-building-at-signoz</link>
+    <description>It’s been more than 2 years since I joined SigNoz. As I look back to share my experience of working at Signoz, I am amazed at the things I got the opportunity to work at and the life I have built while working 100% remotely with a team I enjoy working with....</description>
+    <pubDate>Fri, 17 Jan 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/guides/alerts-as-code</guid>
+    <title>Implementing Alerts as Code - Best Practices for DevOps</title>
+    <link>https://signoz.io/guides/alerts-as-code</link>
+    <description>Learn how to implement Alerts as Code in DevOps. Discover best practices, tools, and benefits for efficient incident management and improved reliability.</description>
+    <pubDate>Thu, 19 Dec 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>alerts</category><category>devops</category><category>signoz</category><category>monitoring</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-visualization</guid>
+    <title>Getting Started with OpenTelemetry Visualization - A Practical Guide</title>
+    <link>https://signoz.io/opentelemetry-visualization</link>
+    <description>Learn how to effectively visualize OpenTelemetry data for enhanced observability and monitoring in distributed systems. Explore tools, techniques, and best practices.</description>
+    <pubDate>Fri, 06 Dec 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/open-source-newrelic-alternative</guid>
+    <title>SigNoz - Open-source alternative to New Relic</title>
+    <link>https://signoz.io/open-source-newrelic-alternative</link>
+    <description>If you&#39;re looking for an open-source alternative to New Relic, then you&#39;re at the right place. SigNoz is a perfect open-source alternative to New Relic. SigNoz provides a unified UI for metrics, traces and logs with advanced tagging and filtering capabilities...</description>
+    <pubDate>Wed, 20 Nov 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/logspout-signoz-setup</guid>
+    <title>Rich Logs Collector for Docker Compose Services with SigNoz</title>
+    <link>https://signoz.io/logspout-signoz-setup</link>
+    <description>Learn how to set up `logspout-signoz` for effective log collection, labeling, and forwarding from Docker containers to SigNoz. Simplify your log management and improve observability.</description>
+    <pubDate>Mon, 18 Nov 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Log Management</category><category>Docker</category><category>SigNoz</category><category>Observability</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/opentelemetry-apm</guid>
+    <title>An Open Source OpenTelemetry APM | SigNoz</title>
+    <link>https://signoz.io/opentelemetry-apm</link>
+    <description>SigNoz is an open source APM built to support OpenTelemetry natively. In this article, we will talk about things to be kept in mind while selecting an OpenTelemetry APM. We will also see how SigNoz can help you in setting up full-stack observability....</description>
+    <pubDate>Mon, 30 Sep 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/single-pane-of-glass-monitoring</guid>
+    <title>Single Pane of Glass Monitoring - Quick Guide &amp; Open Source Solution</title>
+    <link>https://signoz.io/single-pane-of-glass-monitoring</link>
+    <description>Discover Single Pane of Glass Monitoring, its benefits, challenges, open source solutions and best practices for unified IT infrastructure visibility and management.</description>
+    <pubDate>Sat, 28 Sep 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/signoz-soc-2-compliance</guid>
+    <title>SigNoz is now SOC 2 Type I compliant</title>
+    <link>https://signoz.io/signoz-soc-2-compliance</link>
+    <description>We’re thrilled to announce that SigNoz is now SOC 2 Type I compliant. We are committed to protecting your data and privacy, and we follow the industry’s best practices to ensure that your data is safe and secure.</description>
+    <pubDate>Mon, 17 Jun 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Community</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/launch-week-1-day-5</guid>
+    <title>Feature in Spotlight - Access Token Management &amp; Onboarding [Day 5] 🐝</title>
+    <link>https://signoz.io/launch-week-1-day-5</link>
+    <description>Welcome to SigNoz Launch Week 1.0. This is our first launch week, and we’re excited to introduce you to some cool new features in SigNoz. The feature in spotlight for Day 5 is Access Token Management &amp; Onboarding. Access Token Management was a popular requested feature by SigNoz users. Before we enabled it through our UI, users had to reach out to us via email.</description>
+    <pubDate>Fri, 01 Mar 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/launch-week-1-day-4</guid>
+    <title>Feature in Spotlight - Logs Pipeline [Day 4] 🪵</title>
+    <link>https://signoz.io/launch-week-1-day-4</link>
+    <description>Welcome to SigNoz Launch Week 1.0. This is our first launch week, and we’re excited to introduce you to some cool new features in SigNoz. The feature in spotlight for Day 4 is Logs Pipeline in SigNoz. With Log Pipelines, you can transform logs to suit your querying and aggregation needs before they get stored in the database.</description>
+    <pubDate>Thu, 29 Feb 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/launch-week-1-day-3</guid>
+    <title>Feature in Spotlight - Frontend Monitoring [Day 3] 🧬</title>
+    <link>https://signoz.io/launch-week-1-day-3</link>
+    <description>Welcome to SigNoz Launch Week 1.0. This is our first launch week, and we’re excited to introduce you to some cool new features in SigNoz. The feature in spotlight for Day 3 is Frontend monitoring in SigNoz. Learn how to monitor core web vitals...</description>
+    <pubDate>Wed, 28 Feb 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/launch-week-1-day-1</guid>
+    <title>Feature in Spotlight - Logs Explorer [Launch Week Day 1] 🪵</title>
+    <link>https://signoz.io/launch-week-1-day-1</link>
+    <description>Welcome to SigNoz Launch Week 1.0.This is our first launch week, and we’re excited to introduce you to some cool new features in SigNoz. The feature in spotlight for Day 1 is our new Logs Explorer...</description>
+    <pubDate>Mon, 26 Feb 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/launch-week-1-day-2</guid>
+    <title>Feature in Spotlight - Metrics &amp; Query Builder [Day 2] 📊</title>
+    <link>https://signoz.io/launch-week-1-day-2</link>
+    <description>Welcome to SigNoz Launch Week 1.0. This is our first launch week, and we’re excited to introduce you to some cool new features in SigNoz. The feature in spotlight for Day 2 are some amazing upgrades to metrics &amp; query builder..</description>
+    <pubDate>Mon, 26 Feb 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/elk-alternative-open-source</guid>
+    <title>A Lightweight Open Source ELK alternative</title>
+    <link>https://signoz.io/elk-alternative-open-source</link>
+    <description>Are you looking for a lightweight ELK alternative? ELK stack is hard to manage at scale and is not resource efficient. Here&#39;s an alternative that is easy to deploy and manage...</description>
+    <pubDate>Tue, 06 Feb 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/launch-week-1</guid>
+    <title>Five Days of SigNoz &amp; OpenTelemetry - SigNoz Launch Week 1.0 🚀</title>
+    <link>https://signoz.io/launch-week-1</link>
+    <description>This is our first launch week, and we’re excited to introduce you to some cool new features in SigNoz. We ship fast but often miss sharing the story behind these features with our community...</description>
+    <pubDate>Fri, 02 Feb 2024 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/dynatrace-alternative</guid>
+    <title>SigNoz - Open-source alternative to Dynatrace</title>
+    <link>https://signoz.io/dynatrace-alternative</link>
+    <description>If you&#39;re looking for an open-source alternative to Dynatrace, then you&#39;re at the right place. SigNoz is a perfect open-source alternative to Dynatrace. SigNoz provides a unified UI for metrics, traces and logs with advanced tagging and filtering capabilities...</description>
+    <pubDate>Sun, 15 Oct 2023 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/signoz-funding</guid>
+    <title>We’ve raised $6.5M to build the future of open source observability</title>
+    <link>https://signoz.io/signoz-funding</link>
+    <description>SigNoz Fundraise</description>
+    <pubDate>Thu, 28 Sep 2023 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/appdynamics-alternative</guid>
+    <title>SigNoz - Open-source alternative to AppDynamics</title>
+    <link>https://signoz.io/appdynamics-alternative</link>
+    <description>If you&#39;re looking for an open-source alternative to AppDynamics, then you&#39;re at the right place. SigNoz is a perfect open-source alternative to AppDynamics. SigNoz provides a unified UI for metrics, traces and logs with advanced tagging and filtering capabilities...</description>
+    <pubDate>Fri, 25 Aug 2023 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/aws-ecs-monitoring</guid>
+    <title>AWS ECS Monitoring | Breaking out of the observability vendor lock-in with SigNoz</title>
+    <link>https://signoz.io/aws-ecs-monitoring</link>
+    <description>In this article I’d like to take you through the architecture and the process through which we leverage the container orchestration capabilities of AWS ECS without depending on AWS for logging, distributed tracing, metrics, alerts, and visualizations...</description>
+    <pubDate>Tue, 30 May 2023 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Product</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/pricing-comparison-signoz-vs-datadog-vs-newrelic-vs-grafana</guid>
+    <title>9x more value for money than Datadog - SigNoz</title>
+    <link>https://signoz.io/pricing-comparison-signoz-vs-datadog-vs-newrelic-vs-grafana</link>
+    <description>SigNoz can provide up to 9x more value for money versus Datadog. Datadog pricing is complex, and often unpredictable. With SigNoz, your engineering team can do more while saving money simultaneously...</description>
+    <pubDate>Sat, 06 May 2023 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Product</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/logs-performance-benchmark</guid>
+    <title>SigNoz - Logs Performance Benchmark</title>
+    <link>https://signoz.io/logs-performance-benchmark</link>
+    <description>We found SigNoz to be 2.5x faster than ELK. For querying benchmarks, we tested out different types of commonly used queries. While ELK was better at performing queries like COUNT, SigNoz is 13x faster than ELK for aggregate queries...</description>
+    <pubDate>Tue, 17 Jan 2023 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/hacktoberfest</guid>
+    <title>SigNoz is taking part in Hacktoberfest - 2022!</title>
+    <link>https://signoz.io/hacktoberfest</link>
+    <description>As an open-source project, we are excited to announce that SigNoz is participating in Hacktoberfest 2022!..</description>
+    <pubDate>Mon, 03 Oct 2022 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Open Source</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/jaeger-vs-signoz</guid>
+    <title>Jaeger vs SigNoz - Taking distributed tracing to the next level</title>
+    <link>https://signoz.io/jaeger-vs-signoz</link>
+    <description>Thinking of using Jaeger for distributed tracing? But wait, there is a much better alternative. SigNoz provides advanced capabilities for distributed tracing along with metrics and ...</description>
+    <pubDate>Thu, 02 Jun 2022 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Tools Comparison</category><category>Jaeger</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/getting-to-know-our-4000-plus-stargazers-on-github</guid>
+    <title>Getting to know our 4000+ stargazers on GitHub</title>
+    <link>https://signoz.io/getting-to-know-our-4000-plus-stargazers-on-github</link>
+    <description>SigNoz crossed 4000+ stars recently. In this article, we dig deep to find out about our GitHub stargazers using a tool called Stargazers.</description>
+    <pubDate>Sat, 10 Jul 2021 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Community</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/signoz-vs-prometheus-jaeger</guid>
+    <title>The genesis of SigNoz - A full-stack open source observability platform</title>
+    <link>https://signoz.io/signoz-vs-prometheus-jaeger</link>
+    <description>Why we felt there was a need for a full-stack open source observability platform and how we went about building it.</description>
+    <pubDate>Fri, 16 Apr 2021 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Community</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/signoz-benchmarks</guid>
+    <title>Cost benchmarking - Self hosting SigNoz vs using a SaaS vendor</title>
+    <link>https://signoz.io/signoz-benchmarks</link>
+    <description>With changing privacy laws, it&#39;s getting riskier to send your data to third party SaaS vendors. In the observability domain, traces and logs are something which you don&#39;t want to send outside. Let&#39;s find out why self-hosted software solutions are replacing SaaS providers now.</description>
+    <pubDate>Tue, 02 Feb 2021 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Community</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/why-are-we-building-signoz</guid>
+    <title>Why are we building SigNoz?</title>
+    <link>https://signoz.io/why-are-we-building-signoz</link>
+    <description>In the world of microservices, who takes care of failures? How do you solve availability and performance issues quickly in your production environment. For a modern-day distributed system, observability needs to be built within the system. And, SigNoz attempts to bring you the best open-source observability stack for your distributed system.</description>
+    <pubDate>Wed, 15 Jan 2020 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Community</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/out-of-box-application-monitoring-prometheus</guid>
+    <title>Bringing out of the box application monitoring to Prometheus</title>
+    <link>https://signoz.io/out-of-box-application-monitoring-prometheus</link>
+    <description>Prometheus is a popular monitoring tool for kubernetes. Kube-state metrics and node exporters send a lot of metrics. But visualization of the metrics in charts is still painful. In this article, let&#39;s see how we can have some out of box visualizations with Prometheus.</description>
+    <pubDate>Fri, 29 Nov 2019 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>APM</category><category>OpenTelemetry</category><category>SigNoz</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/7-takeaways-prometheus-conference-2019</guid>
+    <title>My 7 key takeaways from PromCon 2019</title>
+    <link>https://signoz.io/7-takeaways-prometheus-conference-2019</link>
+    <description>PromCon is one of the premier conference on Prometheus and related tools like Grafana. This is held every year where developers from around the world gather to learn the latest in monitoring technologies.</description>
+    <pubDate>Tue, 19 Nov 2019 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Community</category><category>Prometheus</category>
+    }
+  </item>
+    </channel>
+  </rss>

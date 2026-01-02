@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - coding</title>
+      <link>https://signoz.io/tags/coding</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Wed, 20 Aug 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/coding/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/how-our-engineers-use-ai</guid>
+    <title>How our engineers use AI for coding (and where they refuse to)</title>
+    <link>https://signoz.io/how-our-engineers-use-ai</link>
+    <description>This blog is a look into how our engineers use AI for coding (and where they refuse to) with practical tips that you can adopt asa well.</description>
+    <pubDate>Wed, 20 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>AI</category><category>Coding</category>
+    }
+  </item>
+    </channel>
+  </rss>

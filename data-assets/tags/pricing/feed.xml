@@ -1,0 +1,52 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - pricing</title>
+      <link>https://signoz.io/tags/pricing</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Tue, 23 Sep 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/pricing/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/new-relic-ccu-pricing-unpredictable-costs</guid>
+    <title>New Relic&#39;s CCU-based pricing is creating unpredictable costs, pushing teams to sample heavily</title>
+    <link>https://signoz.io/new-relic-ccu-pricing-unpredictable-costs</link>
+    <description>Analysis of New Relic&#39;s CCU pricing model reveals how it forces engineering teams into heavy sampling. Learn how unpublished CCU costs and complex pricing tiers create budget uncertainty and limit observability.</description>
+    <pubDate>Tue, 23 Sep 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Pricing</category><category>OpenTelemetry</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/datadog-pricing</guid>
+    <title>Datadog Pricing Main Caveats Explained [Updated for 2025]</title>
+    <link>https://signoz.io/datadog-pricing</link>
+    <description>Datadog is a powerful observability platform, but its complex pricing model often leads to surprise bills. Learn about the key pricing caveats, breakdown of core costs, and why SigNoz offers a simpler, more transparent alternative built on OpenTelemetry.</description>
+    <pubDate>Tue, 24 Jun 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Datadog</category><category>Pricing</category><category>Observability</category><category>SigNoz</category><category>OpenTelemetry</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/guides/sentry-pricing</guid>
+    <title>Understanding Sentry Pricing - Plans, Features, and Cost Breakdown</title>
+    <link>https://signoz.io/guides/sentry-pricing</link>
+    <description>Explore Sentry&#39;s pricing plans, features, and costs to find the best fit for your application monitoring and error tracking needs.</description>
+    <pubDate>Wed, 05 Mar 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>sentry</category><category>error tracking</category><category>application monitoring</category><category>pricing</category>
+    }
+  </item>
+      <item>
+    <guid>https://signoz.io/guides/new-relic-pricing</guid>
+    <title>💰 Unpacking New Relic&#39;s Pricing - Plans, Costs, and Optimization</title>
+    <link>https://signoz.io/guides/new-relic-pricing</link>
+    <description>Discover New Relic&#39;s usage-based pricing model, compare plans, and learn cost optimization strategies for full-stack observability.</description>
+    <pubDate>Tue, 18 Feb 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>observability</category><category>pricing</category><category>monitoring</category>
+    }
+  </item>
+    </channel>
+  </rss>

@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - mcp</title>
+      <link>https://signoz.io/tags/mcp</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Wed, 27 Aug 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/mcp/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/monitoring-langchain-agent-querying-signoz-mcp-server</guid>
+    <title>Full-Circle Observability: Using SigNoz to monitor a LangChain agent that queries SigNoz MCP</title>
+    <link>https://signoz.io/monitoring-langchain-agent-querying-signoz-mcp-server</link>
+    <description>Monitoring and Observability for LangChain agent apps with SigNoz and OpenTelemetry. This blog takes you through a practical implementation of OTel in a MCP agent app built using LangChain.</description>
+    <pubDate>Wed, 27 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>Monitoring</category><category>LangChain</category><category>SigNoz</category><category>MCP</category>
+    }
+  </item>
+    </channel>
+  </rss>

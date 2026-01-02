@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - team</title>
+      <link>https://signoz.io/tags/team</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Sun, 03 Aug 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/team/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/developer-marketing-at-signoz</guid>
+    <title>How We Think About “Developer Marketing” at SigNoz</title>
+    <link>https://signoz.io/developer-marketing-at-signoz</link>
+    <description>Developers hate marketing. Or do they, really? The reason developers are hard to “market” to is that they are also the builders of the stuff you want to sell.</description>
+    <pubDate>Sun, 03 Aug 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>SigNoz</category><category>Team</category>
+    }
+  </item>
+    </channel>
+  </rss>

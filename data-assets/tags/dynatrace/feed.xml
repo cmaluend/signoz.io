@@ -1,0 +1,34 @@
+
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz</title>
+      <link>https://signoz.io/blog</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Thu, 11 Sep 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/dynatrace/feed.xml" rel="self" type="application/rss+xml"/>
+      
+  <item>
+    <guid>https://signoz.io/comparisons/datadog-vs-dynatrace</guid>
+    <title>Datadog vs Dynatrace: Which is Better in 2025? [Hands-On Testing]</title>
+    <link>https://signoz.io/comparisons/datadog-vs-dynatrace</link>
+    <description>Compare Datadog vs Dynatrace with hands-on testing results. Real pricing examples, AI capabilities, and honest recommendations.</description>
+    <pubDate>Thu, 11 Sep 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>datadog</category><category>dynatrace</category>
+  </item>
+
+  <item>
+    <guid>https://signoz.io/guides/dynatrace-pricing</guid>
+    <title>Understanding Dynatrace Pricing: How Much Does It Really Cost?</title>
+    <link>https://signoz.io/guides/dynatrace-pricing</link>
+    <description>A clear guide to understanding Dynatrace&#39;s pricing model — DPS today vs Classic (DDU) licensing — with real calculations and cost scenarios</description>
+    <pubDate>Thu, 11 Sep 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>observability</category><category>dynatrace</category>
+  </item>
+
+    </channel>
+  </rss>

@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - nginx</title>
+      <link>https://signoz.io/tags/nginx</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Wed, 30 Jul 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/nginx/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/nginx-logging</guid>
+    <title>Complete NGINX Logging Guide: Access Logs, Error Logs &amp; Advanced Configuration</title>
+    <link>https://signoz.io/nginx-logging</link>
+    <description>Master NGINX logging with our comprehensive guide covering access logs, error logs, custom formats, troubleshooting, and integration with modern observability tools. Includes practical examples and best practices.</description>
+    <pubDate>Wed, 30 Jul 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>Logging</category><category>NGINX</category>
+    }
+  </item>
+    </channel>
+  </rss>

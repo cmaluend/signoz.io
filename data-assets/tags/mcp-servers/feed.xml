@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - mcp-servers</title>
+      <link>https://signoz.io/tags/mcp-servers</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Fri, 18 Jul 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/mcp-servers/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/unhyped-take-on-mcp-servers</guid>
+    <title>I built an MCP Server for Observability. This is my Unhyped Take</title>
+    <link>https://signoz.io/unhyped-take-on-mcp-servers</link>
+    <description>MCP Servers are the new hotness in the Observability space. But are they really? This is an unhyped take filled with facts and figures.</description>
+    <pubDate>Fri, 18 Jul 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>MCP Servers</category><category>Observability</category>
+    }
+  </item>
+    </channel>
+  </rss>

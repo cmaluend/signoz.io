@@ -1,0 +1,22 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+      <title>SigNoz - vercel-ai-sdk</title>
+      <link>https://signoz.io/tags/vercel-ai-sdk</link>
+      <description>SigNoz is an open-source observability tool powered by OpenTelemetry. Get APM, logs, traces, metrics, exceptions, &amp; alerts in a single tool.</description>
+      <language>en-us</language>
+      <managingEditor>hello@signoz.io (SigNoz Inc)</managingEditor>
+      <webMaster>hello@signoz.io (SigNoz Inc)</webMaster>
+      <lastBuildDate>Mon, 28 Jul 2025 00:00:00 GMT</lastBuildDate>
+      <atom:link href="https://signoz.io/tags/vercel-ai-sdk/feed.xml" rel="self" type="application/rss+xml"/>
+      <item>
+    <guid>https://signoz.io/opentelemetry-vercel-ai-sdk</guid>
+    <title>Observing Vercel AI SDK with OpenTelemetry + SigNoz</title>
+    <link>https://signoz.io/opentelemetry-vercel-ai-sdk</link>
+    <description>Monitor Vercel AI SDK apps with SigNoz and OpenTelemetry. This blog takes takes you through a practical implementation of OTel in an app built using Vercel AI SDK.</description>
+    <pubDate>Mon, 28 Jul 2025 00:00:00 GMT</pubDate>
+    <author>hello@signoz.io (SigNoz Inc)</author>
+    <category>OpenTelemetry</category><category>Vercel AI SDK</category><category>SigNoz</category>
+    }
+  </item>
+    </channel>
+  </rss>
