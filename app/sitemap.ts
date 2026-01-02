@@ -124,7 +124,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     )) as MDXContentApiResponse
 
     opentelemetryRoutes = opentelemetryRoutesResponse.data.map((opentelemetry) => ({
-      url: `${siteUrl}/${opentelemetry.path}/`,
+      url: `${siteUrl}/opentelemetry${opentelemetry.path}/`,
       lastModified: opentelemetry.updatedAt || opentelemetry.publishedAt,
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
