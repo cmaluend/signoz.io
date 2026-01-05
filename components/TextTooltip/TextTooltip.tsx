@@ -12,10 +12,13 @@ const TextTooltip: React.FC<TextTooltipProps> = ({ content, children, position =
   const [isVisible, setIsVisible] = useState(false)
 
   const positionClasses = {
-    top: 'bottom-full mb-2',
-    bottom: 'top-full mt-2',
-    left: 'right-full mr-2',
-    right: 'left-full ml-2',
+    // 'left-1/2 transform -translate-x-1/2' to center horizontally
+    top: 'bottom-full mb-2 left-1/2 transform -translate-x-1/2',
+    bottom: 'top-full mt-2 left-1/2 transform -translate-x-1/2',
+
+    // 'top-1/2 transform -translate-y-1/2' to center vertically
+    left: 'right-full mr-2 top-1/2 transform -translate-y-1/2',
+    right: 'left-full ml-2 top-1/2 transform -translate-y-1/2',
   }
 
   const arrowClasses = {
@@ -28,22 +31,25 @@ const TextTooltip: React.FC<TextTooltipProps> = ({ content, children, position =
   }
 
   return (
-    <span
-      className="relative inline-block cursor-help border-b border-dashed border-blue-400"
-      onMouseEnter={() => setIsVisible(true)}
-      onMouseLeave={() => setIsVisible(false)}
-    >
-      {children}
+    <>
+      <span
+        // `inline` ensures browser search and find the wrapped text
+        className="relative inline cursor-help border-b border-dashed border-blue-400"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+      >
+        {children}
 
-      {isVisible && (
-        <div
-          className={`absolute z-50 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-lg ${positionClasses[position]}`}
-        >
-          {content}
-          <div className={`absolute h-0 w-0 border-4 ${arrowClasses[position]}`} />
-        </div>
-      )}
-    </span>
+        {isVisible && (
+          <div
+            className={`pointer-events-none absolute z-50 whitespace-nowrap rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-lg ${positionClasses[position]}`}
+          >
+            {content}
+            <div className={`absolute h-0 w-0 border-4 ${arrowClasses[position]}`} />
+          </div>
+        )}
+      </span>
+    </>
   )
 }
 
