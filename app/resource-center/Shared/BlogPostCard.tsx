@@ -14,9 +14,12 @@ export default function BlogPostCard({
   const { path, date, title, authors } = blog
 
   const getAuthorDetails = (authorID) => {
-    // TODO: Check this for strapi schema consumption key match
-    if (typeof authorID === 'object' && authorID !== null) {
+    if (authorID !== null) {
       return authorID
+    }
+
+    if (typeof authorID === 'object') {
+      return Authors[authorID?.key] ?? authorID
     }
 
     if (Authors[authorID]) {
