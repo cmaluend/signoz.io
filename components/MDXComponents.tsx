@@ -72,6 +72,7 @@ import CICDMonitoringListicle from './CICD/CICDMonitoringListicle'
 import ToggleHeading from './Headings/ToggleHeading'
 import AWSMonitoringListicle from './AWS/AWSMonitoringListicle'
 import AWSOneClickListicle from './AWS/AWSOneClickListicle'
+import TextTooltip from './TextTooltip/TextTooltip'
 
 export const components: MDXComponents = {
   ToggleHeading,
@@ -144,4 +145,5 @@ export const components: MDXComponents = {
   CICDMonitoringListicle,
   AWSMonitoringListicle,
   AWSOneClickListicle,
+  TextTooltip,
 }
