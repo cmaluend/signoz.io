@@ -1,12 +1,16 @@
 ---
 date: 2024-06-06
-title: Stream Logs from Vercel to SigNoz
+title: Stream Logs and Traces from Vercel to SigNoz
 tags : [SigNoz Cloud]
 id: vercel_logs_to_signoz
 hide_table_of_contents: true
 ---
 
-If you are running your applications on [Vercel](https://vercel.com/), you can stream logs from Vercel to SigNoz using [log drains](https://vercel.com/docs/drains).
+If you are running your applications on [Vercel](https://vercel.com/), you can stream logs and traces from Vercel to SigNoz.
+
+## Stream Logs from Vercel to SigNoz
+
+You can stream logs from Vercel to SigNoz using [log drains](https://vercel.com/docs/drains).
 
 ## Prerequisite
 - Vercel Pro or Enterprise accounts 
@@ -59,3 +63,30 @@ Your Vercel logs will now be streamed to SigNoz Cloud.
 
 </TabItem>
 </Tabs>
+
+## Stream Traces from Vercel to SigNoz
+
+If you want to stream traces from your Vercel deployments to SigNoz, you can use Vercel's [trace streaming feature](https://vercel.com/docs/observability/otel-overview/traces).
+
+### Configure the Trace Endpoint
+
+For Vercel's trace streaming feature, use the following endpoint format:
+
+`https://ingest.<REGION>.signoz.cloud:443/v1/traces`
+
+Set the `<REGION>` to match your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint) (e.g., `us`, `in`, `eu`).
+
+### Set the Encoding Format
+
+When configuring your Vercel trace streaming, make sure to select **protobuf** as the encoding format.
+
+### Configuration Steps
+
+1. Navigate to your Vercel project settings
+2. Go to the **Observability** section
+3. Enable trace streaming
+4. Set the endpoint to `https://ingest.<REGION>.signoz.cloud:443/v1/traces`
+5. Select **protobuf** as the encoding format
+6. Add your SigNoz ingestion key in the authentication headers
+
+This configuration will enable proper trace collection from your Vercel deployments to SigNoz Cloud.
