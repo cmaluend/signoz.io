@@ -1,0 +1,165 @@
+---
+date: 2026-01-06
+id: kubernetes-pod-startup-alerts
+
+title: How to Create Alerts for Slow-Starting Kubernetes Pods
+---
+
+This guide shows you how to create an alert for Kubernetes pods that take more than 60 seconds to start. This helps you identify pods experiencing startup issues, which can indicate problems with container images, resource constraints, or configuration issues.
+
+## Prerequisites
+
+Before setting up this alert, ensure you have:
+
+1. Enabled Kubernetes monitoring in SigNoz using the [k8s-infra Helm chart](/docs/tutorial/kubernetes-infra-metrics/) or configured the [k8scluster receiver](/docs/userguide/k8s-metrics/) manually
+2. Verified that the `k8s.pod.phase` metric is being collected (this metric is available from the k8scluster receiver)
+
+## Understanding k8s.pod.phase Metric
+
+The `k8s.pod.phase` metric tracks the current lifecycle phase of Kubernetes pods. The metric uses numeric values to represent each phase:
+
+| Phase Value | Phase Name | Description |
+|-------------|------------|-------------|
+| 1 | Pending | Pod has been accepted but containers are not yet running |
+| 2 | Running | Pod is bound to a node and all containers are created |
+| 3 | Succeeded | All containers terminated successfully |
+| 4 | Failed | All containers terminated, at least one failed |
+| 5 | Unknown | Pod state cannot be determined |
+
+For monitoring startup time, focus on pods transitioning from **Pending (1)** to **Running (2)**.
+
+## Creating the Alert
+
+Follow these steps to set up an alert for slow-starting pods:
+
+### Step 1: Navigate to Alerts
+
+1. Go to your SigNoz dashboard
+2. Click on **Alerts** in the left navigation menu
+3. Click **New Alert**
+4. Select **Metrics based** alert type
+
+### Step 2: Define the Metric Query
+
+Configure the query to detect pods stuck in the Pending phase:
+
+1. **Metric**: Select `k8s.pod.phase`
+2. **Time aggregation**: Choose `latest` (to get the current phase)
+3. **WHERE**: Add filters if needed (e.g., specific namespace: `k8s.namespace.name = production`)
+4. **Space aggregation**: Select `no aggregation` or `avg` depending on your needs
+5. **Group by**: Add `k8s.pod.name` and `k8s.namespace.name` to identify specific pods
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/alerts/k8s-pod-startup-query.webp" alt="Configuring the k8s.pod.phase metric query"/>
+    <figcaption><i>Example query configuration for monitoring pod phase</i></figcaption>
+</figure>
+
+### Step 3: Define Alert Conditions
+
+Set up the condition to trigger when pods remain in Pending phase too long:
+
+- **Query**: Select the query you defined (e.g., `A`)
+- **Condition**: `Equal to`
+- **Threshold**: `1` (Pending phase)
+- **Match Type**: `at least once`
+- **Evaluation Window (For)**: `1 minute`
+
+This configuration checks if any pod has been in the Pending phase (value = 1) for at least 60 seconds.
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/alerts/k8s-pod-startup-condition.webp" alt="Defining alert conditions for slow pod startup"/>
+    <figcaption><i>Alert condition configuration</i></figcaption>
+</figure>
+
+### Step 4: Configure Alert Details
+
+1. **Severity**: Choose appropriate severity (e.g., `Warning` or `Critical`)
+2. **Alert Name**: Provide a descriptive name (e.g., "Kubernetes Pod Slow Startup - More than 60s")
+3. **Alert Description**: Add context, for example:
+
+```
+Pod {{k8s.pod.name}} in namespace {{k8s.namespace.name}} has been in Pending phase for more than 60 seconds.
+
+This may indicate:
+- Resource constraints (CPU/memory limits)
+- Image pull issues
+- Node scheduling problems
+- Configuration errors
+
+Pod Phase Values: 1=Pending, 2=Running, 3=Succeeded, 4=Failed, 5=Unknown
+```
+
+4. **Labels**: Add relevant labels for filtering (e.g., `team: platform`, `component: kubernetes`)
+
+### Step 5: Set Up Notifications
+
+Configure how you want to be notified when the alert triggers:
+
+1. **Notification channels**: Select one or more channels (Slack, PagerDuty, email, etc.)
+2. **Test notifications**: Use the test button to verify your notification setup works
+
+Learn more about [notification channels](/docs/alerts-management/notification-channel/).
+
+### Step 6: Save and Enable
+
+1. Review your alert configuration
+2. Click **Save** to create the alert
+3. Ensure the alert is **enabled**
+
+## Alternative Approaches
+
+### Monitoring Pod Transition Time
+
+For more precise startup time monitoring, you can create an alert that tracks the time difference between pod creation and running state using the `k8s.pod.start_time` attribute:
+
+1. Use the `k8s.pod.start_time` metric attribute
+2. Calculate the duration since pod start
+3. Alert when duration exceeds your threshold while phase is still Pending
+
+### Multi-Phase Monitoring
+
+Create separate alerts for different scenarios:
+
+- **Alert 1**: Pods stuck in Pending phase (startup issues)
+- **Alert 2**: Pods in Failed phase (container crashes)
+- **Alert 3**: Pods in Unknown phase (API server communication issues)
+
+## Troubleshooting
+
+### Alert Not Firing
+
+If your alert isn't triggering as expected:
+
+1. **Verify metric availability**: Check that `k8s.pod.phase` metrics are being collected
+   - Navigate to **Metrics Explorer**
+   - Search for `k8s.pod.phase`
+   - Verify data is flowing
+
+2. **Check the evaluation window**: If your evaluation window is too short, pods might transition to Running before the alert fires
+
+3. **Review filters**: Ensure your WHERE clause isn't filtering out the pods you want to monitor
+
+4. **Check RBAC permissions**: The k8scluster receiver requires proper permissions to access pod status
+
+### False Positives
+
+If you're getting too many alerts:
+
+1. **Adjust the threshold**: Increase the evaluation window from 60 seconds to a higher value (e.g., 2-3 minutes)
+2. **Add namespace filters**: Exclude namespaces with expected slow startups (e.g., batch jobs)
+3. **Consider pod patterns**: Some pods legitimately take longer to start (databases, large applications)
+
+### Missing Context
+
+To get better context when alerts fire:
+
+1. Add more attributes to the **Group by** clause (e.g., `k8s.deployment.name`, `k8s.node.name`)
+2. Include these attributes in your alert description using template variables
+3. Link to related dashboards or runbooks in the alert description
+
+## Additional Resources
+
+- [Kubernetes Metrics Configuration Guide](/docs/userguide/k8s-metrics/)
+- [Metrics-Based Alerts Documentation](/docs/alerts-management/metrics-based-alerts/)
+- [OpenTelemetry k8scluster Receiver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/k8sclusterreceiver)
+- [Kubernetes Pod Lifecycle Documentation](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/)

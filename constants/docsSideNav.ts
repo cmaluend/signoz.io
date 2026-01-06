@@ -2329,6 +2329,11 @@ const docsSideNav = [
             route: '/docs/alerts-management/user-guides/how-to-configure-alerts-for-missing-data',
             label: 'How to Configure Alerts for Missing Data',
           },
+          {
+            type: 'doc',
+            route: '/docs/alerts-management/user-guides/kubernetes-pod-startup-alerts',
+            label: 'How to Create Alerts for Slow-Starting Kubernetes Pods',
+          },
         ],
       },
       {
