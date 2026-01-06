@@ -1217,6 +1217,11 @@ const docsSideNav = [
             route: '/docs/infrastructure-monitoring/user-guides/telemetry-data-requirements',
             label: 'Telemetry Data Requirements for Infrastructure Monitoring',
           },
+          {
+            type: 'doc',
+            route: '/docs/infrastructure-monitoring/user-guides/understanding-cpu-metrics',
+            label: 'Understanding CPU Utilization Metrics and Aggregation Intervals',
+          },
         ],
       },
     ],
