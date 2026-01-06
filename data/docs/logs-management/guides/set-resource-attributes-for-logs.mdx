@@ -297,6 +297,48 @@ This approach ensures that all logs from your Kubernetes applications include co
 
 </Tabs>
 
+## Moving Kubernetes Namespace from Attributes to Resources
+
+By default, SigNoz uses the [k8sattributes processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/k8sattributesprocessor) to extract Kubernetes metadata like `k8s.namespace.name`. This processor adds Kubernetes information as attributes by default, which affects all cluster metrics, logs, and traces.
+
+Since SigNoz filters work on fields under resources, you may find that filtering by namespace in the Explore view returns no results when the namespace is stored as an attribute. To enable proper filtering by namespace, you need to configure a transform processor to move `k8s.namespace.name` from attributes to resources.
+
+### Configuration for K8s Infra Chart
+
+Add the following configuration to your `override-values.yaml` file for the k8s-infra chart:
+
+```yaml
+otelDeployment:
+  config:
+    processors:
+      transform/move_k8s_ns:
+        log_statements:
+          - context: log
+            statements:
+              - set(resource.attributes["k8s.namespace.name"], attributes["k8s.namespace.name"]) where attributes["k8s.namespace.name"] != nil
+              - delete_key(attributes, "k8s.namespace.name") where attributes["k8s.namespace.name"] != nil
+    service:
+      pipelines:
+        logs:
+          processors: [transform/move_k8s_ns, batch]
+```
+
+Apply the configuration using:
+
+```bash
+helm -n platform upgrade --install <release-name> signoz/k8s-infra -f override-values.yaml
+```
+
+Replace `<release-name>` with your helm release name (e.g., `my-monitoring`).
+
+<Admonition type="info">
+- You don't need to explicitly define the `k8sattributes` processor as it's added by default
+- This configuration should be added to `otelDeployment.config` rather than `logsCollection.operators` since it's not related to Kubernetes events collection
+- This change affects all telemetry data (metrics, logs, and traces) that include namespace information
+</Admonition>
+
+After applying this configuration, you should be able to filter by namespace in the Explore view as the `k8s.namespace.name` field will be available under resources.
+
 ## Related Guides
 
 - [Remove Resource Attributes](https://signoz.io/docs/logs-management/guides/remove-resource-attributes/) - Remove unwanted resource attributes from your logs
