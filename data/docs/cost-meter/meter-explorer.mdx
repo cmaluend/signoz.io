@@ -183,8 +183,58 @@ signoz.meter.log.size{signoz.workspace.key.id = "01963e56-0bbb-7df5-b26c-2c4aa48
 
 ## Creating Saved Views
 
-Meter Explorer supports saved views, allowing you to create and reuse common queries for recurring cost analysis. 
+Meter Explorer supports saved views, allowing you to create and reuse common queries for recurring cost analysis.
 
 You can checkout the [Saved View Documentation](https://signoz.io/docs/product-features/saved-view/#how-to-use-saved-views) for more details on creating and managing saved views.
+
+## Troubleshooting
+
+### How do I separate environments in the Volume breakdown dashboard?
+
+If your environments are not appearing separately in the "Volume breakdown by environment" dashboard, you need to add the `deployment.environment` attribute to your resource metadata in the OpenTelemetry Collector configuration.
+
+#### Configuration Steps
+
+1. **Add the resource processor to your OpenTelemetry Collector configuration:**
+
+```yaml
+processors:
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: "your-environment-name"
+        action: upsert
+```
+
+2. **Replace `"your-environment-name"`** with the actual name of your environment (e.g., "dev", "qa", "prod")
+
+3. **Apply this processor to your metrics and logs pipelines** in the collector configuration:
+
+```yaml
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+```
+
+4. **Restart your OpenTelemetry Collector** to apply the changes
+
+After implementing this configuration, your environments will appear as separate entries in the Volume breakdown dashboard instead of being grouped together.
+
+<Admonition type="info">
+  **Note on Attribute Naming**: You may notice that metrics will show the attribute as `deployment_environment` (with underscore) while logs will show `deployment.environment` (with dot). This is expected behavior due to current normalization in SigNoz.
+</Admonition>
+
+#### Additional Resources
+
+For more detailed information on configuring resource attributes:
+- [Setting Resource Attributes for Logs](https://signoz.io/docs/logs-management/guides/set-resource-attributes-for-logs/)
+- [OpenTelemetry Collector Configuration](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/)
 
 For additional support and discussion, visit our [Community Forum](https://github.com/SigNoz/signoz/discussions). For advanced topics and comprehensive guides, explore our [Documentation](https://signoz.io/docs/).
