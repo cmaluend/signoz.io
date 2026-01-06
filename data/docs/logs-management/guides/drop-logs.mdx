@@ -100,6 +100,47 @@ See our [Kubernetes pod logs collection guide](https://signoz.io/docs/userguide/
 
 Refer to the [OpenTelemetry documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/filterprocessor) for more details on how to configure the filter processor.
 
+## Limit Log Body Size
+
+If you're concerned about logs that are too large causing issues or potential abuse, you can control the size of log bodies using the transform processor with the `truncate_all` function.
+
+This is useful to:
+- Prevent accidental collection of oversized logs
+- Avoid abuse scenarios where extremely large log entries could impact system performance
+- Reduce storage costs and improve query performance
+
+### Configuration
+
+Add the transform processor to your OpenTelemetry Collector configuration to truncate log bodies to a maximum size:
+
+```yaml
+processors:
+  transform/truncate_logs:
+    log_statements:
+      - context: log
+        statements:
+          - truncate_all(body, 4096)  # Limit log body to 4096 characters
+```
+
+In this example, log bodies will be truncated to 4096 characters. You can adjust this value based on your needs.
+
+<Admonition>
+
+The processor needs to be added to the logs pipeline to take effect.
+
+```
+logs:
+  receivers: [otlp]
+  processors: [transform/truncate_logs, batch]
+  exporters: [otlp]
+```
+
+</Admonition>
+
+For more information about the transform processor and the `truncate_all` function, refer to:
+- [Transform processor documentation](https://pkg.go.dev/github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor)
+- [Related GitHub discussion on log size control](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/23847)
+
 ## Related Guides
 
 - [Remove Resource Attributes](https://signoz.io/docs/logs-management/guides/remove-resource-attributes/) - Remove unwanted resource attributes from your logs
