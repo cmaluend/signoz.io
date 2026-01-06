@@ -1,8 +1,9 @@
 ---
-date: 2025-08-22
+date: 2026-01-06
 id: faqs
-
 title: General FAQs
+description: Commonly asked questions and troubleshooting steps for SigNoz Dashboards.
+doc_type: howto
 ---
 
 ### Q. I see an empty Dashboard, what should I do ?
@@ -12,19 +13,13 @@ A. Try changing the variable in the Dashboard. Or increase the time range to see
 <summary> Show detailed steps </summary>
 
 Try changing the variable in Dashboard. 
-For example, if you're using the **[Kubernetes Pod Metrics - Overall](https://github.com/SigNoz/dashboards/blob/main/k8s-infra-metrics/kubernetes-pod-metrics-overall.json)** dashboard, you can select $node_name variable as **ALL** to see the data as shown in below image.
+For example, if you're using the **<a href="https://github.com/SigNoz/dashboards/blob/main/k8s-infra-metrics/kubernetes-pod-metrics-overall.json" target="_blank" rel="noopener noreferrer nofollow">Kubernetes Pod Metrics - Overall</a>** dashboard, you can select $node_name variable as **ALL** to see the data as shown in below image.
 
-<figure data-zoomable align="center">
-    <img
-      src="/img/docs/troubleshooting/signoz-cloud/cloud-troubleshooting-metrics-1.webp"
-      alt="Select a variable to see Dashboard Values"
-    />
-    <figcaption>
-      <i>
-        Selecting ALL as $node_name variable in Kubernetes Pod Metrics - Overall Dashboard
-      </i>
-    </figcaption>
-</figure>
+<Figure
+  src="/img/docs/troubleshooting/signoz-cloud/cloud-troubleshooting-metrics-1.webp"
+  alt="Select a variable to see Dashboard Values"
+  caption="Selecting ALL as $node_name variable in Kubernetes Pod Metrics - Overall Dashboard"
+/>
 
 </details>
 
@@ -35,7 +30,9 @@ A. No, it's not possible to import Grafana Dashboards in SigNoz at the moment.
 A. You can change the legend colors in charts by modifying the chart settings. Look for the "Legend Colors" option in the chart settings panel, where you can customize the colors for each series in the chart.
 
 <details>
+
 <summary> Show detailed steps </summary>
+
 To change legend colors:
 1. Go in edit panel mode
 2. Locate the right side panel of your chart
@@ -53,11 +50,18 @@ A. You can download table data as CSV directly from the dashboard view. Follow t
 <summary> Show detailed steps </summary>
 
 1. Create and configure your table in the dashboard editor.  
-2. Save the dashboard.  
-3. Open the saved dashboard in view mode.  
-4. In the table panel, locate the menu icon (three vertical dots) and select "Download CSV" to export the table data.
+2. Save the panel and navigate to Dashboard view.  
+3. In the table panel, locate the menu icon (three vertical dots) and select "Download CSV" to export the table data.
+
+<Figure
+  src="/img/docs/dashboards/troubleshooting/download-csv-menu.webp"
+  alt="Download Table CSV"
+  caption="Download data as CSV from the table panel"
+/>
+
+
+<Admonition type="note">
+The CSV download option is only available in the dashboard view mode, not in the dashboard editor mode.
+</Admonition>
 
 </details>
-
-Note: The CSV download option is only available in the dashboard view mode, not in the dashboard editor mode.
-
