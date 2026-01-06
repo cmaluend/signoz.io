@@ -78,7 +78,7 @@ A. Check your exporter and collector configuration.
 ### Q. How to increase the retention period of logs from x days to y days?  
 A. If you are using SigNoz Cloud, contact SigNoz support via the chatbox. Or if you are self-hosting, you can change the retention period in the SigNoz UI under Settings > Logs Retention.
 
-### Q. In java my mdc attributes are not visible in SigNoz  
+### Q. In java my mdc attributes are not visible in SigNoz
 A. Ensure your logging configuration includes MDC pattern and OpenTelemetry is configured to capture MDC attributes.
 
 <details>
@@ -86,10 +86,45 @@ A. Ensure your logging configuration includes MDC pattern and OpenTelemetry is c
 
 You can get your mdc attributes by using the [appender settings][def] and passing it as `-D<property>=<value>` format.
 
-For example, for **logback** use:  
-`otel.instrumentation.logback-appender.experimental.capture-mdc-attributes=*`  
-For **log4j** use:  
-`otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes=*`  
+For example, for **logback** use:
+`otel.instrumentation.logback-appender.experimental.capture-mdc-attributes=*`
+For **log4j** use:
+`otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes=*`
 See [this documentation][def] for more system properties.
+
+</details>
+
+### Q. My log queries are running slowly or taking several minutes to complete. How can I optimize performance?
+A. There are several strategies to improve log query performance significantly.
+
+<details>
+<summary>Show performance optimization strategies</summary>
+
+#### 1. Use Resource Attributes in Filters
+
+Moving commonly used attributes from regular attributes to resource attributes can drastically improve search performance. For example, if you're filtering by `app`, move it from `attributes.app` to `resource.app` using the [move operator](https://signoz.io/docs/logs-pipelines/processors/#move) in log pipelines.
+
+#### 2. Enable Data Flattening and Indexing
+
+For nested attributes like `body.step.<any attribute>`, you'll need to:
+
+* Enable data flattening first
+* Request indexing of commonly used attributes
+* This allows nested fields to exist as their own attributes outside of the body, making queries more performant
+
+#### 3. Reduce Query Time Range
+
+Limiting the time range of your query can significantly improve performance by reducing the amount of data that needs to be searched.
+
+#### Implementation Steps
+
+To optimize your log queries:
+
+1. Identify commonly used filter attributes in your queries
+2. Use log pipelines to move these attributes to resource attributes using the move operator
+3. If you need to query nested attributes, enable flattening and request indexing for those specific fields
+4. Adjust your query time ranges to be as narrow as possible while still capturing the data you need
+
+These optimizations work together to reduce query execution time from minutes to seconds, making your log analysis much more efficient.
 
 </details>
