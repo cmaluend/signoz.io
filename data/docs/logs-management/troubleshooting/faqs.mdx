@@ -78,7 +78,7 @@ A. Check your exporter and collector configuration.
 ### Q. How to increase the retention period of logs from x days to y days?  
 A. If you are using SigNoz Cloud, contact SigNoz support via the chatbox. Or if you are self-hosting, you can change the retention period in the SigNoz UI under Settings > Logs Retention.
 
-### Q. In java my mdc attributes are not visible in SigNoz  
+### Q. In java my mdc attributes are not visible in SigNoz
 A. Ensure your logging configuration includes MDC pattern and OpenTelemetry is configured to capture MDC attributes.
 
 <details>
@@ -86,10 +86,43 @@ A. Ensure your logging configuration includes MDC pattern and OpenTelemetry is c
 
 You can get your mdc attributes by using the [appender settings][def] and passing it as `-D<property>=<value>` format.
 
-For example, for **logback** use:  
-`otel.instrumentation.logback-appender.experimental.capture-mdc-attributes=*`  
-For **log4j** use:  
-`otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes=*`  
+For example, for **logback** use:
+`otel.instrumentation.logback-appender.experimental.capture-mdc-attributes=*`
+For **log4j** use:
+`otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes=*`
 See [this documentation][def] for more system properties.
+
+</details>
+
+### Q. How do I query log fields with dots in key names?
+A. Use log pipelines to transform the data by extracting values from dotted keys into new keys without dots.
+
+<details>
+<summary>Show detailed explanation and solution</summary>
+
+When working with structured logs that contain keys with dots (like `result.description`), you may encounter issues when trying to query these fields directly. This is a common scenario with Azure logs such as AppServiceConsoleLogs.
+
+**The Problem:**
+
+Keys containing dots cannot be queried directly using standard syntax because the system interprets the dot as a path separator rather than part of the key name. For example, these queries will not work:
+
+* `body.result.description EXISTS` (returns no results)
+* `body['result.description'] EXISTS` (syntax error)
+* `body["result.description"] EXISTS` (syntax error)
+* `body CONTAINS 'result.description'` (returns no results)
+
+**Current Solution: Use Log Pipelines**
+
+To work with fields that have dots in their key names, you can use log pipelines to transform the data:
+
+1. Create a pipeline that extracts the value from the dotted key
+2. Assign this value to a new key without dots
+3. Query the new key normally
+
+For example, if you have a field `result.description`, you can create a pipeline that copies its value to a new field like `result_description`, which can then be queried using standard syntax like `body.result_description EXISTS`.
+
+See [Logs Pipeline Introduction](https://signoz.io/docs/logs-pipelines/introduction/) for more details on creating pipelines.
+
+**Note:** Support for querying keys with dots directly is currently in development and will be available soon.
 
 </details>
