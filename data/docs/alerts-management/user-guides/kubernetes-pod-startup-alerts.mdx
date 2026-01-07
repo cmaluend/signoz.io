@@ -51,7 +51,6 @@ Configure the query to detect pods stuck in the Pending phase:
 
 <figure data-zoomable align='center'>
     <img src="/img/docs/alerts/k8s-pod-startup-query.webp" alt="Configuring the k8s.pod.phase metric query"/>
-    <figcaption><i>Example query configuration for monitoring pod phase</i></figcaption>
 </figure>
 
 ### Step 3: Define Alert Conditions
@@ -68,7 +67,6 @@ This configuration checks if any pod has been in the Pending phase (value = 1) f
 
 <figure data-zoomable align='center'>
     <img src="/img/docs/alerts/k8s-pod-startup-condition.webp" alt="Defining alert conditions for slow pod startup"/>
-    <figcaption><i>Alert condition configuration</i></figcaption>
 </figure>
 
 ### Step 4: Configure Alert Details
@@ -106,24 +104,6 @@ Learn more about [notification channels](/docs/alerts-management/notification-ch
 2. Click **Save** to create the alert
 3. Ensure the alert is **enabled**
 
-## Alternative Approaches
-
-### Monitoring Pod Transition Time
-
-For more precise startup time monitoring, you can create an alert that tracks the time difference between pod creation and running state using the `k8s.pod.start_time` attribute:
-
-1. Use the `k8s.pod.start_time` metric attribute
-2. Calculate the duration since pod start
-3. Alert when duration exceeds your threshold while phase is still Pending
-
-### Multi-Phase Monitoring
-
-Create separate alerts for different scenarios:
-
-- **Alert 1**: Pods stuck in Pending phase (startup issues)
-- **Alert 2**: Pods in Failed phase (container crashes)
-- **Alert 3**: Pods in Unknown phase (API server communication issues)
-
 ## Troubleshooting
 
 ### Alert Not Firing
@@ -138,24 +118,6 @@ If your alert isn't triggering as expected:
 2. **Check the evaluation window**: If your evaluation window is too short, pods might transition to Running before the alert fires
 
 3. **Review filters**: Ensure your WHERE clause isn't filtering out the pods you want to monitor
-
-4. **Check RBAC permissions**: The k8scluster receiver requires proper permissions to access pod status
-
-### False Positives
-
-If you're getting too many alerts:
-
-1. **Adjust the threshold**: Increase the evaluation window from 60 seconds to a higher value (e.g., 2-3 minutes)
-2. **Add namespace filters**: Exclude namespaces with expected slow startups (e.g., batch jobs)
-3. **Consider pod patterns**: Some pods legitimately take longer to start (databases, large applications)
-
-### Missing Context
-
-To get better context when alerts fire:
-
-1. Add more attributes to the **Group by** clause (e.g., `k8s.deployment.name`, `k8s.node.name`)
-2. Include these attributes in your alert description using template variables
-3. Link to related dashboards or runbooks in the alert description
 
 ## Additional Resources
 
