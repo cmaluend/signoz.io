@@ -50,10 +50,6 @@ Configure the query to detect pods stuck in the Pending phase:
 4. **Space aggregation**: Select `no aggregation` or `avg` depending on your needs
 5. **Group by**: Add `k8s.pod.name` and `k8s.namespace.name` to identify specific pods
 
-<figure data-zoomable align='center'>
-    <img src="/img/docs/alerts/k8s-pod-startup-query.webp" alt="Configuring the k8s.pod.phase metric query"/>
-</figure>
-
 ### Step 3: Define Alert Conditions
 
 Set up the condition to trigger when pods remain in Pending phase too long:
@@ -65,10 +61,6 @@ Set up the condition to trigger when pods remain in Pending phase too long:
 - **Evaluation Window (For)**: `1 minute`
 
 This configuration checks if any pod has been in the Pending phase (value = 1) for at least 60 seconds.
-
-<figure data-zoomable align='center'>
-    <img src="/img/docs/alerts/k8s-pod-startup-condition.webp" alt="Defining alert conditions for slow pod startup"/>
-</figure>
 
 ### Step 4: Configure Alert Details
 
