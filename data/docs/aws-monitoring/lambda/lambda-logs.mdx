@@ -32,11 +32,12 @@ This documentation provides a detailed walkthrough on how to set up an AWS Lambd
 To accomplish the task described, please follow these steps:
 
 1. **Creating an S3 Bucket:**
-   - Sign in to the AWS Management Console.
-   - Navigate to the Amazon S3 service.
-   - Click on **Create bucket**.
-   - Enter a unique bucket name, select the region, and configure any additional settings if needed (such as versioning, logging, etc.).
-   - Click **Create bucket** to finalize the creation process.
+
+- Sign in to the AWS Management Console.
+- Navigate to the Amazon S3 service.
+- Click on **Create bucket**.
+- Enter a unique bucket name, select the region, and configure any additional settings if needed (such as versioning, logging, etc.).
+- Click **Create bucket** to finalize the creation process.
 
 <Figure
   src="/img/docs/elb/elb-logs-create_bucket_2.webp"
@@ -47,19 +48,22 @@ To accomplish the task described, please follow these steps:
 
 2. **Uploading Data to the S3 Bucket:**
 
-   <Admonition type="info">
-     See the [AWS Lambda extensions blog
-     post](https://aws.amazon.com/blogs/compute/using-aws-lambda-extensions-to-send-logs-to-custom-destinations/)
-     to know how to automatically collect Lambda logs in S3.
-   </Admonition>
-   - After creating the bucket, navigate to the S3 Management Console. - Click on the **Upload**
-   button. - Select the files you wish to upload from your local machine. - Optionally, configure
-   settings like encryption, permissions, etc. - Click **Upload** to upload the selected files to
-   the bucket.
+<Admonition type="info">
+  See the [AWS Lambda extensions blog
+  post](https://aws.amazon.com/blogs/compute/using-aws-lambda-extensions-to-send-logs-to-custom-destinations/)
+  to know how to automatically collect Lambda logs in S3.
+</Admonition>
+
+- After creating the bucket, navigate to the S3 Management Console.
+- Click on the **Upload** button.
+- Select the files you wish to upload from your local machine.
+- Optionally, configure settings like encryption, permissions, etc.
+- Click **Upload** to upload the selected files to the bucket.
 
 3. **File Formats:**
-   - You can upload files in various formats such as .json, .csv, .log, .gz, .zip, etc.
-   - If you have configured Lambda logging, Lambda logs are automatically saved in `.log` format in your S3 bucket.
+
+- You can upload files in various formats such as .json, .csv, .log, .gz, .zip, etc.
+- If you have configured Lambda logging, Lambda logs are automatically saved in `.log` format in your S3 bucket.
 
 To move forward, we assume that you already have some data in your S3 bucket.
 
@@ -246,9 +250,9 @@ To utilize Python's `requests` module within a Lambda function, it's necessary t
 
 **Step 1:** Follow the steps below to create a zip of the request module and add it as a layer to make it work on AWS lambda.
 
-The commands you’d need:
+The commands you need to run:
 
-```py
+```bash
 # make a new directory
 mkdir python
 # move into that directory
@@ -258,7 +262,6 @@ cd python
 pip install --target . requests
 # zip the contents under the name dependencies.zip
 zip -r dependencies.zip ../python
-
 ```
 
 **Step 2:** To upload your zip file, go to AWS Lambda > Layers and click on `Create Layer`. [Not inside your specific Lambda function, just the landing page of AWS Lambda].
@@ -362,7 +365,7 @@ Other than the above explanation and the code comments, in a nutshell, what this
 
 Sends the parsable content of **ENTIRE** S3 bucket whenever the lambda function gets triggered. It gets triggered by the condition you set above. Let’s mention that again here.
 
-> **Step 3:** For the Event types field, you can select any number of options you wish. The trigger will occur depending upon what option(s) you choose here. By default, the `All object create events` will be selected.
+**Step 3:** For the Event types field, you can select any number of options you wish. The trigger will occur depending upon what option(s) you choose here. By default, the `All object create events` will be selected.
 
 Lets say you add something to your S3 bucket, it may / may not trigger this lambda function or if you have setup your s3 as if it automatically stores all your Lambda logs, segregated in different folders, so whenever any new log gets added, the function will get triggered and send all the S3 data.
 
