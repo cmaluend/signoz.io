@@ -125,7 +125,7 @@ This layer provides the OpenTelemetry Collector and auto-instrumentation capabil
 **Example ARN (Node.js, x86_64, us-east-1):**
 
 ```text
-rn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-nodejs-0_19_0:1
+arn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-nodejs-0_19_0:1
 ```
 
 ## Validate
@@ -153,4 +153,7 @@ rn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-nodejs-0_19_0:1
 
 - **Increase Timeout**: Data transmission can take a moment. Increase your Lambda function's timeout setting (e.g., to 30 seconds or 1 minute) if it's too short.
 
-</details>
+## Related Guides
+
+- [Send Logs via S3 Forwarder](https://signoz.io/docs/aws-monitoring/lambda/lambda-logs/)
+- [AWS Lambda Integration](https://signoz.io/docs/integrations/aws/lambda/)
