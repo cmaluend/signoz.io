@@ -150,12 +150,13 @@ Go to AWS Lambda Console, in your Lambda function, go to **Code** tab and create
 ```yaml:collector.yaml
 receivers:
   telemetryapi:
-    types: ["function"] # Filter options: platform, function, extension
+    types: ["function", "platform"] # Filter options: platform, function, extension
 
 exporters:
   otlphttp:
     endpoint: https://ingest.<region>.signoz.cloud:443
-    headers: signoz-ingestion-key=<SIGNOZ_INGESTION_KEY>
+    headers:
+      signoz-ingestion-key: <SIGNOZ_INGESTION_KEY>
 
 processors:
   batch:
@@ -163,10 +164,6 @@ processors:
 
 service:
   pipelines:
-    traces:
-      receivers: [telemetryapi]
-      processors: [batch, decouple]
-      exporters: [otlphttp]
     logs:
       receivers: [telemetryapi]
       processors: [batch, decouple]
@@ -198,12 +195,10 @@ arn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-collector-amd64-0_19_0
 
 Navigate to **Configuration** > **Environment Variables** and configure the collector setup:
 
-| Key                                  | Value                                         | Description                                                                                 |
-| ------------------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `OPENTELEMETRY_COLLECTOR_CONFIG_URI` | `/var/task/collector.yaml`                    | **Crucial**: Points to your custom config file. Supports local path, HTTP/HTTPS, or S3 URI. |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`        | `https://ingest.<region>.signoz.cloud:443`    | Your SigNoz OTLP endpoint. Replace `<region>`.                                              |
-| `OTEL_EXPORTER_OTLP_HEADERS`         | `signoz-ingestion-key=<SIGNOZ_INGESTION_KEY>` | Your ingestion key.                                                                         |
-| `OTEL_SERVICE_NAME`                  | `<service_name>`                              | A name for your Lambda service.                                                             |
+| Key                                  | Value                      | Description                                                                                 |
+| ------------------------------------ | -------------------------- | ------------------------------------------------------------------------------------------- |
+| `OPENTELEMETRY_COLLECTOR_CONFIG_URI` | `/var/task/collector.yaml` | **Crucial**: Points to your custom config file. Supports local path, HTTP/HTTPS, or S3 URI. |
+| `OTEL_SERVICE_NAME`                  | `<service_name>`           | A name for your Lambda service.                                                             |
 
 <Admonition type="note">
   If S3 URI is used, ensure the S3 bucket is accessible from the Lambda function by creating
@@ -232,7 +227,6 @@ Navigate to **Configuration** > **Environment Variables** and configure the coll
 ### Logs not appearing in SigNoz
 
 - **Check Config URI**: Ensure `OPENTELEMETRY_COLLECTOR_CONFIG_URI` matches exactly where your `collector.yaml` is deployed (usually `/var/task/collector.yaml`).
-- **Check Environment Variables**: Ensure `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS` are correct.
 - **Check Region**: Ensure the endpoint region matches your SigNoz account region.
 - **Check CloudWatch**: Look at the AWS CloudWatch logs for your Lambda function. The OpenTelemetry layer output starts with "OpenTelemetry Collector". If you see errors there, it usually indicates connection issues or bad config.
 
