@@ -8,11 +8,14 @@ doc_type: howto
 
 ## Overview
 
-This guide explains how to instrument your AWS Lambda Node.js functions with OpenTelemetry to send logs directly to SigNoz. This method allows you to capture application logs alongside traces for better observability.
+This guide explains how to instrument your AWS Lambda Node.js functions with OpenTelemetry to send logs directly to SigNoz. There are two primary approaches:
+
+1.  **Application Logging**: Modifying your function code to send structured logs (best for business events).
+2.  **Infrastructure Logging**: Collecting all `stdout`/`stderr` and platform logs automatically via an extension (best for full observability without code changes).
 
 <Admonition type="info">
-  This guide covers the **direct OpenTelemetry instrumentation** method. If you prefer to collect
-  logs via CloudWatch Logs and S3, please refer to the [AWS Lambda Logs via
+  This guide covers the **direct OpenTelemetry instrumentation** method using the OTel Lambda Layer.
+  If you prefer to collect logs via CloudWatch Logs and S3, please refer to the [AWS Lambda Logs via
   S3](https://signoz.io/docs/aws-monitoring/lambda/lambda-logs/) guide.
 </Admonition>
 
@@ -28,6 +31,11 @@ This guide explains how to instrument your AWS Lambda Node.js functions with Ope
 </KeyPointCallout>
 
 ## Steps
+
+<Tabs>
+<TabItem value="application" label="Application Logging (SDK)" default>
+
+This method sends specific, structured application logs using the OpenTelemetry API. It provides fine-grained control over log attributes but requires code modification.
 
 ### Step 1: Add Required Dependencies
 
@@ -115,12 +123,12 @@ Replace the placeholders:
 
 ### Step 6: Add OpenTelemetry Lambda Layer
 
-This layer provides the OpenTelemetry Collector and auto-instrumentation capabilities.
+This layer provides the OpenTelemetry Node.js Extension for AWS Lambda with auto-instrumentation capabilities.
 
 1.  Go to the **Layers** section of your function.
 2.  Click **Add a layer**.
 3.  Select **Specify an ARN**.
-4.  Enter the ARN for your region and architecture. You can find the latest ARNs in the [OpenTelemetry Lambda Layers](https://github.com/open-telemetry/opentelemetry-lambda/releases) release notes.
+4.  Enter the ARN for your region and architecture from [OpenTelemetry Lambda Layers](https://github.com/open-telemetry/opentelemetry-lambda/releases).
 
 **Example ARN (Node.js, x86_64, us-east-1):**
 
@@ -128,12 +136,81 @@ This layer provides the OpenTelemetry Collector and auto-instrumentation capabil
 arn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-nodejs-0_19_0:1
 ```
 
+</TabItem>
+<TabItem value="infrastructure" label="Infrastructure Logging (No Code)">
+
+This method captures everything written to `stdout` and `stderr` (e.g., `console.log`) as well as AWS Platform logs (REPORT, START, END). It requires zero code changes.
+
+### Step 1: Create a Collector Configuration File
+
+By default, the OpenTelemetry layer exports to AWS backends. To send logs to SigNoz and enable the `telemetryapi` receiver (which captures Lambda logs), you must provide a custom configuration.
+
+Go to AWS Lambda Console and navigate to your function. Create a file named `collector.yaml` in the root of your function code using the **Code** tab:
+
+```yaml:collector.yaml
+receivers:
+  telemetryapi:
+
+exporters:
+  otlphttp:
+    endpoint: https://ingest.<region>.signoz.cloud:443
+    headers: signoz-ingestion-key=<SIGNOZ_INGESTION_KEY>
+
+processors:
+  batch:
+  decouple:
+
+service:
+  pipelines:
+    traces:
+      receivers: [telemetryapi]
+      processors: [batch, decouple]
+      exporters: [otlphttp]
+    logs:
+      receivers: [telemetryapi]
+      processors: [batch, decouple]
+      exporters: [otlphttp]
+```
+
+<Admonition type="note">
+  Ensure this file is included in your deployment package (root directory).
+</Admonition>
+
+### Step 2: Add OpenTelemetry Lambda Layer
+
+1.  Navigate to your function in the [AWS Console](https://console.aws.amazon.com/lambda/).
+2.  Scroll to the **Layers** section and click **Add a layer**.
+3.  Select **Specify an ARN**.
+4.  Enter the ARN from [OpenTelemetry Collector Lambda Layers](https://github.com/open-telemetry/opentelemetry-lambda/releases), look for the `layer-collector` release.
+
+**Example ARN (Node.js, x86_64, us-east-1):**
+
+```text
+arn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-collector-amd64-0_19_0:1
+```
+
+### Step 3: Configure Environment Variables
+
+Navigate to **Configuration** > **Environment Variables** and configure the collector setup:
+
+| Key                                  | Value                                         | Description                                                      |
+| ------------------------------------ | --------------------------------------------- | ---------------------------------------------------------------- |
+| `OPENTELEMETRY_COLLECTOR_CONFIG_URI` | `/var/task/collector.yaml`                    | **Crucial**: Points to your custom config file in the task root. |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`        | `https://ingest.<region>.signoz.cloud:443`    | Your SigNoz OTLP endpoint. Replace `<region>`.                   |
+| `OTEL_EXPORTER_OTLP_HEADERS`         | `signoz-ingestion-key=<SIGNOZ_INGESTION_KEY>` | Your ingestion key.                                              |
+| `OTEL_SERVICE_NAME`                  | `<service_name>`                              | A name for your Lambda service.                                  |
+
+</TabItem>
+</Tabs>
+
 ## Validate
 
 1.  Trigger your Lambda function (e.g., using a Test event in the AWS Console).
 2.  Go to the SigNoz Logs Explorer.
-3.  Filter by `service.name` = `<service_name>` (the one you set in Step 5).
-4.  You should see your logs (e.g., "Processing request in Lambda").
+3.  Filter by `service.name`.
+4.  **Result**:
+    - **Application Logging**: You should see your specific log attributes (e.g., `custom.attribute`).
+    - **Infrastructure Logging**: You should see your standard console output (e.g., `Hello World`) and AWS Platform logs (`REPORT RequestId: ...`).
 
 <details>
 <ToggleHeading>
@@ -144,10 +221,10 @@ arn:aws:lambda:us-east-1:184161586896:layer:opentelemetry-nodejs-0_19_0:1
 
 ### Logs not appearing in SigNoz
 
+- **Check Config URI**: Ensure `OPENTELEMETRY_COLLECTOR_CONFIG_URI` matches exactly where your `collector.yaml` is deployed (usually `/var/task/collector.yaml`).
 - **Check Environment Variables**: Ensure `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS` are correct.
 - **Check Region**: Ensure the endpoint region matches your SigNoz account region.
-- **Check Force Flush**: Ensure `await provider.forceFlush()` is called before the handler returns.
-- **Check CloudWatch**: Look at the AWS CloudWatch logs for your Lambda function. The OpenTelemetry layer often outputs initialization logs or error messages there if it fails to connect.
+- **Check CloudWatch**: Look at the AWS CloudWatch logs for your Lambda function. The OpenTelemetry layer output starts with "OpenTelemetry Collector". If you see errors there, it usually indicates connection issues or bad config.
 
 ### "Task timed out" error
 
