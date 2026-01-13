@@ -112,7 +112,7 @@ Add the following dependencies to your `Cargo.toml` file:
 
 ```toml:Cargo.toml
 [dependencies]
-opentelemetry = { version = "0.31", features = ["metrics"] }
+opentelemetry = { version = "0.31", features = ["metrics", "otel_unstable"] }
 opentelemetry_sdk = { version = "0.31", features = ["metrics", "rt-tokio"] }
 opentelemetry-otlp = { version = "0.31", features = ["metrics", "http-proto", "reqwest-client", "tls-roots"] }
 tokio = { version = "1", features = ["full"] }
@@ -344,6 +344,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     Ok(())
 }
 ```
+
+<Admonition type="info">
+The synchronous `Gauge` instrument is experimental and requires the `otel_unstable` feature flag in `opentelemetry`. This feature was added in OpenTelemetry Rust SDK v0.22.0. If you prefer stable APIs only, use `ObservableGauge` from the Observable Instruments tab instead.
+</Admonition>
 
 </TabItem>
 
