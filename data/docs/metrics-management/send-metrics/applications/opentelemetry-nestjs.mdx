@@ -255,6 +255,7 @@ import { metrics, Counter, Histogram, UpDownCounter } from '@opentelemetry/api';
 
 @Injectable()
 export class MetricsService implements OnModuleInit {
+  // The version should match your application version for tracking
   private meter = metrics.getMeter('nestjs-app', '1.0.0');
 
   // HTTP request metrics
