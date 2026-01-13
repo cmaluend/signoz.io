@@ -1000,8 +1000,16 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            isExpanded: false,
             label: 'PHP',
             route: '/docs/instrumentation/opentelemetry-php',
+            items: [
+              {
+                type: 'doc',
+                label: 'Manual Instrumentation',
+                route: '/docs/instrumentation/manual-instrumentation/php/manual-instrumentation',
+              },
+            ],
           },
           {
             type: 'doc',
