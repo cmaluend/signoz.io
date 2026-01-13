@@ -1,0 +1,558 @@
+---
+date: 2026-01-12
+id: opentelemetry-nestjs
+title: Send Metrics from NestJS application
+description: Learn how to instrument your NestJS application with OpenTelemetry to send metrics to SigNoz
+
+doc_type: howto
+---
+
+This guide shows you how to instrument your NestJS application with OpenTelemetry to send metrics to SigNoz. You will learn how to collect runtime metrics, auto-instrument libraries, and create custom metrics.
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+    Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+- Node.js 18 or later (LTS versions 18, 20, or 22 are supported)
+- NestJS 9.x or later
+- A SigNoz Cloud account or self-hosted SigNoz instance
+
+## Send metrics to SigNoz
+
+<Tabs entityName="deployment">
+<TabItem value="vm" label="VM" default>
+<KeyPointCallout title="What classifies as VM?" defaultCollapsed={true}>
+    A VM is a virtual computer that runs on physical hardware. This includes:
+    - **Cloud VMs**: AWS EC2, Google Compute Engine, Azure VMs, DigitalOcean Droplets
+    - **On-premise VMs**: VMware, VirtualBox, Hyper-V, KVM
+    - **Bare metal servers**: Physical servers running Linux/Unix directly
+
+    Use this section if you're deploying your NestJS application directly on a server or VM without containerization.
+</KeyPointCallout>
+
+### Step 1. Set environment variables
+Set the following environment variables to configure the OpenTelemetry exporter:
+```bash
+export OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signoz.cloud:443/v1/metrics"
+export OTEL_EXPORTER_OTLP_METRICS_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+export OTEL_SERVICE_NAME="<service-name>"
+```
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `orders-service`).
+
+</TabItem>
+
+<TabItem value="k8s" label="Kubernetes">
+### Step 1. Set environment variables
+Add these environment variables to your deployment manifest:
+```yaml
+env:
+- name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+  value: 'https://ingest.<region>.signoz.cloud:443/v1/metrics'
+- name: OTEL_EXPORTER_OTLP_METRICS_HEADERS
+  value: 'signoz-ingestion-key=<your-ingestion-key>'
+- name: OTEL_SERVICE_NAME
+  value: '<service-name>'
+```
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `orders-service`).
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+### Step 1. Set environment variables (PowerShell)
+```powershell
+$env:OTEL_EXPORTER_OTLP_METRICS_ENDPOINT = "https://ingest.<region>.signoz.cloud:443/v1/metrics"
+$env:OTEL_EXPORTER_OTLP_METRICS_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
+$env:OTEL_SERVICE_NAME = "<service-name>"
+```
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service.
+</TabItem>
+
+<TabItem value="docker" label="Docker">
+### Step 1. Set environment variables in Dockerfile
+Add environment variables to your Dockerfile:
+```dockerfile:Dockerfile
+# ... build stages ...
+
+# Set OpenTelemetry environment variables
+ENV OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signoz.cloud:443/v1/metrics"
+ENV OTEL_EXPORTER_OTLP_METRICS_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+ENV OTEL_SERVICE_NAME="<service-name>"
+
+CMD ["node", "dist/main.js"]
+```
+
+Or pass them at runtime using `docker run`:
+```bash
+docker run -e OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signoz.cloud:443/v1/metrics" \
+    -e OTEL_EXPORTER_OTLP_METRICS_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
+    -e OTEL_SERVICE_NAME="<service-name>" \
+    your-image:latest
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your service (e.g., `orders-service`).
+</TabItem>
+</Tabs>
+
+### Step 2. Install OpenTelemetry packages
+
+Run the following command in your project directory to install the necessary packages for metrics and OTLP export:
+
+```bash
+npm install @opentelemetry/sdk-node \
+  @opentelemetry/sdk-metrics \
+  @opentelemetry/api \
+  @opentelemetry/resources \
+  @opentelemetry/semantic-conventions \
+  @opentelemetry/exporter-metrics-otlp-http \
+  @opentelemetry/instrumentation-runtime-node
+```
+
+### Step 3. Create the Telemetry Module
+
+Create a dedicated telemetry module that initializes OpenTelemetry before NestJS bootstraps. This is important because OpenTelemetry needs to be initialized before any other modules are loaded.
+
+```typescript:src/telemetry/telemetry.service.ts
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+import { resourceFromAttributes } from '@opentelemetry/resources';
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+import { RuntimeNodeInstrumentation } from '@opentelemetry/instrumentation-runtime-node';
+
+let sdk: NodeSDK | null = null;
+
+export function initTelemetry(): NodeSDK {
+  if (sdk) {
+    return sdk;
+  }
+
+  const metricExporter = new OTLPMetricExporter();
+
+  sdk = new NodeSDK({
+    resource: resourceFromAttributes({
+      [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || 'nestjs-app',
+    }),
+    metricReader: new PeriodicExportingMetricReader({
+      exporter: metricExporter,
+      exportIntervalMillis: 10000,
+    }),
+    instrumentations: [
+      new RuntimeNodeInstrumentation({
+        eventLoopUtilizationMeasurementInterval: 5000,
+      }),
+    ],
+  });
+
+  sdk.start();
+  console.log('OpenTelemetry metrics initialized');
+
+  return sdk;
+}
+
+@Injectable()
+export class TelemetryService implements OnModuleDestroy {
+  async onModuleDestroy() {
+    if (sdk) {
+      await sdk.shutdown();
+      console.log('OpenTelemetry metrics shut down');
+    }
+  }
+}
+```
+
+```typescript:src/telemetry/telemetry.module.ts
+import { Global, Module } from '@nestjs/common';
+import { TelemetryService } from './telemetry.service';
+
+@Global()
+@Module({
+  providers: [TelemetryService],
+  exports: [TelemetryService],
+})
+export class TelemetryModule {}
+```
+
+<KeyPointCallout title="Why 10 seconds export interval?" defaultCollapsed={true}>
+This guide uses a 10-second export interval for faster feedback during development. The OpenTelemetry default is 60 seconds, which reduces network overhead and is better suited for production. Shorter intervals provide more real-time visibility but increase network traffic and storage costs. Adjust based on your monitoring needs.
+</KeyPointCallout>
+
+### Step 4. Initialize Telemetry Before Bootstrap
+
+Update your `main.ts` to initialize telemetry before importing NestJS modules:
+
+```typescript:src/main.ts
+// Initialize telemetry FIRST - before any other imports
+import { initTelemetry } from './telemetry/telemetry.service';
+initTelemetry();
+
+// Now import NestJS modules
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+  console.log('Application listening on port 3000');
+}
+bootstrap();
+```
+
+Add the TelemetryModule to your AppModule:
+
+```typescript:src/app.module.ts
+import { Module } from '@nestjs/common';
+import { TelemetryModule } from './telemetry/telemetry.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+@Module({
+  imports: [TelemetryModule],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+## Validate
+
+Once you have configured your application to start sending metrics to SigNoz, you can start visualizing the metrics in the [metrics explorer](https://signoz.io/docs/metrics-management/metrics-explorer/).
+
+<details>
+<ToggleHeading>
+## Manual Instrumentation
+</ToggleHeading>
+
+Create custom metrics to track business logic with all metric types: Counter, UpDownCounter, Histogram, and Observable Gauge.
+
+### Metric Types
+
+- **Counter**: A value that only goes up (e.g., total orders)
+- **UpDownCounter**: A value that can go up or down (e.g., active users)
+- **Histogram**: A distribution of values (e.g., request duration)
+- **Observable Gauge**: A current value measured asynchronously (e.g., queue size)
+
+### Create a Metrics Service
+
+Create a reusable metrics service for your NestJS application:
+
+```typescript:src/metrics/metrics.service.ts
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { metrics, Counter, Histogram, UpDownCounter } from '@opentelemetry/api';
+
+@Injectable()
+export class MetricsService implements OnModuleInit {
+  private meter = metrics.getMeter('nestjs-app', '1.0.0');
+
+  // HTTP request metrics
+  public httpRequestCounter: Counter;
+  public httpRequestDuration: Histogram;
+  public httpActiveRequests: UpDownCounter;
+
+  // Business metrics
+  public ordersCreated: Counter;
+  public orderValue: Histogram;
+  public activeUsers: UpDownCounter;
+
+  onModuleInit() {
+    // HTTP metrics
+    this.httpRequestCounter = this.meter.createCounter('http.requests.total', {
+      description: 'Total number of HTTP requests',
+    });
+
+    this.httpRequestDuration = this.meter.createHistogram('http.request.duration', {
+      description: 'HTTP request duration in milliseconds',
+      unit: 'ms',
+    });
+
+    this.httpActiveRequests = this.meter.createUpDownCounter('http.requests.active', {
+      description: 'Number of active HTTP requests',
+    });
+
+    // Business metrics
+    this.ordersCreated = this.meter.createCounter('orders.created.total', {
+      description: 'Total number of orders created',
+    });
+
+    this.orderValue = this.meter.createHistogram('orders.value', {
+      description: 'Distribution of order values',
+      unit: 'USD',
+    });
+
+    this.activeUsers = this.meter.createUpDownCounter('users.active', {
+      description: 'Number of currently active users',
+    });
+
+    // Observable gauge for queue size
+    this.meter.createObservableGauge('queue.size', {
+      description: 'Current size of the processing queue',
+    }).addCallback((observableResult) => {
+      // This would typically read from a queue service
+      observableResult.observe(this.getQueueSize(), { queue: 'orders' });
+    });
+  }
+
+  private getQueueSize(): number {
+    // Implementation depends on your queue service
+    return 0;
+  }
+}
+```
+
+```typescript:src/metrics/metrics.module.ts
+import { Global, Module } from '@nestjs/common';
+import { MetricsService } from './metrics.service';
+
+@Global()
+@Module({
+  providers: [MetricsService],
+  exports: [MetricsService],
+})
+export class MetricsModule {}
+```
+
+### Create a Metrics Interceptor
+
+Create an interceptor to automatically track HTTP request metrics:
+
+```typescript:src/metrics/metrics.interceptor.ts
+import {
+  Injectable,
+  NestInterceptor,
+  ExecutionContext,
+  CallHandler,
+} from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import { MetricsService } from './metrics.service';
+
+@Injectable()
+export class MetricsInterceptor implements NestInterceptor {
+  constructor(private readonly metricsService: MetricsService) {}
+
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const request = context.switchToHttp().getRequest();
+    const { method, url } = request;
+    const startTime = Date.now();
+
+    // Track active requests
+    this.metricsService.httpActiveRequests.add(1);
+
+    return next.handle().pipe(
+      tap(() => {
+        const response = context.switchToHttp().getResponse();
+        const duration = Date.now() - startTime;
+
+        this.recordMetrics(method, url, response.statusCode, duration);
+      }),
+      catchError((error) => {
+        const duration = Date.now() - startTime;
+        const statusCode = error.status || 500;
+
+        this.recordMetrics(method, url, statusCode, duration);
+        throw error;
+      }),
+    );
+  }
+
+  private recordMetrics(
+    method: string,
+    url: string,
+    statusCode: number,
+    duration: number,
+  ) {
+    const attributes = {
+      method,
+      route: url,
+      status: statusCode,
+    };
+
+    this.metricsService.httpRequestCounter.add(1, attributes);
+    this.metricsService.httpRequestDuration.record(duration, attributes);
+    this.metricsService.httpActiveRequests.add(-1);
+  }
+}
+```
+
+### Use Metrics in Services
+
+Use the MetricsService in your business logic:
+
+```typescript:src/orders/orders.service.ts
+import { Injectable } from '@nestjs/common';
+import { MetricsService } from '../metrics/metrics.service';
+
+interface CreateOrderDto {
+  items: { productId: string; quantity: number; price: number }[];
+  customerId: string;
+  region: string;
+}
+
+@Injectable()
+export class OrdersService {
+  constructor(private readonly metricsService: MetricsService) {}
+
+  async createOrder(orderData: CreateOrderDto) {
+    // Calculate order total
+    const total = orderData.items.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0,
+    );
+
+    // Business logic to create order...
+    const order = {
+      id: `order-${Date.now()}`,
+      ...orderData,
+      total,
+      createdAt: new Date(),
+    };
+
+    // Record metrics
+    this.metricsService.ordersCreated.add(1, {
+      region: orderData.region,
+    });
+
+    this.metricsService.orderValue.record(total, {
+      region: orderData.region,
+    });
+
+    return order;
+  }
+}
+```
+
+### Register the Interceptor Globally
+
+```typescript:src/app.module.ts
+import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { TelemetryModule } from './telemetry/telemetry.module';
+import { MetricsModule } from './metrics/metrics.module';
+import { MetricsInterceptor } from './metrics/metrics.interceptor';
+import { OrdersModule } from './orders/orders.module';
+
+@Module({
+  imports: [TelemetryModule, MetricsModule, OrdersModule],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MetricsInterceptor,
+    },
+  ],
+})
+export class AppModule {}
+```
+
+<details>
+<ToggleHeading>
+### Exported Metrics
+</ToggleHeading>
+
+The custom instrumentation example above exports the following metrics:
+
+**HTTP Metrics:**
+- `http.requests.total` (Counter) - Total count of HTTP requests with method, route, and status attributes
+- `http.request.duration` (Histogram) - Distribution of HTTP request latencies in milliseconds
+- `http.requests.active` (UpDownCounter) - Current number of active HTTP requests
+
+**Business Metrics:**
+- `orders.created.total` (Counter) - Total number of orders created with region attribute
+- `orders.value` (Histogram) - Distribution of order values in USD
+- `users.active` (UpDownCounter) - Number of currently active users
+- `queue.size` (Observable Gauge) - Current size of the processing queue
+
+</details>
+
+</details>
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Metrics not appearing?
+
+1. **Check Environment Variables**: Ensure `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` is set correctly:
+    - For HTTP (default in this guide): `https://ingest.<region>.signoz.cloud:443/v1/metrics`
+    - For gRPC (if using `@opentelemetry/exporter-metrics-otlp-grpc`): `https://ingest.<region>.signoz.cloud:443`
+
+2. **Check Initialization Order**: Ensure `initTelemetry()` is called BEFORE importing NestJS modules in `main.ts`. OpenTelemetry must be initialized before any modules are loaded.
+
+3. **Enable Debug Logging**: Set the log level to see detailed output:
+    ```bash
+    export OTEL_LOG_LEVEL=debug
+    ```
+
+4. **Resource Attributes**: Ensure `service.name` is set. This helps you filter metrics by service in SigNoz.
+
+5. **Check Export Interval**: The default export interval is 10 seconds in this guide. Ensure you wait long enough to see metrics appear.
+
+### Authentication errors
+
+If you see errors like "Unauthorized" or "403 Forbidden":
+- Verify your ingestion key is correct in `OTEL_EXPORTER_OTLP_METRICS_HEADERS`
+- Ensure the header format is exactly: `signoz-ingestion-key=<your-key>` (no extra spaces)
+- Check that your ingestion key is active in the SigNoz Cloud dashboard
+
+### "Connection Refused" errors
+
+- If running locally and sending to SigNoz Cloud, check your internet connection and firewall.
+- If sending to a self-hosted collector, ensure the collector is running and listening on port 4317 (gRPC) or 4318 (HTTP).
+
+### Module initialization errors
+
+If you see errors related to module initialization:
+- Ensure the TelemetryModule is imported in your AppModule
+- Check that `initTelemetry()` is called at the very top of `main.ts` before any other imports
+- Verify all OpenTelemetry packages are installed with compatible versions
+
+### TypeScript compilation errors
+
+If you encounter TypeScript errors with OpenTelemetry packages:
+- Ensure you are using TypeScript 5.0 or later
+- Install the correct type definitions: `npm install --save-dev @types/node`
+- Check that your `tsconfig.json` has `"esModuleInterop": true`
+
+</details>
+
+<details>
+<ToggleHeading>
+## Setup OpenTelemetry Collector (Optional)
+</ToggleHeading>
+
+### What is the OpenTelemetry Collector?
+
+Think of the OTel Collector as a middleman between your app and SigNoz. Instead of your application sending data directly to SigNoz, it sends everything to the Collector first, which then forwards it along.
+
+### Why use it?
+
+- **Cleaning up data** - Filter out noisy metrics you don't care about, or remove sensitive info before it leaves your servers.
+- **Keeping your app lightweight** - Let the Collector handle batching, retries, and compression instead of your application code.
+- **Adding context automatically** - The Collector can tag your data with useful info like which Kubernetes pod or cloud region it came from.
+- **Future flexibility** - Want to send data to multiple backends later? The Collector makes that easy without changing your app.
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions to convert your setup.
+
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
+
+</details>
+
+## Next Steps
+
+- [Create Dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize your metrics.
+- [Set up Alerts](https://signoz.io/docs/alerts-management/notification-channel/slack/) on your metrics.
+- [Instrument your NestJS application with traces](https://signoz.io/docs/instrumentation/javascript/opentelemetry-nodejs/) to correlate metrics with traces for better observability.
+- [Send logs from your Node.js application](https://signoz.io/docs/logs-management/send-logs/nodejs-logs/) to complete your observability setup.
