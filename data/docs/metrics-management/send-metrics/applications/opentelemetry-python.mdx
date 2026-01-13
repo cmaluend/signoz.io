@@ -271,25 +271,45 @@ while True:
 The `SystemMetricsInstrumentor` automatically exports the following metrics:
 
 **System Metrics:**
-- `system.cpu.time` - CPU time spent in different modes (user, system, idle)
+- `system.cpu.time` - CPU time spent in different modes (user, system, idle, irq)
 - `system.cpu.utilization` - CPU utilization percentage
 - `system.memory.usage` - Memory usage in bytes
-- `system.memory.utilization` - Memory utilization percentage
-- `system.swap.usage` - Swap space usage
-- `system.disk.io` - Disk I/O operations (read/write bytes)
-- `system.network.packets` - Network packets sent/received
-- `system.network.errors` - Network errors
-- `system.thread_count` - Number of threads
+- `system.memory.utilization` - Memory utilization as a ratio
+- `system.swap.usage` - Swap space usage in pages
+- `system.swap.utilization` - Swap utilization as a ratio
+- `system.disk.io` - Disk I/O in bytes (read/write)
+- `system.disk.operations` - Disk operation count (read/write)
+- `system.disk.time` - Time spent on disk operations
+- `system.network.io` - Network I/O in bytes (transmit/receive)
+- `system.network.packets` - Network packets (transmit/receive)
+- `system.network.errors` - Network errors (transmit/receive)
+- `system.network.dropped.packets` - Dropped network packets
+- `system.network.connections` - Network connections by family and type
+- `system.thread_count` - Number of system threads
 
-**Process Metrics:**
-- `process.runtime.cpu.time` - Process CPU time
-- `process.runtime.memory` - Process memory usage (resident and virtual)
-- `process.runtime.gc_count` - Garbage collection count
-- `process.open_file_descriptor.count` - Open file descriptors
-- `process.context_switches` - Context switches
+**Process Metrics (Semantic Conventions compliant):**
+- `process.cpu.time` - Process CPU time (user/system)
+- `process.cpu.utilization` - Process CPU utilization
+- `process.memory.usage` - Process memory usage (resident set size)
+- `process.memory.virtual` - Process virtual memory size
+- `process.open_file_descriptor.count` - Open file descriptors (Unix)
+- `process.thread.count` - Process thread count
+- `process.context_switches` - Context switches (voluntary/involuntary)
+
+**CPython Runtime Metrics:**
+- `cpython.gc.collections` - Garbage collection count by generation
+- `cpython.gc.collected_objects` - Objects collected by GC
+- `cpython.gc.uncollectable_objects` - Uncollectable objects
+
+<Admonition type="warning">
+The instrumentor also exports deprecated `process.runtime.*` prefixed metrics (e.g., `process.runtime.cpu.time`, `process.runtime.memory`). These will be removed in future versions. Use the `process.*` metrics listed above instead.
+</Admonition>
 
 <Admonition type="info">
-Metric names follow the OpenTelemetry semantic conventions. For the complete specification, see the [System metrics semantic conventions](https://opentelemetry.io/docs/specs/semconv/system/system-metrics/).
+Metric names follow the OpenTelemetry semantic conventions. See the complete specifications:
+- [System metrics semantic conventions](https://opentelemetry.io/docs/specs/semconv/system/system-metrics/)
+- [Process metrics semantic conventions](https://opentelemetry.io/docs/specs/semconv/system/process-metrics/)
+- [CPython runtime metrics](https://opentelemetry.io/docs/specs/semconv/runtime/cpython-metrics/)
 </Admonition>
 
 </details>
