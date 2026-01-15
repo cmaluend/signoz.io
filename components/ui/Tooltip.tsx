@@ -51,9 +51,12 @@ export default function Tooltip({ text, content, link, linkText = "Explore more 
         <span>&nbsp;</span> 
         </>
       ) : (
+        <>
         <span className="cursor-help border-b border-dashed border-zinc-500 decoration-zinc-500 hover:border-zinc-200 hover:text-zinc-100 transition-colors">
           {text}
         </span>
+        <span>&nbsp;</span> 
+        </>
       )}
 
       {/* Tooltip Popup */}
