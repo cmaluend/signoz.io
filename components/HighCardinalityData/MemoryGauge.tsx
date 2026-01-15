@@ -42,20 +42,20 @@ export default function MemoryGauge() {
     <div className="w-full max-w-4xl mx-auto my-16 font-sans">
       
       {/* Main Container - Integrated look, less boxy */}
-      <div className="flex flex-col md:flex-row items-end gap-12 mb-12 px-4 md:px-12">
+      <div className="flex flex-col md:flex-row items-end gap-8 md:gap-12 mb-12 px-2 md:px-12">
         
         {/* Left: Stats */}
-        <div className="flex-1 space-y-8 pb-4">
+        <div className="flex-1 space-y-6 md:space-y-8 pb-4">
            <div>
              <div className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-1">Total Users</div>
-             <div className="text-4xl font-bold text-zinc-100 tabular-nums">
+             <div className="text-3xl md:text-4xl font-bold text-zinc-100 tabular-nums">
                {users.toLocaleString()}
              </div>
            </div>
            
            <div>
              <div className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-1">Active Series</div>
-             <div className={`text-4xl font-bold tabular-nums transition-colors duration-300 ${isOOM ? "text-red-500" : "text-zinc-100"}`}>
+             <div className={`text-3xl md:text-4xl font-bold tabular-nums transition-colors duration-300 ${isOOM ? "text-red-500" : "text-zinc-100"}`}>
                {totalSeries.toLocaleString()}
              </div>
              <div className="text-xs text-zinc-400 mt-2">
@@ -72,9 +72,9 @@ export default function MemoryGauge() {
         </div>
 
         {/* Right: The RAM Tank */}
-        <div className="relative">
+        <div className="relative w-full md:w-auto flex flex-col items-center md:block">
            {/* Tank Container */}
-           <div className="w-32 h-64 border-2 border-zinc-800 rounded-lg relative overflow-hidden bg-zinc-900">
+           <div className="w-24 md:w-32 h-64 border-2 border-zinc-800 rounded-lg relative overflow-hidden bg-zinc-900">
              {/* Fluid */}
              <div 
                className={`absolute bottom-0 left-0 right-0 transition-all duration-300 ease-out ${isOOM ? "bg-red-600" : "bg-blue-600"}`}
@@ -102,7 +102,7 @@ export default function MemoryGauge() {
       </div>
 
       {/* Full Width Slider Control */}
-      <div className="bg-zinc-900 rounded-xl p-8 border border-zinc-800">
+      <div className="bg-zinc-900 rounded-xl p-4 md:p-8 border border-zinc-800">
          <div className="flex justify-between items-end mb-4">
             <label className="text-sm font-bold text-zinc-300 uppercase tracking-wider">
                Scale Users (Cardinality)

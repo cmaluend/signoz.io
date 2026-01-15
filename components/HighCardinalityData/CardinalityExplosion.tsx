@@ -54,7 +54,7 @@ export default function CardinalityExplosion() {
         <div className="flex-1 w-full relative">
            <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-zinc-800 via-blue-900 to-red-900" />
            
-           <div className="space-y-6 pl-6">
+           <div className="space-y-6 pl-3 md:pl-6">
              {LABELS.map((label, index) => {
                const isActive = activeLabels.has(index);
                return (
@@ -88,7 +88,7 @@ export default function CardinalityExplosion() {
         <div className="flex-1 w-full text-center md:text-left">
            <div className="relative inline-block">
               {/* Animated Number */}
-              <div className={`text-5xl md:text-6xl font-extrabold tracking-tight transition-all duration-500 ${
+              <div className={`text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight transition-all duration-500 ${
                  isOOM ? "text-red-500" : activeLabels.size > 1 ? "text-blue-500" : "text-zinc-100"
               }`}>
                 {activeLabels.size === 0 ? "0" : formatNumber(totalCardinality)}

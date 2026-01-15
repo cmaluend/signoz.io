@@ -24,8 +24,9 @@ export default function DatabaseTable() {
   return (
     <div className="w-full max-w-4xl mx-auto my-12 font-mono text-sm">
       <div className="bg-zinc-900 rounded-lg border border-zinc-800 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
         {/* Table Header */}
-        <div className="grid grid-cols-5 bg-zinc-800 border-b border-zinc-700">
+        <div className="grid grid-cols-5 bg-zinc-800 border-b border-zinc-700 min-w-[600px]">
           {columns.map((col) => (
             <div 
               key={col.key} 
@@ -48,7 +49,7 @@ export default function DatabaseTable() {
         {/* Table Body */}
         <div className="divide-y divide-zinc-700">
           {DATA.map((row, i) => (
-            <div key={i} className="grid grid-cols-5 hover:bg-zinc-800/50 transition-colors">
+            <div key={i} className="grid grid-cols-5 hover:bg-zinc-800/50 transition-colors min-w-[600px]">
               {columns.map((col) => (
                 <div 
                   key={col.key} 
@@ -64,14 +65,15 @@ export default function DatabaseTable() {
             </div>
           ))}
           {/* ... row */}
-          <div className="grid grid-cols-5 bg-zinc-800/30 text-zinc-600 italic">
+          <div className="grid grid-cols-5 bg-zinc-800/30 text-zinc-600 italic min-w-[600px]">
             {columns.map((col) => (
               <div key={col.key} className="p-4 border-r border-zinc-700 last:border-0">
                 ...
               </div>
             ))}
           </div>
-        </div>
+          </div>
+      </div>
       </div>
 
       {/* Caption / Context */}

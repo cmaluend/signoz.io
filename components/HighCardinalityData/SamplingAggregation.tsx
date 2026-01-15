@@ -28,7 +28,7 @@ export default function SamplingAggregation() {
              <button
                 key={m}
                 onClick={() => setMode(m)}
-                className={`pb-4 px-6 text-sm font-medium transition-all relative ${
+                className={`pb-4 px-3 sm:px-6 text-sm font-medium transition-all relative ${
                     mode === m ? "text-zinc-100" : "text-zinc-500 hover:text-zinc-300"
                 }`}
              >

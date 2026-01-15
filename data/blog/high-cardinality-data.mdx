@@ -81,7 +81,7 @@ Each unique combination of label values creates a new time series and as we add 
   Total Series = Label₁ × Label₂ × Label₃ × ...
 </p>
 
-A single metric with four labels can theoretically explode into billions of time series. Try it below—click each label to activate it and watch the count grow.
+A single metric with four labels can theoretically explode into billions of time series. Try it below by clicking each label to activate it and watch the count grow.
 
 <CardinalityExplosion />
 
@@ -94,13 +94,13 @@ Indexes work beautifully when there are a small number of categories to organize
 
 When you query by a low-cardinality field like `status=200`, the database looks up "200" in the index and immediately finds all matching rows. Fast.
 
-When you query by a high-cardinality field like `user_id=abc123`, the index still works—but it has millions of entries to manage. This means finding your specific user requires navigating a massive index structure, which takes more time and memory.
+When you query by a high-cardinality field like `user_id=abc123`, the index still works but it has millions of entries to manage. This means finding your specific user requires navigating a massive index structure, which takes more time and memory.
 
 Watch the race below - both queries search the same dataset, but one filters by status code (~50 unique values) and the other by user ID (1 million unique values).
 
 <QueryRace />
 
-The low-cardinality query uses a compact index and returns almost instantly. The high-cardinality query must work through a much larger index structure. In production, this difference cascades—slow queries block other queries, consume CPU, and can spiral into a full outage.
+The low-cardinality query uses a compact index and returns almost instantly. The high-cardinality query must work through a much larger index structure. In production, this difference cascades, the slow queries block other queries, consume CPU, and can spiral into a full outage.
 
 This is why observability vendors often charge by cardinality as high cardinality genuinely costs more in infrastructure (more memory for indexes, more CPU for queries, more storage for data).
 
@@ -120,7 +120,7 @@ Drag the slider below to specific user counts and watch how high-cardinality lab
 
 <MemoryGauge />
 
- <Tooltip text="OOM (out-of-memory)" content="An Out of Memory (OOM) state occurs when the environment (might be the operating system, container, or application runtime) attempts to allocate memory but none is available." link="https://signoz.io/guides/what-is-oom/" />  kills are the most common symptom of cardinality explosion. The container gets terminated mid-operation, potentially corrupting the <Tooltip text="Write-Ahead Logging (WAL)" content="Write-Ahead Logging (WAL) is a database feature that ensures data durability by writing transactions to a log before applying them to the database." />  and you lose recent data. Teams often discover the problem only after losing visibility during an incident—exactly when they needed monitoring most.
+ <Tooltip text="OOM (out-of-memory)" content="An Out of Memory (OOM) state occurs when the environment (might be the operating system, container, or application runtime) attempts to allocate memory but none is available." link="https://signoz.io/guides/what-is-oom/" />  kills are the most common symptom of cardinality explosion. The container gets terminated mid-operation, potentially corrupting the <Tooltip text="Write-Ahead Logging (WAL)" content="Write-Ahead Logging (WAL) is a database feature that ensures data durability by writing transactions to a log before applying them to the database." />  and you lose recent data. Teams often discover the problem only after losing visibility during an incident — exactly when they needed monitoring most.
 
 The Reddit threads are full of these stories: "I added a request_id label for debugging and my Prometheus crashed overnight." "Why does my memory usage spike every deploy?" (Answer: new <Tooltip text="pod" content="The smallest deployable unit in Kubernetes, representing one or more containers running together." link="https://signoz.io/guides/kubernetes-pod/" />  IDs creating new series with every restart.)
 
@@ -128,11 +128,11 @@ The Reddit threads are full of these stories: "I added a request_id label for de
 
 ## How Different Databases Handle High Cardinality
 
-We have already seen why time-series databases like Prometheus struggle with high cardinality—their in-memory <Tooltip text="inverted index" content="A mapping from content (like label values) to its location in the data, enabling fast lookups." />  grows with every unique label combination until the server runs out of RAM but Prometheus is not the only option. Let us look at how different database architectures handle this problem.
+We have already seen why time-series databases like Prometheus struggle with high cardinality as their in-memory <Tooltip text="inverted index" content="A mapping from content (like label values) to its location in the data, enabling fast lookups." />  grows with every unique label combination until the server runs out of RAM but Prometheus is not the only option. Let us look at how different database architectures handle this problem.
 
 ### Time-Series Databases (Prometheus, InfluxDB)
 
-TSDBs use an **inverted index**—a data structure that maps each unique label value to a list of matching time series. Think of it like a reverse lookup table: instead of "row → labels," it stores "label → rows."
+TSDBs use an **inverted index**, a data structure that maps each unique label value to a list of matching time series. Think of it like a reverse lookup table: instead of "row → labels," it stores "label → rows."
 
 This is extremely fast for low-cardinality queries like `status=200`. The database looks up "200" in the index and immediately retrieves all matching series.
 
@@ -233,7 +233,7 @@ This layout solves both problems we discussed:
 *   **Better compression:** Values of the same type are stored together. A column of `status` codes (200, 200, 200, 500, 200...) compresses beautifully because there are patterns. <Tooltip text="Dictionary encoding" content="A compression technique that replaces repeated values with shorter codes. Instead of storing 'user_abc123' a million times, the database stores it once in a dictionary and uses a small number to reference it." /> helps when values repeat often, though it works best with moderate cardinality rather than millions of unique values.
 *   **Efficient scans:** To calculate average latency, the database reads *only* the latency column. The `user_id` and other columns stay on disk, untouched.
 
-This is why modern analytics databases like <Tooltip text="ClickHouse" content="An open-source columnar database designed for fast analytics over large datasets." />  can handle billions of unique values that would crash a Prometheus server. They trade the instant index lookup for fast column scans—and with modern SSDs and vectorized CPU instructions, those scans are surprisingly quick.
+This is why modern analytics databases like <Tooltip text="ClickHouse" content="An open-source columnar database designed for fast analytics over large datasets." />  can handle billions of unique values that would crash a Prometheus server. They trade the instant index lookup for fast column scans, and with modern SSDs and vectorized CPU instructions, those scans are surprisingly quick.
 
 This architectural difference explains why <Tooltip text="SigNoz" content="SigNoz is an all-in-one observability platform built from the grounds up to be OpenTelemetry native." link="https://signoz.io" />  (built on ClickHouse) can handle high-cardinality data that would bring down a traditional TSDB. For queries like "show me p99 latency grouped by service," columnar stores scan a single compressed column and vectorize the computation while an inverted-index TSDB must touch index entries for every matching series.
 
@@ -249,7 +249,7 @@ Metrics suffer the most. Every unique label combination creates a time series th
 
 ### Logs
 
-Logs handle high cardinality better because they are naturally event-oriented. Each log line is independent—there is no ongoing "series" to maintain. The challenge is query efficiency: searching for a specific `user_id` in billions of logs requires good indexing or brute-force scanning. Columnar stores shine here.
+Logs handle high cardinality better because they are naturally event-oriented. Each log line is independent and there is no ongoing "series" to maintain. The challenge is query efficiency: searching for a specific `user_id` in billions of logs requires good indexing or brute-force scanning. Columnar stores shine here.
 
 ### Traces
 

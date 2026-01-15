@@ -86,8 +86,8 @@ export default function UsersAnalogy() {
 
       {/* Visual Area - Less Boxy, No Borders */}
       <div className={`transition-all duration-500 min-h-[300px] ${
-        query === "region" ? "grid grid-cols-2 gap-8" : 
-        query === "userId" ? "grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-2" : 
+        query === "region" ? "grid grid-cols-2 gap-4 md:gap-8" : 
+        query === "userId" ? "grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 gap-1.5 md:gap-2" : 
         "flex flex-wrap justify-center gap-2 content-start"
       }`}>
         {Object.entries(groups).map(([groupName, groupUsers]) => (
