@@ -44,7 +44,7 @@ Neither is inherently "bad." High cardinality fields like `user_id` are incredib
 
 ## The Cardinality Explosion
 
-To understand cardinality explosion, you first need to understand how <Tooltip text="metrics" content="A metric is a measurement collected over time, such as CPU usage, request count, or error rate." link="https://signoz.io/blog/opentelemetry-metrics-with-examples/" />  work in time-series databases like Prometheus. // remove double underline from tooltip and fix the margin/padding
+To understand cardinality explosion, you first need to understand how <Tooltip text="metrics" content="A metric is a measurement collected over time, such as CPU usage, request count, or error rate." link="https://signoz.io/blog/opentelemetry-metrics-with-examples/" />  work in time-series databases like Prometheus.
 
 A metric is not just "CPU usage." A metric is CPU usage *with labels attached*. // explain labels before and breakdown the code below as people don't read comments inside code blocks
 
@@ -253,7 +253,7 @@ You have two main options for taming high cardinality: **aggregation** and **sam
 
 Toggle between the modes below to see how each strategy transforms the same raw data.
 
-<SamplingAggregation /> // change "fidelity" to a simpler word
+<SamplingAggregation /> 
 
 **Aggregation** is best for metrics. Instead of tracking latency per user, track histogram buckets. Instead of counting requests per `container_id`, count per service. You lose individual data points but keep statistical accuracy. // track histogram bucket is not clear
 

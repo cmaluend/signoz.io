@@ -86,9 +86,9 @@ export default function SamplingAggregation() {
        {/* Contextual Caption */}
        <div className="text-center mt-4 h-12">
            <p className="text-zinc-400 italic animate-fade-in transition-all key-mode">
-               {mode === "raw" && "150 raw events. Perfect fidelity, maximum storage cost."}
+               {mode === "raw" && "150 raw events. Perfect detail, maximum storage cost."}
                {mode === "aggregated" && "3 summary metrics. Cardinality reduced to near zero. Great for dashboards."}
-               {mode === "sampled" && "15 representative traces (10% sample). Good fidelity, 90% cost savings."}
+               {mode === "sampled" && "15 representative traces (10% sample). Good detail, 90% cost savings."}
            </p>
        </div>
     </div>
