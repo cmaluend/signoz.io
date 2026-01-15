@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allDocs, allGuides, allComparisons } from 'contentlayer/generated'
+import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -44,14 +44,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }))
 
-  const comparisonRoutes = allComparisons
-    .filter((post) => !post.draft)
-    .map((post) => ({
-      url: `${siteUrl}/${post.path}/`,
-      lastModified: post.lastmod || post.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.5,
-    }))
+  let comparisonRoutes: MetadataRoute.Sitemap = []
+  try {
+    const comparisonsResponse = (await fetchMDXContentByPath(
+      'comparisons',
+      undefined,
+      isProduction ? 'live' : 'staging',
+      true
+    )) as MDXContentApiResponse
+
+    comparisonRoutes = comparisonsResponse.data.map((post) => {
+      const path = post.path || `comparisons/${post.slug}`
+      const cleanPath = path.startsWith('/') ? path.slice(1) : path
+      return {
+        url: `${siteUrl}/${cleanPath}/`,
+        lastModified: post.updatedAt || post.publishedAt || post.date,
+        changeFrequency: mapChangeFrequency('weekly'),
+        priority: 0.5,
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching comparisons for sitemap:', error)
+  }
 
   // New section for guides
   const guideRoutes = allGuides

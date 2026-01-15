@@ -1,12 +1,12 @@
 'use client'
 
-import { allComparisons } from 'contentlayer/generated'
-import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
+import React, { useEffect, useState } from 'react'
 import BlogPostCard from '../Shared/BlogPostCard'
 import SearchInput from '../Shared/Search'
-import React from 'react'
 import { filterData } from 'app/utils/common'
-import { Frown } from 'lucide-react'
+import { Frown, Loader2 } from 'lucide-react'
+import { fetchMDXContentByPath } from '@/utils/strapi'
+import { calculateReadingTime } from '@/utils/content'
 
 interface ComparisonsPageHeaderProps {
   onSearch: (e) => void
@@ -32,17 +32,52 @@ const ComparisonsPageHeader: React.FC<ComparisonsPageHeaderProps> = ({ onSearch 
 }
 
 export default function ComparisonsListing() {
-  const posts = allCoreContent(sortPosts(allComparisons))
-  const primaryFeaturedBlogs = posts.slice(0, 2)
-  const secondaryFeaturedBlogs = posts.slice(0)
+  const [posts, setPosts] = useState<any[]>([])
+  const [blogs, setBlogs] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchValue, setSearchValue] = useState('')
 
-  const [blogs, setBlogs] = React.useState(secondaryFeaturedBlogs)
-  const [searchValue, setSearchValue] = React.useState('')
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const response = await fetchMDXContentByPath('comparisons', undefined, undefined, true)
+        const data = 'data' in response ? response.data : [response]
+
+        const mappedData = data.map((post) => ({
+          ...post,
+          date: post.publishedAt || post.date,
+          path: post.path || `comparisons/${post.slug}`,
+          readingTime: calculateReadingTime(post.content),
+        }))
+
+        // Sort by date desc
+        mappedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+        setPosts(mappedData)
+        setBlogs(mappedData)
+      } catch (error) {
+        console.error('Failed to fetch comparisons', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+
+  const primaryFeaturedBlogs = posts.slice(0, 2)
 
   const handleSearch = (e) => {
     setSearchValue(e.target.value)
     const filteredPosts = filterData(posts, e.target.value)
     setBlogs(filteredPosts)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex h-[400px] w-full items-center justify-center">
+        <Loader2 className="animate-spin text-indigo-500" size={32} />
+      </div>
+    )
   }
 
   return (
@@ -53,7 +88,7 @@ export default function ComparisonsListing() {
         <div className="mt-5 w-full max-md:max-w-full">
           <div className="mt-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2">
             {primaryFeaturedBlogs.map((featuredBlog, index) => {
-              return <BlogPostCard blog={featuredBlog} key={index} />
+              return <BlogPostCard blog={featuredBlog as any} key={index} />
             })}
           </div>
         </div>
@@ -67,7 +102,7 @@ export default function ComparisonsListing() {
 
       <div className="mt-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {blogs.map((post, index) => {
-          return <BlogPostCard blog={post} key={index} />
+          return <BlogPostCard blog={post as any} key={index} />
         })}
       </div>
     </div>
