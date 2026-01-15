@@ -247,6 +247,26 @@ export default function LogsInstrumentationListicle({
     <div className="mb-10">
       <h2 className="mb-4 text-2xl font-semibold">Cloud Logs</h2>
 
+      <h3 className="mb-4 text-xl font-semibold">AWS Integrations</h3>
+      <IconCardGrid
+        cards={[
+          {
+            name: 'One-Click AWS Integration',
+            href: '/docs/integrations/aws/one-click-aws-integrations',
+            icon: <SiAmazonwebservices className="h-7 w-7 text-orange-400" />,
+            clickName: 'AWS One-Click Integration Link',
+          },
+          {
+            name: 'S3 Sync',
+            href: '/docs/integrations/aws/s3-sync',
+            icon: <img src="/img/icons/aws-s3.svg" width={32} height={32} alt="S3 Sync" />,
+            clickName: 'S3 Sync Link',
+          },
+        ]}
+        sectionName="AWS Integrations"
+        gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
+      />
+
       <h3 className="mb-4 text-xl font-semibold">AWS</h3>
       <IconCardGrid
         cards={[
@@ -257,28 +277,92 @@ export default function LogsInstrumentationListicle({
             clickName: 'EC2 Logs Link',
           },
           {
+            name: 'ECS',
+            href: '/docs/integrations/aws/ecs',
+            icon: <img src="/img/icons/aws-ecs.svg" width={32} height={32} alt="ECS" />,
+            clickName: 'ECS Link',
+          },
+          {
             name: 'EKS',
             href: '/docs/collection-agents/k8s/k8s-infra/install-k8s-infra/',
             icon: <img src="/img/icons/aws-eks.svg" width={32} height={32} alt="EKS" />,
             clickName: 'EKS Logs Link',
           },
           {
-            name: 'ELB',
-            href: '/docs/aws-monitoring/elb-logs/',
-            icon: <img src="/img/icons/aws-elb.svg" width={32} height={32} alt="ELB" />,
-            clickName: 'ELB Logs Link',
+            name: 'Lambda',
+            href: '/docs/integrations/aws/lambda',
+            icon: <img src="/img/icons/aws-lambda.svg" width={32} height={32} alt="Lambda" />,
+            clickName: 'AWS Lambda Link',
           },
           {
-            name: 'VPC',
-            href: '/docs/aws-monitoring/vpc-logs/',
-            icon: <img src="/img/icons/aws-vpc.svg" width={32} height={32} alt="VPC" />,
-            clickName: 'VPC Logs Link',
+            name: 'S3',
+            href: '/docs/aws-monitoring/s3',
+            icon: <img src="/img/icons/aws-s3.svg" width={32} height={32} alt="S3" />,
+            clickName: 'S3 Link',
           },
           {
             name: 'RDS',
-            href: '/docs/aws-monitoring/rds-logs/',
+            href: '/docs/integrations/aws/rds',
             icon: <img src="/img/icons/aws-rds.svg" width={32} height={32} alt="RDS" />,
-            clickName: 'RDS Logs Link',
+            clickName: 'RDS Link',
+          },
+          {
+            name: 'DynamoDB',
+            href: '/docs/integrations/aws/dynamodb',
+            icon: <img src="/img/icons/aws-dynamodb.svg" width={32} height={32} alt="DynamoDB" />,
+            clickName: 'DynamoDB Link',
+          },
+          {
+            name: 'ElastiCache',
+            href: '/docs/integrations/aws/elasticache',
+            icon: (
+              <img src="/img/icons/aws-elasticache.svg" width={32} height={32} alt="ElastiCache" />
+            ),
+            clickName: 'ElastiCache Link',
+          },
+          {
+            name: 'ELB',
+            href: '/docs/aws-monitoring/elb',
+            icon: <img src="/img/icons/aws-elb.svg" width={32} height={32} alt="ELB" />,
+            clickName: 'ELB Link',
+          },
+          {
+            name: 'ALB',
+            href: '/docs/integrations/aws/alb',
+            icon: <img src="/img/icons/aws-alb.svg" width={32} height={32} alt="ALB" />,
+            clickName: 'ALB Link',
+          },
+          {
+            name: 'API Gateway',
+            href: '/docs/integrations/aws/api-gateway',
+            icon: (
+              <img src="/img/icons/aws-api-gateway.svg" width={32} height={32} alt="API Gateway" />
+            ),
+            clickName: 'API Gateway Link',
+          },
+          {
+            name: 'MSK',
+            href: '/docs/integrations/aws/msk',
+            icon: <img src="/img/icons/aws-msk.svg" width={32} height={32} alt="MSK" />,
+            clickName: 'MSK Link',
+          },
+          {
+            name: 'SNS',
+            href: '/docs/integrations/aws/sns',
+            icon: <img src="/img/icons/aws-sns.svg" width={32} height={32} alt="SNS" />,
+            clickName: 'SNS Link',
+          },
+          {
+            name: 'SQS',
+            href: '/docs/integrations/aws/sqs',
+            icon: <img src="/img/icons/aws-sqs.svg" width={32} height={32} alt="SQS" />,
+            clickName: 'SQS Link',
+          },
+          {
+            name: 'VPC',
+            href: '/docs/aws-monitoring/vpc',
+            icon: <img src="/img/icons/aws-vpc.svg" width={32} height={32} alt="VPC" />,
+            clickName: 'VPC Link',
           },
           {
             name: 'Cloudwatch',
@@ -288,14 +372,8 @@ export default function LogsInstrumentationListicle({
             ),
             clickName: 'Cloudwatch Logs Link',
           },
-          {
-            name: 'Lambda NodeJS',
-            href: '/docs/logs-management/send-logs/aws-lambda-nodejs',
-            icon: <img src="/img/icons/aws-lambda.svg" width={32} height={32} alt="Lambda" />,
-            clickName: 'AWS Lambda Logs Link',
-          },
         ]}
-        sectionName="AWS"
+        sectionName="AWS Services"
         gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
       />
 
@@ -360,8 +438,22 @@ export default function LogsInstrumentationListicle({
             ),
             clickName: 'Blob Storage Logs Link',
           },
+          {
+            name: 'Virtual Machines',
+            href: '/docs/azure-monitoring/virtual-machines/vm-metrics',
+            icon: (
+              <img src="/img/icons/azure-vms.svg" width={48} height={48} alt="Virtual Machines" />
+            ),
+            clickName: 'Azure VMs Link',
+          },
+          {
+            name: 'MySQL Flexible Server',
+            href: '/docs/azure-monitoring/mysql-flexible-server',
+            icon: <img src="/img/icons/azure-mysql.svg" width={48} height={48} alt="MySQL" />,
+            clickName: 'Azure MySQL Link',
+          },
         ]}
-        sectionName="Azure"
+        sectionName="Azure Services"
         gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
       />
 
