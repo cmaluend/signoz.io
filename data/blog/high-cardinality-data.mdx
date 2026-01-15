@@ -1,16 +1,16 @@
 ---
-title: What is High Cardinality Data?
+title: What is High Cardinality? Explained with Examples
 slug: high-cardinality-data
 date: 2024-09-05
-tags: [Opentelemetry, observability]
-authors: [nicamellifera]
-description: Defining what High Cardinality Data is and isn't, with some examples.
+tags: [Observability, Databases]
+authors: [yuvraj]
+description: High cardinality crashes Prometheus servers and inflates cloud bills. Learn what causes cardinality explosion, how different databases handle it, and strategies to manage it.
 image: /img/blog/2023/06/high_cardinality_cover-min.jpg
 hide_table_of_contents: false
 keywords: [observability,opentelemetry,high cardinality]
 ---
 
-High cardinality is the silent killer of monitoring systems. It crashes Prometheus servers, inflates cloud bills, and turns simple queries into minute-long waits. This guide explains why it happens and what you can do about it.
+High cardinality is the silent killer of monitoring systems. It often crashes Prometheus servers, inflates cloud bills, and turns simple queries into minute-long waits. This guide explains why it happens and what you can do about it.
 
 ## First, What is Cardinality?
 
@@ -22,7 +22,7 @@ The interactive below shows the same 40 users. Try grouping them in different wa
 
 <UsersAnalogy />
 
-When you count total users, there is exactly **1 group**. When you group by region, there are **4 groups**. When you group by user ID, there are **40 groups**, one for each unique user.
+Count everyone together and you get 1 group, group by region and you get 4, and when you group by user ID and you get 40 groups, one for each unique user.
 
 That is cardinality: the number of unique values. Region has low cardinality (4). User ID has high cardinality (40, and it grows with every new user).
 
@@ -46,7 +46,13 @@ Neither is inherently "bad." High cardinality fields like `user_id` are incredib
 
 To understand cardinality explosion, you first need to understand how <Tooltip text="metrics" content="A metric is a measurement collected over time, such as CPU usage, request count, or error rate." link="https://signoz.io/blog/opentelemetry-metrics-with-examples/" />  work in time-series databases like Prometheus.
 
-A metric is not just "CPU usage." A metric is CPU usage *with labels attached*. // explain labels before and breakdown the code below as people don't read comments inside code blocks
+A metric is not just "CPU usage." A metric is CPU usage *with <Tooltip text="labels" content="Labels are key-value pairs attached to metrics that provide additional context, like host=server-1 or region=us-east." /> attached*. These labels allow you to slice and filter your metrics, but each unique combination of labels creates a separate data stream to track.
+
+Here is how it works:
+
+- **One server:** A metric like `cpu_usage` with a single label `host=server-1` creates 1 data stream.
+- **Two servers:** Add another host and you have 2 streams: one for `server-1`, one for `server-2`.
+- **Add users:** If you also label by `user_id`, the count multiplies. With 2 servers and 3 users, you jump to 6 streams.
 
 <div className="bg-zinc-800 text-zinc-100 rounded-lg p-6 my-8 font-mono text-sm overflow-x-auto">
   <div className="mb-4">
@@ -62,12 +68,12 @@ A metric is not just "CPU usage." A metric is CPU usage *with labels attached*. 
     <span className="text-zinc-500"># Now add user_id... this explodes fast</span><br/>
     <span className="text-blue-400">cpu_usage</span>{`{`}<span className="text-green-400">host</span>=<span className="text-yellow-300">"server-1"</span>, <span className="text-red-400">user_id</span>=<span className="text-yellow-300">"123"</span>{`}`}<br/>
     <span className="text-blue-400">cpu_usage</span>{`{`}<span className="text-green-400">host</span>=<span className="text-yellow-300">"server-1"</span>, <span className="text-red-400">user_id</span>=<span className="text-yellow-300">"456"</span>{`}`}<br/>
-    <span className="text-blue-400">cpu_usage</span>{`{`}<span className="text-green-400">host</span>=<span className="text-yellow-300">"server-1"</span>, <span className="text-red-400">user_id</span>=<span className="text-yellow-300">"789"</span>{`}`}<br/>
+    <span className="text-blue-400">cpu_usage</span>{`{`}<span className="text-green-400">host</span>=<span className="text-yellow-300">"server-2"</span>, <span className="text-red-400">user_id</span>=<span className="text-yellow-300">"123"</span>{`}`}<br/>
     <span className="text-zinc-500">... and so on for every user</span>
   </div>
 </div>
 
-With 2 servers and 1,000 users, you now have 2 × 1,000 = **2,000 time series** from a single metric. // user might not know what is a time series, handle that with a tooltip
+With 2 servers and 1,000 users, you now have 2 × 1,000 = **2,000 <Tooltip text="time series" content="A time series is a sequence of data points collected for a specific metric and label combination over time. Each unique combination of labels creates a separate time series." />** from a single metric.
 
 Each unique combination of label values creates a new time series and as we add more labels, the number of time series *multiply*. The formula is simple:
 
@@ -75,7 +81,7 @@ Each unique combination of label values creates a new time series and as we add 
   Total Series = Label₁ × Label₂ × Label₃ × ...
 </p>
 
-A single metric with four labels can explode into billions of time series. Try it below—click each label to activate it and watch the count grow.
+A single metric with four labels can theoretically explode into billions of time series. Try it below—click each label to activate it and watch the count grow.
 
 <CardinalityExplosion />
 
@@ -90,24 +96,24 @@ When you query by a low-cardinality field like `status=200`, the database looks 
 
 When you query by a high-cardinality field like `user_id=abc123`, the index still works—but it has millions of entries to manage. This means finding your specific user requires navigating a massive index structure, which takes more time and memory.
 
-Watch the race below - both queries search the same dataset, but one filters by status code (50 unique values) and the other by user ID (1 million unique values).
+Watch the race below - both queries search the same dataset, but one filters by status code (~50 unique values) and the other by user ID (1 million unique values).
 
 <QueryRace />
 
 The low-cardinality query uses a compact index and returns almost instantly. The high-cardinality query must work through a much larger index structure. In production, this difference cascades—slow queries block other queries, consume CPU, and can spiral into a full outage.
 
-This is why observability vendors charge by cardinality as high cardinality genuinely costs more in infrastructure (more memory for indexes, more CPU for queries, more storage for data).
+This is why observability vendors often charge by cardinality as high cardinality genuinely costs more in infrastructure (more memory for indexes, more CPU for queries, more storage for data).
 
 ## When Prometheus Runs Out of Memory
 
-<Tooltip text="Prometheus" content="A popular open-source monitoring and alerting toolkit for time-series metrics." link="https://signoz.io/guides/what-is-prometheus-for-monitoring/" />  keeps its active index entirely in memory. This is what makes it fast but it is also its weakness when cardinality grows.
+<Tooltip text="Prometheus" content="A popular open-source monitoring and alerting toolkit for time-series metrics." link="https://signoz.io/guides/what-is-prometheus-for-monitoring/" />  keeps its active index entirely in memory. This is what makes it fast, but it is also its weakness when cardinality grows.
 
-Here is the chain of events: // abrupt jump, chain of events for what? we need better transition.
+Here is what typically happens when high-cardinality labels are introduced:
 
 1. You add a label like `user_id` to a metric
 2. Each unique user ID creates a new time series
-3. Each time series requires ~3-4 KB of memory just for its index entry
-4. With 1 million users, that is 3-4 GB of RAM—just for one metric
+3. Assuming each time series requires ~3-4 KB of memory ([source](https://www.robustperception.io/why-does-prometheus-use-so-much-ram/))
+4. With 1 million users, that is 3-4 GB of RAM, just for one metric
 5. The container runs out of memory and gets killed (OOM)
 
 Drag the slider below to specific user counts and watch how high-cardinality labels consume RAM.
@@ -131,6 +137,8 @@ TSDBs use an **inverted index**—a data structure that maps each unique label v
 This is extremely fast for low-cardinality queries like `status=200`. The database looks up "200" in the index and immediately retrieves all matching series.
 
 The problem: this index must fit in memory. With 10 million unique `user_id` values, the index itself consumes gigabytes of RAM before you even store any actual data. When memory runs out, the database crashes.
+
+Note: InfluxDB introduced [TSI](https://docs.influxdata.com/influxdb/v1/concepts/time-series-index/) specifically to move the time-series index to disk (memory-mapped) and reduce RAM as the limiting factor, though high series cardinality can still hurt performance and memory.
 
 ### Row-Oriented Databases (PostgreSQL, MySQL)
 
@@ -163,11 +171,11 @@ Traditional relational databases store data **row by row**. All the columns for 
   </div>
 </div>
 
-Row stores handle high cardinality better than TSDBs for inserts, there is no massive index to update. But they have a different problem: **entropy**.
+Row stores don't create a new time series per label-set, so they avoid the index explosion problem. However, inserts still maintain secondary indexes (e.g., B-trees), which adds write overhead. The bigger issue for row stores is **entropy**.
 
 When columns with very different data types and patterns are stored together (timestamps next to random UUIDs next to short status codes), the data stream becomes chaotic. This chaos makes <Tooltip text="compression" content="Storing data in less space by finding patterns. High-cardinality columns have no patterns, so they don't compress well." />  nearly impossible. A billion random `user_id` values cannot be compressed efficiently because there are no patterns to exploit.
 
-Apart from compression issues, doing analytical queries in row stores also suffer from high I/O. To answer "What is the average latency for user X?" the database must read entire rows, including columns you do not need, just to extract the latency values. This wastes enormous amounts of I/O.
+Apart from compression issues, doing analytical queries in row stores also suffers from high I/O. To answer "What is the average latency for user X?" the database must read entire rows, including columns you do not need, just to extract the latency values. This wastes enormous amounts of I/O.
 
 ### Columnar Databases (ClickHouse, Apache Parquet)
 
@@ -221,8 +229,8 @@ Columnar stores flip the storage model: instead of storing rows together, they s
 
 This layout solves both problems we discussed:
 
-*   **No index explosion:** There is no giant in-memory index mapping labels to series. Adding a new unique `user_id` is just appending a value to a column—not restructuring an index tree.
-*   **Better compression:** Values of the same type are stored together. A column of `status` codes (200, 200, 200, 500, 200...) compresses beautifully because there are patterns. Even high-cardinality columns like `user_id` benefit from dictionary encoding. // explain dictionary encoding in a tool tip.
+*   **No postings index in RAM:** Columnar systems still use indexes (e.g., primary key/data-skipping), but they usually rely more on compressed column scans than a per-label postings index held fully in RAM.
+*   **Better compression:** Values of the same type are stored together. A column of `status` codes (200, 200, 200, 500, 200...) compresses beautifully because there are patterns. <Tooltip text="Dictionary encoding" content="A compression technique that replaces repeated values with shorter codes. Instead of storing 'user_abc123' a million times, the database stores it once in a dictionary and uses a small number to reference it." /> helps when values repeat often, though it works best with moderate cardinality rather than millions of unique values.
 *   **Efficient scans:** To calculate average latency, the database reads *only* the latency column. The `user_id` and other columns stay on disk, untouched.
 
 This is why modern analytics databases like <Tooltip text="ClickHouse" content="An open-source columnar database designed for fast analytics over large datasets." />  can handle billions of unique values that would crash a Prometheus server. They trade the instant index lookup for fast column scans—and with modern SSDs and vectorized CPU instructions, those scans are surprisingly quick.
@@ -255,7 +263,7 @@ Toggle between the modes below to see how each strategy transforms the same raw 
 
 <SamplingAggregation /> 
 
-**Aggregation** is best for metrics. Instead of tracking latency per user, track histogram buckets. Instead of counting requests per `container_id`, count per service. You lose individual data points but keep statistical accuracy. // track histogram bucket is not clear
+**Aggregation** is best for metrics. Instead of tracking latency for each individual user, group latency values into ranges (like 0-100ms, 100-500ms, 500ms+) using <Tooltip text="histograms" content="A metric type that counts observations falling into predefined ranges or buckets, giving you distribution insights without storing every individual value." />. Instead of counting requests per `container_id`, count per service. You lose individual data points but keep statistical accuracy.
 
 **Sampling** is best for traces. Keep 1% of successful requests, 100% of errors, and 100% of slow requests. Sampling gives you full detail for the requests you keep while dramatically reducing volume.
 
@@ -274,4 +282,14 @@ A few practical rules:
 
 Understanding cardinality helps you make better decisions about what data to collect, how to structure it, and which tools to use. The monitoring system that never crashes is the one designed with cardinality in mind from the start.
 
-// add get started with signoz with smooth transition
+## Handling High Cardinality with SigNoz
+
+If you are looking for an observability platform that handles high-cardinality data without the memory constraints of traditional TSDBs, [SigNoz](https://signoz.io) is built for exactly that. Powered by ClickHouse's columnar architecture, SigNoz handles metrics, traces, and logs at scale while keeping costs predictable.
+
+### Getting Started with SigNoz
+
+You can choose between various deployment options in SigNoz. The easiest way to get started with SigNoz is [SigNoz cloud](https://signoz.io/teams/). We offer a 30-day free trial account with access to all features.
+
+Those who have data privacy concerns and can't send their data outside their infrastructure can sign up for either [enterprise self-hosted or BYOC offering](https://signoz.io/contact-us/).
+
+Those who have the expertise to manage SigNoz themselves or just want to start with a free self-hosted option can use our [community edition](https://signoz.io/docs/install/self-host/).
