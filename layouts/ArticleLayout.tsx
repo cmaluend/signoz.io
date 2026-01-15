@@ -31,7 +31,7 @@ export interface TocItemProps {
 
 type ContentType = Blog | Comparison | Guide
 
-interface ArticleContent extends ContentType {
+type ArticleContent = ContentType & {
   cta_title?: string
   cta_text?: string
   relatedArticles?: Array<{ title: string; url: string; publishedOn: string }>
