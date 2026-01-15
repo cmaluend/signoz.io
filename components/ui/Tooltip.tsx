@@ -39,14 +39,17 @@ export default function Tooltip({ text, content, link, linkText = "Explore more 
       {/* Trigger Text */}
       {/* Trigger Text */}
       {link ? (
+        <>
         <a 
           href={link}
           target="_blank"
-          rel="noopener noreferrer"
-          className="cursor-pointer border-b border-dashed border-zinc-500 decoration-zinc-500 hover:border-zinc-200 hover:text-zinc-100 transition-colors"
+          rel="noopener"
+          className="cursor-pointer border-b border-dashed border-zinc-500 decoration-zinc-500 hover:border-zinc-200 hover:text-zinc-100 transition-colors no-underline"
         >
           {text}
-        </a>
+        </a> 
+        <span>&nbsp;</span> 
+        </>
       ) : (
         <span className="cursor-help border-b border-dashed border-zinc-500 decoration-zinc-500 hover:border-zinc-200 hover:text-zinc-100 transition-colors">
           {text}
@@ -62,7 +65,7 @@ export default function Tooltip({ text, content, link, linkText = "Explore more 
           {/* Arrow */}
           <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-2 border-4 border-transparent border-t-zinc-800" />
           
-          <p className="leading-relaxed mb-2 font-medium">
+          <p className="leading-relaxed mb-2 mt-0 font-medium">
             {content}
           </p>
           
@@ -70,7 +73,7 @@ export default function Tooltip({ text, content, link, linkText = "Explore more 
             <a 
               href={link} 
               target="_blank" 
-              rel="noopener noreferrer"
+              rel="noopener"
               className="text-blue-300 hover:text-blue-200 text-xs font-semibold uppercase tracking-wide inline-flex items-center gap-1 transition-colors"
             >
               {linkText}

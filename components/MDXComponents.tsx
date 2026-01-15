@@ -79,7 +79,7 @@ import MemoryGauge from './HighCardinalityData/MemoryGauge';
 import QueryRace from './HighCardinalityData/QueryRace';
 import SamplingAggregation from './HighCardinalityData/SamplingAggregation';
 import UsersAnalogy from './HighCardinalityData/UsersAnalogy';
-import Tooltip from './HighCardinalityData/Tooltip';
+import Tooltip from './ui/Tooltip';
 import DatabaseTable from './HighCardinalityData/DatabaseTable';
 
 export const components: MDXComponents = {
