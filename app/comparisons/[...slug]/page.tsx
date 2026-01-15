@@ -8,7 +8,7 @@ import { allAuthors } from 'contentlayer/generated'
 import type { Authors } from 'contentlayer/generated'
 import OpenTelemetryLayout from '@/layouts/OpenTelemetryLayout'
 import OpenTelemetryHubLayout from '@/layouts/OpenTelemetryHubLayout'
-import BlogLayout from '@/layouts/BlogLayout'
+import ComparisonsLayout from '@/layouts/ComparisonsLayout'
 import { getHubContextForRoute } from '@/utils/opentelemetryHub'
 import { Metadata } from 'next'
 import siteMetadata from '@/data/siteMetadata'
@@ -49,7 +49,7 @@ const icon = fromHtmlIsomorphic(
 const defaultLayout = 'BlogLayout'
 const layouts = {
   OpenTelemetryLayout,
-  BlogLayout,
+  ComparisonsLayout,
 }
 
 export const dynamicParams = false
@@ -230,7 +230,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   if (slug.includes('opentelemetry')) {
     layoutName = 'OpenTelemetryLayout'
   } else {
-    layoutName = 'BlogLayout'
+    layoutName = 'ComparisonsLayout'
   }
 
   // @ts-ignore
