@@ -16,13 +16,13 @@ High cardinality is the silent killer of monitoring systems. It crashes Promethe
 
 Cardinality is simply the count of unique values in a set.
 
-Consider a simple example: you have 40 users in your system. Each user can be described by different attributes—their region, their user ID, or just counted as part of the whole.
+Consider a simple example: you have 40 users in your system. Each user can be described by different attributes: their region, their user ID, or just counted as part of the whole.
 
-The interactive below shows the same 40 users. Try grouping them different ways and watch how the number of groups changes.
+The interactive below shows the same 40 users. Try grouping them in different ways and watch how the number of groups changes.
 
 <UsersAnalogy />
 
-When you count total users, there is exactly **1 group**. When you group by region, there are **4 groups**. When you group by user ID, there are **40 groups**—one for each unique user.
+When you count total users, there is exactly **1 group**. When you group by region, there are **4 groups**. When you group by user ID, there are **40 groups**, one for each unique user.
 
 That is cardinality: the number of unique values. Region has low cardinality (4). User ID has high cardinality (40, and it grows with every new user).
 
@@ -30,21 +30,23 @@ That is cardinality: the number of unique values. Region has low cardinality (4)
 
 Think of a database like a filing cabinet.
 
-If you organize files by **region**, you have 4 drawers: US-East, US-West, EU, and APAC. Finding a file is easy—open the right drawer, grab the file. The database can do this quickly because there are only 4 places to look.
+If you organize files by **region**, you have 4 drawers: US-East, US-West, EU, and APAC. Finding a file is easy, you just open the right drawer and grab the file. The database can do this quickly because there are only 4 places to look.
 
 Now imagine organizing by **user ID**. With 40 users, you need 40 drawers. With a million users, you need a million drawers. The filing cabinet becomes a warehouse. Finding something is still possible, but the system is working much harder to keep track of where everything is.
 
-This is the core issue with high cardinality: more unique values means more things for the database to track, organize, and search through.
+This is the core issue with high cardinality: more unique values means more things for the database to track, organize, and search through. 
+
+The table below shows different columns of a database table with varying level of cardinality, try hovering over headers to see their cardinality estimates:
 
 <DatabaseTable />
 
-Neither is inherently "bad." High cardinality fields like `user_id` are incredibly useful for debugging—you want to know *which specific user* had a problem. The challenge is that they require different strategies to handle efficiently. More on that later.
+Neither is inherently "bad." High cardinality fields like `user_id` are incredibly useful for debugging, you want to know *which specific user* had a problem. The challenge is that they require different strategies to handle efficiently. More on that later.
 
 ## The Cardinality Explosion
 
-To understand cardinality explosion, you first need to understand how <Tooltip text="metrics" content="A metric is a measurement collected over time, such as CPU usage, request count, or error rate." link="https://signoz.io/blog/opentelemetry-metrics-with-examples/" /> work in time-series databases like Prometheus.
+To understand cardinality explosion, you first need to understand how <Tooltip text="metrics" content="A metric is a measurement collected over time, such as CPU usage, request count, or error rate." link="https://signoz.io/blog/opentelemetry-metrics-with-examples/" /> &nbsp; work in time-series databases like Prometheus. // remove double underline from tooltip and fix the margin/padding
 
-A metric is not just "CPU usage." A metric is CPU usage *with labels attached*.
+A metric is not just "CPU usage." A metric is CPU usage *with labels attached*. // explain labels before and breakdown the code below
 
 <div className="bg-zinc-800 text-zinc-100 rounded-lg p-6 my-8 font-mono text-sm overflow-x-auto">
   <div className="mb-4">
@@ -65,7 +67,7 @@ A metric is not just "CPU usage." A metric is CPU usage *with labels attached*.
   </div>
 </div>
 
-With 2 servers and 1,000 users, you now have 2 × 1,000 = **2,000 time series**. From a single metric.
+With 2 servers and 1,000 users, you now have 2 × 1,000 = **2,000 time series** from a single metric.
 
 Each unique combination of label values creates a new time series. Add more labels, and they *multiply*. The formula is simple:
 

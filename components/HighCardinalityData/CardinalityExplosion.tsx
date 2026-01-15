@@ -24,14 +24,28 @@ function formatNumber(num: number): string {
 }
 
 export default function CardinalityExplosion() {
-  const [activeLabels, setActiveLabels] = useState(1); // Default to just 1 label
+  const [activeLabels, setActiveLabels] = useState<Set<number>>(new Set([0])); // Default to just first label
 
-  const totalCardinality = LABELS.slice(0, activeLabels).reduce(
+  const toggleLabel = (index: number) => {
+    setActiveLabels(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  };
+
+  const activeLabelsArray = LABELS.filter((_, index) => activeLabels.has(index));
+  const totalCardinality = activeLabelsArray.reduce(
     (acc, label) => acc * label.cardinality,
     1
   );
 
   const isOOM = totalCardinality > 1e9;
+  const hasUserIdActive = activeLabels.has(3); // user_id is at index 3
 
   return (
     <div className="w-full max-w-3xl mx-auto my-16">
@@ -42,11 +56,11 @@ export default function CardinalityExplosion() {
            
            <div className="space-y-6 pl-6">
              {LABELS.map((label, index) => {
-               const isActive = index < activeLabels;
+               const isActive = activeLabels.has(index);
                return (
                  <div 
                    key={label.name}
-                   onClick={() => setActiveLabels(index + 1)}
+                   onClick={() => toggleLabel(index)}
                    className={`cursor-pointer group transition-all duration-300 ${isActive ? "opacity-100 translate-x-0" : "opacity-60 translate-x-[-4px]"}`}
                  >
                    <div className="flex items-center gap-3">
@@ -75,9 +89,9 @@ export default function CardinalityExplosion() {
            <div className="relative inline-block">
               {/* Animated Number */}
               <div className={`text-5xl md:text-6xl font-extrabold tracking-tight transition-all duration-500 ${
-                 isOOM ? "text-red-500" : activeLabels > 1 ? "text-blue-500" : "text-zinc-100"
+                 isOOM ? "text-red-500" : activeLabels.size > 1 ? "text-blue-500" : "text-zinc-100"
               }`}>
-                {formatNumber(totalCardinality)}
+                {activeLabels.size === 0 ? "0" : formatNumber(totalCardinality)}
               </div>
               
               <div className="text-sm font-semibold text-zinc-400 uppercase tracking-widest mt-2">
@@ -86,7 +100,7 @@ export default function CardinalityExplosion() {
 
               {/* Multiplier Visual */}
               <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start text-xs font-mono text-zinc-500">
-                 {LABELS.slice(0, activeLabels).map((l, i) => (
+                 {activeLabelsArray.map((l, i) => (
                     <span key={l.name} className="flex items-center">
                        {i > 0 && <span className="mx-2 text-zinc-600">×</span>}
                        <span className={l.name === "user_id" ? "text-red-400 font-bold" : ""}>
@@ -94,14 +108,18 @@ export default function CardinalityExplosion() {
                        </span>
                     </span>
                  ))}
-                 <span className="mx-2 text-zinc-600">=</span>
-                 <span className="font-bold text-zinc-100">?</span>
+                 {activeLabels.size > 0 && (
+                   <>
+                     <span className="mx-2 text-zinc-600">=</span>
+                     <span className="font-bold text-zinc-100">?</span>
+                   </>
+                 )}
               </div>
               
               {isOOM && (
-                <div className="mt-6 bg-red-900/20 text-red-200 px-4 py-3 rounded-lg text-sm font-medium border-l-4 border-red-500 text-left">
-                   ⚠️ <strong>Cardinality Explosion Detected</strong><br/>
-                   Adding a high-cardinality label like `user_id` multiplied your series count by 1 Million. This creates billions of unique combinations.
+                <div className="mt-6 text-left text-sm text-zinc-400">
+                   <strong className="text-red-400 block mb-1">⚠️ Cardinality Explosion Detected</strong>
+                   Adding a high-cardinality label like <code className="text-zinc-300">user_id</code> multiplied your series count by 1 Million. This creates billions of unique combinations.
                 </div>
               )}
            </div>
