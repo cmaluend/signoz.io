@@ -1238,6 +1238,28 @@ const docsSideNav = [
         route: '/docs/logs-management/send-logs-to-signoz',
         items: [
           {
+            type: 'category',
+            label: 'Cloud Providers',
+            isExpanded: true,
+            items: [
+              {
+                type: 'doc',
+                label: 'AWS',
+                route: '/docs/integrations/aws/one-click-aws-integrations',
+              },
+              {
+                type: 'doc',
+                label: 'GCP',
+                route: '/docs/gcp-monitoring/cloud-run/logging',
+              },
+              {
+                type: 'doc',
+                label: 'Azure',
+                route: '/docs/azure-monitoring',
+              },
+            ],
+          },
+          {
             type: 'doc',
             route: '/docs/userguide/collect_kubernetes_pod_logs',
             label: 'Kubernetes pod logs',
