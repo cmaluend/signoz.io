@@ -57,6 +57,9 @@ exporters:
   debug:
     verbosity: normal
 service:
+  telemetry:
+    metrics:
+      level: basic
   extensions: [health_check, zpages]
   pipelines:
     metrics:
