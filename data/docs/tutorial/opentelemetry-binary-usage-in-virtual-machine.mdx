@@ -155,7 +155,7 @@ receivers:
         mute_process_name_error: true
         mute_process_exe_error: true
         mute_process_io_error: true
-      processes: {}
+      processes: {} # Linux/macOS only, not supported on Windows
 
   prometheus:
     config:
@@ -168,9 +168,15 @@ receivers:
               # - localhost:8888 # Replace the target endpoint with a Prometheus exporter
 
 processors:
+  # Use memory_limiter to prevent out-of-memory crashes
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1000 # Adjust based on your system's memory
+    spike_limit_mib: 200
   batch:
     send_batch_size: 1000
     timeout: 10s
+  # Use resourcedetection enrich the telemetry data with additional attributes like hostname, os, etc.
   resourcedetection:
     detectors: [env, system]
     timeout: 2s
@@ -196,19 +202,19 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp]
     metrics/internal:
       receivers: [prometheus, hostmetrics]
-      processors: [resourcedetection, batch]
+      processors: [memory_limiter, resourcedetection, batch]
       exporters: [otlp]
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp]
     logs:
       receivers: [otlp]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp]
 ```
 
@@ -323,15 +329,24 @@ Go to the **Traces** tab in SigNoz and check for the generated traces.
 
 ## Validate
 
-### Verify Service Status (Linux)
-
-If running via systemd, check the logs:
+If running OTel Collector via systemd (Linux), check the logs:
 
 ```bash
 sudo journalctl -u otelcol-contrib -f
 ```
 
-You should see logs indicating the collector has started and extensions are ready.
+You should see logs indicating the collector has started and extensions are ready:
+
+```
+2026-01-17T09:38:23.348Z        info    internal/resourcedetection.go:223       detected resource information   {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "resourcedetection", "otelcol.component.kind": "processor", "otelcol.pipeline.id": "metrics/internal", "otelcol.signal": "metrics", "resource": {"host.name":"Debian-VM","os.type":"linux"}}
+2026-01-17T09:38:23.349Z        info    prometheusreceiver@v0.143.0/metrics_receiver.go:155     Starting discovery manager      {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "prometheus", "otelcol.component.kind": "receiver", "otelcol.signal": "metrics"}
+2026-01-17T09:38:28.389Z        info    targetallocator/manager.go:215  Scrape job added        {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "prometheus", "otelcol.component.kind": "receiver", "otelcol.signal": "metrics", "jobName": "otel-collector-binary"}
+2026-01-17T09:38:28.395Z        info    prometheusreceiver@v0.143.0/metrics_receiver.go:202     Starting scrape manager {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "prometheus", "otelcol.component.kind": "receiver", "otelcol.signal": "metrics"}
+2026-01-17T09:38:28.397Z        info    otlpreceiver@v0.143.0/otlp.go:120       Starting GRPC server    {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "otlp", "otelcol.component.kind": "receiver", "endpoint": "[::]:4317"}
+2026-01-17T09:38:28.398Z        info    otlpreceiver@v0.143.0/otlp.go:178       Starting HTTP server    {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "otlp", "otelcol.component.kind": "receiver", "endpoint": "[::]:4318"}
+2026-01-17T09:38:28.398Z        info    healthcheck/handler.go:131      Health Check state change       {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}, "otelcol.component.id": "health_check", "otelcol.component.kind": "extension", "status": "ready"}
+2026-01-17T09:38:28.399Z        info    service@v0.143.0/service.go:273 Everything is ready. Begin running and processing data. {"resource": {"service.instance.id": "ecd063f6-8fa4-408d-9047-74938de082f3", "service.name": "otelcol-contrib", "service.version": "0.143.1"}}
+```
 
 <details>
 <ToggleHeading>
@@ -347,15 +362,21 @@ You should see logs indicating the collector has started and extensions are read
 
 ### Config Errors
 
+- Validate your configuration before starting:
+
+```bash
+/usr/local/bin/otelcol-contrib validate --config /etc/otelcol-contrib/config.yaml
+```
+
 - Run the binary manually to see immediate startup errors:
-  ```bash
-  /usr/local/bin/otelcol-contrib --config /etc/otelcol-contrib/config.yaml
-  ```
-- Validate YAML indentation.
+
+```bash
+/usr/local/bin/otelcol-contrib --config /etc/otelcol-contrib/config.yaml
+```
 
 ### Log & Trace Permissions
 
-- If you are collecting logs from files (not covered in the basic config above, but a common use case), ensure the `otelcol-contrib` user has read access to those files.
+- If you are collecting logs from files, ensure the `otelcol-contrib` user has read access to those files.
 
 </details>
 

@@ -1238,6 +1238,11 @@ module.exports = () => {
           destination: '/docs/llm-observability/',
           permanent: true,
         },
+        {
+          source: '/docs/tutorial/opentelemetry-binary-usage/',
+          destination: '/docs/tutorial/opentelemetry-binary-usage-in-virtual-machine/',
+          permanent: true,
+        },
       ]
     },
     webpack: (config, options) => {
