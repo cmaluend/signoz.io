@@ -165,7 +165,7 @@ receivers:
         - job_name: otel-collector-binary
           static_configs:
             - targets:
-              # - localhost:8888 # Replace the target endpoint with a Prometheus exporter
+              # - localhost:8888 # Uncomment to scrape Collector's own metrics
 
 processors:
   # Use memory_limiter to prevent out-of-memory crashes
@@ -198,6 +198,9 @@ exporters:
     verbosity: normal
 
 service:
+  telemetry:
+    metrics:
+      level: basic
   extensions: [health_check, zpages]
   pipelines:
     metrics:
@@ -221,10 +224,11 @@ service:
 - Replace `<region>` with your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - Replace `<your-ingestion-key>` with your [SigNoz Ingestion Key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 
-<Admonition type="info">
-  You can learn more about the configuration at [OTel Collector
-  Configuration](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#otel-collector-configuration-structure)
-  doc.
+You can learn more about the configuration at [OTel Collector Configuration](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#otel-collector-configuration-structure) doc.
+
+<Admonition type="warning">
+  **Windows users:** Remove the `processes: {}` scraper from the `hostmetrics` receiver
+  configuration, as it is not supported on Windows.
 </Admonition>
 
 ### Step 3: Run the Collector
@@ -302,7 +306,7 @@ Run the collector using PowerShell:
 .\otelcol-contrib.exe --config config.yaml
 ```
 
-For a persistent Windows Service, you can create a Windows Service, you can create a service using `sc` command.
+For a persistent Windows Service, use the `sc` command to create a service.
 
 </TabItem>
 </Tabs>
