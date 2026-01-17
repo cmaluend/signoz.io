@@ -57,9 +57,6 @@ exporters:
   debug:
     verbosity: normal
 service:
-  telemetry:
-    metrics:
-      address: 0.0.0.0:8888
   extensions: [health_check, zpages]
   pipelines:
     metrics:
@@ -82,8 +79,8 @@ service:
 
 Depending on the choice of your region for SigNoz cloud, the otlp endpoint will vary according to this table.
 
-| Region	| Endpoint |
-| --- | --- |
-| US | ingest.us.signoz.cloud:443 |
-| IN | ingest.in.signoz.cloud:443 |
-| EU | ingest.eu.signoz.cloud:443 |
+| Region | Endpoint                   |
+| ------ | -------------------------- |
+| US     | ingest.us.signoz.cloud:443 |
+| IN     | ingest.in.signoz.cloud:443 |
+| EU     | ingest.eu.signoz.cloud:443 |
