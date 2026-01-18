@@ -1,5 +1,5 @@
 ---
-date: 2026-01-12
+date: 2026-01-17
 id: opentelemetry-rust
 title: Send Metrics from Rust application
 description: Learn how to instrument your Rust application with OpenTelemetry to send metrics to SigNoz
@@ -238,218 +238,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 Unlike languages with runtime environments (Go, Java, Python), Rust does not have a built-in runtime metrics package for memory usage, goroutine counts, or similar statistics. You will need to create custom instrumentation for your specific metrics needs.
 
 <Tabs>
-<TabItem value="custom" label="Custom Instrumentation" default>
-
-Create custom metrics to track business logic with all metric types: Counter, UpDownCounter, Histogram, and Gauge.
-
-### Metric Types
-
-- **Counter**: A value that only goes up (e.g., total requests, bytes sent)
-- **UpDownCounter**: A value that can go up or down (e.g., queue size, active connections)
-- **Histogram**: A distribution of values (e.g., request duration, response size)
-- **Gauge**: A current value at a point in time (e.g., temperature, CPU usage)
-
-### Synchronous Instruments
-
-Synchronous instruments are used when you know the measurement value at the time of recording.
-
-```rust:src/main.rs
-use opentelemetry::global;
-use opentelemetry::metrics::{Counter, Histogram, UpDownCounter, Gauge};
-use opentelemetry::KeyValue;
-use std::time::{Duration, Instant};
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    // Initialize Meter Provider (from Step 3)
-    let meter_provider = init_meter_provider()?;
-
-    // Get a meter
-    let meter = global::meter("my-rust-app");
-
-    // Counter - monotonically increasing value
-    let request_counter: Counter<u64> = meter
-        .u64_counter("http_requests_total")
-        .with_description("Total number of HTTP requests")
-        .with_unit("requests")
-        .build();
-
-    // UpDownCounter - value that can increase or decrease
-    let active_connections: UpDownCounter<i64> = meter
-        .i64_up_down_counter("active_connections")
-        .with_description("Number of active connections")
-        .with_unit("connections")
-        .build();
-
-    // Histogram - distribution of values
-    let request_duration: Histogram<f64> = meter
-        .f64_histogram("http_request_duration_seconds")
-        .with_description("HTTP request duration in seconds")
-        .with_unit("s")
-        .build();
-
-    // Gauge - instantaneous value
-    let temperature: Gauge<f64> = meter
-        .f64_gauge("temperature_celsius")
-        .with_description("Current temperature in Celsius")
-        .with_unit("Cel")
-        .build();
-
-    // Simulate application behavior
-    for i in 0..5 {
-        let start = Instant::now();
-
-        // Increment active connections
-        active_connections.add(1, &[KeyValue::new("pool", "main")]);
-
-        // Simulate request processing
-        tokio::time::sleep(Duration::from_millis(50 + (i * 20) as u64)).await;
-
-        // Record request counter
-        request_counter.add(
-            1,
-            &[
-                KeyValue::new("method", "POST"),
-                KeyValue::new("route", "/api/orders"),
-                KeyValue::new("status", "201"),
-            ],
-        );
-
-        // Record request duration
-        let duration = start.elapsed().as_secs_f64();
-        request_duration.record(
-            duration,
-            &[
-                KeyValue::new("method", "POST"),
-                KeyValue::new("route", "/api/orders"),
-            ],
-        );
-
-        // Record temperature gauge
-        temperature.record(
-            22.5 + (i as f64 * 0.5),
-            &[KeyValue::new("location", "server-room")],
-        );
-
-        // Decrement active connections
-        active_connections.add(-1, &[KeyValue::new("pool", "main")]);
-
-        println!("Processed request {} in {:.3}s", i + 1, duration);
-    }
-
-    // Shutdown to flush metrics
-    meter_provider.shutdown()?;
-    println!("All metrics exported");
-
-    Ok(())
-}
-```
-
-<Admonition type="info">
-The synchronous `Gauge` instrument is experimental and requires the `otel_unstable` feature flag in `opentelemetry`. This feature was added in OpenTelemetry Rust SDK v0.22.0. If you prefer stable APIs only, use `ObservableGauge` from the Observable Instruments tab instead.
-</Admonition>
-
-</TabItem>
-
-<TabItem value="observable" label="Observable Instruments">
-
-Observable (asynchronous) instruments are used when the measurement value is computed on-demand, such as reading from a system resource or external source.
-
-### Observable Instrument Types
-
-- **ObservableCounter**: Async counter for values computed on-demand
-- **ObservableUpDownCounter**: Async up/down counter for bidirectional values
-- **ObservableGauge**: Async gauge for instantaneous readings
-
-```rust:src/main.rs
-use opentelemetry::global;
-use opentelemetry::KeyValue;
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::Arc;
-use std::time::Duration;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    // Initialize Meter Provider (from Step 3)
-    let meter_provider = init_meter_provider()?;
-
-    // Get a meter
-    let meter = global::meter("my-rust-app");
-
-    // Shared state for observable instruments
-    let processed_jobs = Arc::new(AtomicU64::new(0));
-    let queue_size = Arc::new(AtomicU64::new(100));
-
-    // Observable Counter - reports cumulative value on demand
-    let jobs_counter = processed_jobs.clone();
-    let _observable_counter = meter
-        .u64_observable_counter("jobs_processed_total")
-        .with_description("Total number of processed jobs")
-        .with_unit("jobs")
-        .with_callback(move |observer| {
-            let value = jobs_counter.load(Ordering::Relaxed);
-            observer.observe(value, &[KeyValue::new("worker", "main")]);
-        })
-        .build();
-
-    // Observable UpDownCounter - reports current queue depth
-    let queue = queue_size.clone();
-    let _observable_updown = meter
-        .i64_observable_up_down_counter("queue_depth")
-        .with_description("Current number of items in queue")
-        .with_unit("items")
-        .with_callback(move |observer| {
-            let value = queue.load(Ordering::Relaxed) as i64;
-            observer.observe(value, &[KeyValue::new("queue", "default")]);
-        })
-        .build();
-
-    // Observable Gauge - reports system metrics on demand
-    let _observable_gauge = meter
-        .f64_observable_gauge("system_memory_usage_ratio")
-        .with_description("Current memory usage ratio")
-        .with_unit("1")
-        .with_callback(|observer| {
-            // In a real application, you would read actual system metrics
-            // This is a placeholder value
-            let memory_usage = 0.65; // 65% memory usage
-            observer.observe(memory_usage, &[KeyValue::new("host", "server-1")]);
-        })
-        .build();
-
-    // Simulate work that updates the shared state
-    for i in 0..10 {
-        // Simulate processing a job
-        tokio::time::sleep(Duration::from_millis(500)).await;
-
-        // Update counters
-        processed_jobs.fetch_add(1, Ordering::Relaxed);
-        queue_size.fetch_sub(10, Ordering::Relaxed);
-
-        println!("Processed job {}, queue size: {}",
-            i + 1,
-            queue_size.load(Ordering::Relaxed)
-        );
-    }
-
-    // Allow time for final metric collection
-    tokio::time::sleep(Duration::from_secs(2)).await;
-
-    // Shutdown to flush metrics
-    meter_provider.shutdown()?;
-    println!("All metrics exported");
-
-    Ok(())
-}
-```
-
-<Admonition type="info">
-Observable instruments are called by the SDK during metric collection. The callback functions should be fast and non-blocking, as they are invoked periodically by the metric reader.
-</Admonition>
-
-</TabItem>
-
-<TabItem value="http-server" label="HTTP Server Example">
+<TabItem value="http-server" label="HTTP Server Example" default>
 
 A practical example of instrumenting an HTTP server with custom metrics.
 
@@ -590,6 +379,217 @@ Once you have configured your application to start sending metrics to SigNoz, yo
 
 <details>
 <ToggleHeading>
+## Manual/Custom Instrumentation
+</ToggleHeading>
+
+For fine-grained control over your telemetry, you can create custom metrics using all metric types: Counter, UpDownCounter, Histogram, Gauge, and Observable instruments.
+
+### Metric Types
+
+- **Counter**: A value that only goes up (e.g., total requests, bytes sent)
+- **UpDownCounter**: A value that can go up or down (e.g., queue size, active connections)
+- **Histogram**: A distribution of values (e.g., request duration, response size)
+- **Gauge**: A current value at a point in time (e.g., temperature, CPU usage)
+
+### Synchronous Instruments
+
+Synchronous instruments are used when you know the measurement value at the time of recording.
+
+```rust:src/main.rs
+use opentelemetry::global;
+use opentelemetry::metrics::{Counter, Histogram, UpDownCounter, Gauge};
+use opentelemetry::KeyValue;
+use std::time::{Duration, Instant};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Initialize Meter Provider (from Step 3)
+    let meter_provider = init_meter_provider()?;
+
+    // Get a meter
+    let meter = global::meter("my-rust-app");
+
+    // Counter - monotonically increasing value
+    let request_counter: Counter<u64> = meter
+        .u64_counter("http_requests_total")
+        .with_description("Total number of HTTP requests")
+        .with_unit("requests")
+        .build();
+
+    // UpDownCounter - value that can increase or decrease
+    let active_connections: UpDownCounter<i64> = meter
+        .i64_up_down_counter("active_connections")
+        .with_description("Number of active connections")
+        .with_unit("connections")
+        .build();
+
+    // Histogram - distribution of values
+    let request_duration: Histogram<f64> = meter
+        .f64_histogram("http_request_duration_seconds")
+        .with_description("HTTP request duration in seconds")
+        .with_unit("s")
+        .build();
+
+    // Gauge - instantaneous value
+    let temperature: Gauge<f64> = meter
+        .f64_gauge("temperature_celsius")
+        .with_description("Current temperature in Celsius")
+        .with_unit("Cel")
+        .build();
+
+    // Simulate application behavior
+    for i in 0..5 {
+        let start = Instant::now();
+
+        // Increment active connections
+        active_connections.add(1, &[KeyValue::new("pool", "main")]);
+
+        // Simulate request processing
+        tokio::time::sleep(Duration::from_millis(50 + (i * 20) as u64)).await;
+
+        // Record request counter
+        request_counter.add(
+            1,
+            &[
+                KeyValue::new("method", "POST"),
+                KeyValue::new("route", "/api/orders"),
+                KeyValue::new("status", "201"),
+            ],
+        );
+
+        // Record request duration
+        let duration = start.elapsed().as_secs_f64();
+        request_duration.record(
+            duration,
+            &[
+                KeyValue::new("method", "POST"),
+                KeyValue::new("route", "/api/orders"),
+            ],
+        );
+
+        // Record temperature gauge
+        temperature.record(
+            22.5 + (i as f64 * 0.5),
+            &[KeyValue::new("location", "server-room")],
+        );
+
+        // Decrement active connections
+        active_connections.add(-1, &[KeyValue::new("pool", "main")]);
+
+        println!("Processed request {} in {:.3}s", i + 1, duration);
+    }
+
+    // Shutdown to flush metrics
+    meter_provider.shutdown()?;
+    println!("All metrics exported");
+
+    Ok(())
+}
+```
+
+<Admonition type="info">
+The synchronous `Gauge` instrument is experimental and requires the `otel_unstable` feature flag in `opentelemetry`. This feature was added in OpenTelemetry Rust SDK v0.22.0. If you prefer stable APIs only, use `ObservableGauge` instead.
+</Admonition>
+
+### Observable/Asynchronous Instruments
+
+Observable (asynchronous) instruments are used when the measurement value is computed on-demand, such as reading from a system resource or external source.
+
+**Observable/Asynchronous Instrument Types:**
+- **ObservableCounter**: Async counter for values computed on-demand
+- **ObservableUpDownCounter**: Async up/down counter for bidirectional values
+- **ObservableGauge**: Async gauge for instantaneous readings
+
+```rust:src/main.rs
+use opentelemetry::global;
+use opentelemetry::KeyValue;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use std::time::Duration;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Initialize Meter Provider (from Step 3)
+    let meter_provider = init_meter_provider()?;
+
+    // Get a meter
+    let meter = global::meter("my-rust-app");
+
+    // Shared state for observable instruments
+    let processed_jobs = Arc::new(AtomicU64::new(0));
+    let queue_size = Arc::new(AtomicU64::new(100));
+
+    // Observable Counter - reports cumulative value on demand
+    let jobs_counter = processed_jobs.clone();
+    let _observable_counter = meter
+        .u64_observable_counter("jobs_processed_total")
+        .with_description("Total number of processed jobs")
+        .with_unit("jobs")
+        .with_callback(move |observer| {
+            let value = jobs_counter.load(Ordering::Relaxed);
+            observer.observe(value, &[KeyValue::new("worker", "main")]);
+        })
+        .build();
+
+    // Observable UpDownCounter - reports current queue depth
+    let queue = queue_size.clone();
+    let _observable_updown = meter
+        .i64_observable_up_down_counter("queue_depth")
+        .with_description("Current number of items in queue")
+        .with_unit("items")
+        .with_callback(move |observer| {
+            let value = queue.load(Ordering::Relaxed) as i64;
+            observer.observe(value, &[KeyValue::new("queue", "default")]);
+        })
+        .build();
+
+    // Observable Gauge - reports system metrics on demand
+    let _observable_gauge = meter
+        .f64_observable_gauge("system_memory_usage_ratio")
+        .with_description("Current memory usage ratio")
+        .with_unit("1")
+        .with_callback(|observer| {
+            // In a real application, you would read actual system metrics
+            // This is a placeholder value
+            let memory_usage = 0.65; // 65% memory usage
+            observer.observe(memory_usage, &[KeyValue::new("host", "server-1")]);
+        })
+        .build();
+
+    // Simulate work that updates the shared state
+    for i in 0..10 {
+        // Simulate processing a job
+        tokio::time::sleep(Duration::from_millis(500)).await;
+
+        // Update counters
+        processed_jobs.fetch_add(1, Ordering::Relaxed);
+        queue_size.fetch_sub(10, Ordering::Relaxed);
+
+        println!("Processed job {}, queue size: {}",
+            i + 1,
+            queue_size.load(Ordering::Relaxed)
+        );
+    }
+
+    // Allow time for final metric collection
+    tokio::time::sleep(Duration::from_secs(2)).await;
+
+    // Shutdown to flush metrics
+    meter_provider.shutdown()?;
+    println!("All metrics exported");
+
+    Ok(())
+}
+```
+
+<Admonition type="info">
+Observable instruments are called by the SDK during metric collection. The callback functions should be fast and non-blocking, as they are invoked periodically by the metric reader.
+</Admonition>
+
+</details>
+
+<details>
+<ToggleHeading>
 ## Troubleshooting
 </ToggleHeading>
 
@@ -673,5 +673,5 @@ For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/d
 ## Next Steps
 
 - [Create Dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize your metrics.
-- [Set up Alerts](https://signoz.io/docs/alerts-management/notification-channel/slack/) on your metrics.
+- [Set up Alerts](https://signoz.io/docs/setup-alerts-notification/) on your metrics.
 - [Instrument your Rust application with traces](https://signoz.io/docs/instrumentation/opentelemetry-rust/) to correlate metrics with traces for better observability.
