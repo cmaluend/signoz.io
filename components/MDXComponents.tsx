@@ -40,6 +40,7 @@ import APMQuickStartOverview from './APM/APMQuickStartOverview'
 import APMInstrumentationListicle from './APM/APMInstrumentationListicle'
 import JavascriptInstrumentationListicle from './APM/JavascriptInstrumentationListicle'
 import JavaInstrumentationListicle from './APM/JavaInstrumentationListicle'
+import PHPInstrumentationListicle from './APM/PHPInstrumentationListicle'
 import LibraryTabs from './LibraryTabs/LibraryTabs'
 import LibraryTab from './LibraryTabs/LibraryTab'
 import MDXButton from './MDXButton/MDXButton'
@@ -74,13 +75,13 @@ import ToggleHeading from './Headings/ToggleHeading'
 import AWSMonitoringListicle from './AWS/AWSMonitoringListicle'
 import AWSOneClickListicle from './AWS/AWSOneClickListicle'
 
-import CardinalityExplosion from './HighCardinalityData/CardinalityExplosion';
-import MemoryGauge from './HighCardinalityData/MemoryGauge';
-import QueryRace from './HighCardinalityData/QueryRace';
-import SamplingAggregation from './HighCardinalityData/SamplingAggregation';
-import UsersAnalogy from './HighCardinalityData/UsersAnalogy';
-import Tooltip from './ui/Tooltip';
-import DatabaseTable from './HighCardinalityData/DatabaseTable';
+import CardinalityExplosion from './HighCardinalityData/CardinalityExplosion'
+import MemoryGauge from './HighCardinalityData/MemoryGauge'
+import QueryRace from './HighCardinalityData/QueryRace'
+import SamplingAggregation from './HighCardinalityData/SamplingAggregation'
+import UsersAnalogy from './HighCardinalityData/UsersAnalogy'
+import Tooltip from './ui/Tooltip'
+import DatabaseTable from './HighCardinalityData/DatabaseTable'
 
 export const components: MDXComponents = {
   ToggleHeading,
@@ -125,6 +126,7 @@ export const components: MDXComponents = {
   APMInstrumentationListicle,
   JavascriptInstrumentationListicle,
   JavaInstrumentationListicle,
+  PHPInstrumentationListicle,
   LibraryTabs,
   LibraryTab,
   MDXButton,

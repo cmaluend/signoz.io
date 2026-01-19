@@ -1,0 +1,334 @@
+---
+date: 2026-01-18
+id: opentelemetry-wordpress
+title: WordPress OpenTelemetry Instrumentation
+description: Learn how to instrument your WordPress site with OpenTelemetry and send traces to SigNoz.
+doc_type: howto
+---
+
+This guide shows you how to instrument your WordPress site with OpenTelemetry and send traces to SigNoz. The auto-instrumentation approach automatically captures WordPress hooks, database queries, and HTTP requests.
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+- A self-managed WordPress site
+- PHP 8.0 or newer
+- [PECL](https://pecl.php.net/) package manager
+- [Composer](https://getcomposer.org/) dependency manager
+- A SigNoz Cloud account or self-hosted SigNoz instance
+
+## Send traces to SigNoz
+
+### Step 1. Set environment variables and install build tools
+
+<Tabs entityName="deployment">
+<TabItem value="vm" label="VM" default>
+
+<KeyPointCallout title="What classifies as VM?" defaultCollapsed={true}>
+A VM is a virtual computer that runs on physical hardware. This includes:
+- **Cloud VMs**: AWS EC2, Google Compute Engine, Azure VMs, DigitalOcean Droplets
+- **On-premise VMs**: VMware, VirtualBox, Hyper-V, KVM
+- **Bare metal servers**: Physical servers running Linux/Unix directly
+
+Most traditional WordPress hosting (shared hosting, VPS, dedicated servers) falls into this category.
+</KeyPointCallout>
+
+**Set environment variables in your `php.ini`:**
+
+```ini:/etc/php/8.2/fpm/php.ini
+OTEL_PHP_AUTOLOAD_ENABLED="true"
+OTEL_SERVICE_NAME=<service-name>
+OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+OTEL_EXPORTER_OTLP_ENDPOINT=https://ingest.<region>.signoz.cloud:443
+OTEL_EXPORTER_OTLP_HEADERS=signoz-ingestion-key=<your-ingestion-key>
+OTEL_PROPAGATORS=baggage,tracecontext
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your WordPress site (e.g., `wordpress-blog`).
+
+<Admonition type="info">
+Run `php --ini` to find your `php.ini` location. Common paths: `/etc/php/8.x/fpm/php.ini` (PHP-FPM) or `/etc/php/8.x/apache2/php.ini` (Apache).
+</Admonition>
+
+### Step 2. Install build tools and the OpenTelemetry extension
+
+```bash
+sudo apt-get install gcc make autoconf php-pear php-dev
+sudo pecl install opentelemetry
+```
+
+Add to `php.ini`:
+
+```ini
+[opentelemetry]
+extension=opentelemetry.so
+```
+
+Verify: `php -m | grep opentelemetry`
+
+</TabItem>
+<TabItem value="k8s" label="Kubernetes">
+
+**Set environment variables in your deployment manifest:**
+
+```yaml:deployment.yaml
+env:
+- name: OTEL_PHP_AUTOLOAD_ENABLED
+  value: "true"
+- name: OTEL_SERVICE_NAME
+  value: "<service-name>"
+- name: OTEL_TRACES_EXPORTER
+  value: "otlp"
+- name: OTEL_EXPORTER_OTLP_PROTOCOL
+  value: "http/protobuf"
+- name: OTEL_EXPORTER_OTLP_ENDPOINT
+  value: "https://ingest.<region>.signoz.cloud:443"
+- name: OTEL_EXPORTER_OTLP_HEADERS
+  value: "signoz-ingestion-key=<your-ingestion-key>"
+- name: OTEL_PROPAGATORS
+  value: "baggage,tracecontext"
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your WordPress site.
+
+### Step 2. Install build tools and the OpenTelemetry extension in your Dockerfile
+
+```dockerfile
+RUN apt-get update && apt-get install -y \
+    gcc make autoconf unzip git curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN pecl install opentelemetry \
+    && docker-php-ext-enable opentelemetry
+```
+
+</TabItem>
+<TabItem value="docker" label="Docker">
+
+**Set environment variables in your Dockerfile:**
+
+```dockerfile
+ENV OTEL_PHP_AUTOLOAD_ENABLED=true
+ENV OTEL_SERVICE_NAME="<service-name>"
+ENV OTEL_TRACES_EXPORTER="otlp"
+ENV OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
+ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
+ENV OTEL_PROPAGATORS="baggage,tracecontext"
+```
+
+Or pass them at runtime:
+
+```bash
+docker run -d -p 8080:80 \
+    -e OTEL_PHP_AUTOLOAD_ENABLED=true \
+    -e OTEL_SERVICE_NAME="<service-name>" \
+    -e OTEL_TRACES_EXPORTER="otlp" \
+    -e OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf" \
+    -e OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443" \
+    -e OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
+    -e OTEL_PROPAGATORS="baggage,tracecontext" \
+    <your-image>
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your WordPress site.
+
+### Step 2. Install build tools and the OpenTelemetry extension in your Dockerfile
+
+```dockerfile
+RUN apt-get update && apt-get install -y \
+    gcc make autoconf unzip git curl \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN pecl install opentelemetry \
+    && docker-php-ext-enable opentelemetry
+```
+
+</TabItem>
+<TabItem value="windows" label="Windows">
+
+**Set environment variables in `php.ini`:**
+
+```ini
+OTEL_PHP_AUTOLOAD_ENABLED="true"
+OTEL_SERVICE_NAME=<service-name>
+OTEL_TRACES_EXPORTER=otlp
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+OTEL_EXPORTER_OTLP_ENDPOINT=https://ingest.<region>.signoz.cloud:443
+OTEL_EXPORTER_OTLP_HEADERS=signoz-ingestion-key=<your-ingestion-key>
+OTEL_PROPAGATORS=baggage,tracecontext
+```
+
+Replace the following:
+- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<service-name>`: A descriptive name for your WordPress site.
+
+### Step 2. Install the OpenTelemetry extension
+
+<KeyPointCallout title="Why a different approach?" defaultCollapsed={true}>
+Windows doesn't support `pecl install` for compiling extensions from source. Instead, PHP extensions on Windows are distributed as pre-built DLL files.
+</KeyPointCallout>
+
+1. Download the DLL from the <a href="https://github.com/open-telemetry/opentelemetry-php-instrumentation/releases" target="_blank" rel="noopener noreferrer nofollow">releases page</a>
+2. Choose the version matching your PHP version (e.g., 8.2) and architecture (x64 or x86, thread-safe or non-thread-safe)
+3. Place the DLL in your PHP `ext` directory
+4. Add to `php.ini`:
+   ```ini
+   extension=opentelemetry
+   ```
+5. Verify: `php -m | findstr opentelemetry`
+
+</TabItem>
+</Tabs>
+
+### Step 3. Install Composer dependencies
+
+Navigate to your WordPress root directory (where `wp-config.php` is located):
+
+```bash
+cd /var/www/html/wordpress
+```
+
+If Composer isn't initialized, create a `composer.json`:
+
+```bash
+composer init --no-interaction
+```
+
+Install the OpenTelemetry packages:
+
+```bash
+composer require \
+  open-telemetry/sdk \
+  open-telemetry/exporter-otlp \
+  open-telemetry/opentelemetry-auto-wordpress
+```
+
+### Step 4. Configure the autoload prepend and restart
+
+Add the Composer autoloader to `php.ini` so it loads before WordPress:
+
+```ini
+auto_prepend_file=/var/www/html/wordpress/vendor/autoload.php
+```
+
+Replace the path with your actual WordPress installation path, then restart your web server or redeploy your application.
+
+## Validate
+
+With your WordPress site running, verify traces are being sent to SigNoz:
+
+1. Visit different pages on your WordPress site, create posts, or perform other actions to generate traces.
+2. In SigNoz, open the **Services** tab and click **Refresh**. Your WordPress site should appear.
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/instrumentation/services-in-signoz.webp" alt="Navigate to Services in SigNoz"/>
+    <figcaption><i>Navigate to Services in SigNoz</i></figcaption>
+</figure>
+
+3. Click on your service to view RED metrics (Rate, Errors, Duration).
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/instrumentation/wordpress-red-metrics-in-signoz.webp" alt="WordPress RED metrics in SigNoz"/>
+    <figcaption><i>WordPress RED Metrics in SigNoz</i></figcaption>
+</figure>
+
+4. Go to the **Traces** tab to see your WordPress traces.
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/instrumentation/wordpress-traces-in-signoz.webp" alt="WordPress traces in SigNoz"/>
+    <figcaption><i>WordPress traces in SigNoz</i></figcaption>
+</figure>
+
+<details>
+<ToggleHeading>
+
+## Troubleshooting
+
+</ToggleHeading>
+
+### Why don't traces appear in SigNoz?
+
+**Check that the OpenTelemetry extension is loaded:**
+
+```bash
+php -m | grep opentelemetry
+```
+
+If you see no output, the extension isn't installed correctly. Check your `php.ini` configuration and restart your web server.
+
+**Verify the correct `php.ini` is being used:**
+
+```bash
+php --ini
+```
+
+**Check environment variables are set:**
+
+```bash
+php -r "echo getenv('OTEL_EXPORTER_OTLP_ENDPOINT');"
+```
+
+**Verify network connectivity:**
+
+```bash
+curl -v https://ingest.<region>.signoz.cloud:443/v1/traces
+```
+
+### auto_prepend_file not working
+
+- Ensure the path is absolute and correct
+- Check file permissions on the `vendor/autoload.php` file
+- Verify the Composer autoloader was generated (`composer dump-autoload`)
+
+### PECL installation fails
+
+If `pecl install opentelemetry` fails:
+
+1. Ensure build tools are installed (`gcc`, `make`, `autoconf`)
+2. Install PHP development headers: `apt-get install php-dev`
+3. Check your PHP version is 8.0 or higher: `php -v`
+
+</details>
+
+<details>
+<ToggleHeading>
+
+## Setup OpenTelemetry Collector (Optional)
+
+</ToggleHeading>
+
+### What is the OpenTelemetry Collector?
+
+Think of the OTel Collector as a middleman between your app and SigNoz. Instead of your application sending data directly to SigNoz, it sends everything to the Collector first, which then forwards it along.
+
+### Why use it?
+
+- **Cleaning up data** — Filter out noisy traces you don't care about, or remove sensitive info before it leaves your servers.
+- **Keeping your app lightweight** — Let the Collector handle batching, retries, and compression instead of your application code.
+- **Adding context automatically** — The Collector can tag your data with useful info like which Kubernetes pod or cloud region it came from.
+- **Future flexibility** — Want to send data to multiple backends later? The Collector makes that easy without changing your app.
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions to convert your setup.
+
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
+
+</details>
+
+## Next steps
+
+- [Add manual instrumentation](https://signoz.io/docs/instrumentation/php/manual-instrumentation/) for custom spans and attributes
+- [Set up alerts](https://signoz.io/docs/setup-alerts-notification/) for your WordPress site
+- [Create dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize metrics

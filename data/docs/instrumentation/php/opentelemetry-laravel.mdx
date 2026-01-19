@@ -1,12 +1,12 @@
 ---
-date: 2026-01-08
-id: opentelemetry-php
-title: PHP OpenTelemetry Instrumentation
-description: Learn how to instrument your PHP application with OpenTelemetry and send traces to SigNoz.
+date: 2026-01-18
+id: opentelemetry-laravel
+title: Laravel OpenTelemetry Instrumentation
+description: Learn how to instrument your Laravel application with OpenTelemetry and send traces to SigNoz.
 doc_type: howto
 ---
 
-This guide shows you how to instrument your PHP application with OpenTelemetry and send traces to SigNoz. The auto-instrumentation approach works with Slim, Laravel, Symfony, and other PHP frameworks.
+This guide shows you how to instrument your Laravel application with OpenTelemetry and send traces to SigNoz. The auto-instrumentation approach automatically captures HTTP requests, database queries, and other Laravel operations.
 
 <KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
 Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
@@ -48,9 +48,9 @@ export OTEL_PROPAGATORS=baggage,tracecontext
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
-- `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
+- `<service-name>`: A descriptive name for your service (e.g., `laravel-api`).
 
-**Step 2. Install build tools and the OpenTelemetry extension:**
+### Step 2. Install build tools and the OpenTelemetry extension
 
 ```bash
 sudo apt-get install gcc make autoconf
@@ -88,7 +88,7 @@ Replace the following:
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service.
 
-**Step 2. Install build tools and the OpenTelemetry extension in your Dockerfile:**
+### Step 2. Install build tools and the OpenTelemetry extension in your Dockerfile
 
 ```dockerfile
 RUN apt-get update && apt-get install -y \
@@ -116,7 +116,7 @@ ENV OTEL_PROPAGATORS="baggage,tracecontext"
 Or pass them at runtime:
 
 ```bash
-docker run -d -p 8080:8080 \
+docker run -d -p 8080:80 \
     -e OTEL_PHP_AUTOLOAD_ENABLED=true \
     -e OTEL_SERVICE_NAME="<service-name>" \
     -e OTEL_TRACES_EXPORTER="otlp" \
@@ -132,7 +132,7 @@ Replace the following:
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service.
 
-**Step 2. Install build tools and the OpenTelemetry extension in your Dockerfile:**
+### Step 2. Install build tools and the OpenTelemetry extension in your Dockerfile
 
 ```dockerfile
 RUN apt-get update && apt-get install -y \
@@ -162,7 +162,7 @@ Replace the following:
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service.
 
-**Step 2. Install the OpenTelemetry extension:**
+### Step 2. Install the OpenTelemetry extension
 
 <KeyPointCallout title="Why a different approach?" defaultCollapsed={true}>
 Windows doesn't support `pecl install` for compiling extensions from source. Instead, PHP extensions on Windows are distributed as pre-built DLL files.
@@ -187,24 +187,21 @@ composer config allow-plugins.php-http/discovery false
 composer require \
   open-telemetry/sdk \
   open-telemetry/exporter-otlp \
-  php-http/guzzle7-adapter
+  php-http/guzzle7-adapter \
+  open-telemetry/opentelemetry-auto-laravel
 ```
-
-<Admonition type="info">
-For framework-specific auto-instrumentation, install the corresponding package from [Packagist](https://packagist.org/explore/?query=open-telemetry). For example, `open-telemetry/opentelemetry-auto-laravel` for Laravel or `open-telemetry/opentelemetry-auto-slim` for Slim.
-</Admonition>
 
 ### Step 4. Run your application
 
 ```bash
-php -S localhost:8080 app.php
+php artisan serve
 ```
 
 ## Validate
 
 With your application running, verify traces are being sent to SigNoz:
 
-1. Trigger an action in your app that generates a web request. Hit the endpoint a few times.
+1. Trigger some actions in your Laravel app (visit pages, submit forms, make API calls).
 2. In SigNoz, open the **Services** tab and click **Refresh**. Your application should appear.
 3. Go to the **Traces** tab to see your application's traces.
 
@@ -241,7 +238,7 @@ curl -v https://ingest.<region>.signoz.cloud:443/v1/traces
 **Enable console exporter to verify spans are being created:**
 
 ```bash
-OTEL_TRACES_EXPORTER=console OTEL_PHP_AUTOLOAD_ENABLED=true php -S localhost:8080 app.php
+OTEL_TRACES_EXPORTER=console php artisan serve
 ```
 
 If you see span output in your terminal but traces don't appear in SigNoz, the issue is with export configuration (endpoint, auth, or network). If no output appears, the instrumentation isn't capturing your requests.
@@ -290,9 +287,9 @@ For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/d
 
 ## Next steps
 
-- [Add manual instrumentation](https://signoz.io/docs/instrumentation/manual-instrumentation/php/manual-instrumentation) for custom spans and attributes
-- [Set up alerts](https://signoz.io/docs/setup-alerts-notification/) for your PHP application
+- [Add manual instrumentation](https://signoz.io/docs/instrumentation/php/manual-instrumentation/) for custom spans and attributes
+- [Set up alerts](https://signoz.io/docs/setup-alerts-notification/) for your Laravel application
 - [Create dashboards](https://signoz.io/docs/userguide/manage-dashboards/) to visualize metrics
 
 **Sample application**:
-- <a href="https://github.com/SigNoz/OpenTelemetry-PHP-example" target="_blank" rel="noopener noreferrer nofollow">PHP sample app with OpenTelemetry</a>
+- <a href="https://github.com/SigNoz/OpenTelemetry-laravel-example" target="_blank" rel="noopener noreferrer nofollow">Laravel sample app with OpenTelemetry</a>
