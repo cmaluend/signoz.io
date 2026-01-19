@@ -1,5 +1,5 @@
 ---
-date: 2026-01-08
+date: 2026-01-19
 title: Send logs from AWS Lambda Node.js functions to SigNoz
 description: Learn how to collect logs from AWS Lambda Node.js functions and send them correctly to SigNoz using OpenTelemetry.
 id: aws-lambda-nodejs
@@ -14,9 +14,7 @@ This guide explains how to instrument your AWS Lambda Node.js functions with Ope
 2.  **Infrastructure Logging**: Collecting all `stdout`/`stderr` and platform logs automatically via an extension (best for full observability without code changes).
 
 <Admonition type="info">
-  This guide covers the **direct OpenTelemetry instrumentation** method using the OTel Lambda Layer.
-  If you prefer to collect logs via CloudWatch Logs and S3, please refer to the [AWS Lambda Logs via
-  S3](https://signoz.io/docs/aws-monitoring/lambda/lambda-logs/) guide.
+This guide covers the **direct OpenTelemetry instrumentation** method using the OTel Lambda Layer. If you prefer to collect logs via CloudWatch Logs and S3, please refer to the [AWS Lambda Logs via S3](https://signoz.io/docs/aws-monitoring/lambda/lambda-logs/) guide.
 </Admonition>
 
 ## Prerequisites
@@ -25,9 +23,7 @@ This guide explains how to instrument your AWS Lambda Node.js functions with Ope
 - A SigNoz account (Cloud or Self-Hosted).
 
 <KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
-  Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key
-  header as shown in [Cloud →
-  Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
 </KeyPointCallout>
 
 ## Steps
@@ -173,9 +169,7 @@ service:
 You can remove the `types` field if you want to capture all types of logs including platform, function and extension logs.
 
 <Admonition type="note">
-  The `OPENTELEMETRY_COLLECTOR_CONFIG_URI` supports local paths (e.g. `/var/task/collector.yaml`),
-  HTTP/HTTPS URIs, and S3 URIs. If using a local file, ensure it is included in your deployment
-  package (root directory).
+The `OPENTELEMETRY_COLLECTOR_CONFIG_URI` supports local paths (e.g. `/var/task/collector.yaml`), HTTP/HTTPS URIs, and S3 URIs. If using a local file, ensure it is included in your deployment package (root directory).
 </Admonition>
 
 ### Step 2: Add OpenTelemetry Lambda Layer
@@ -201,8 +195,7 @@ Navigate to **Configuration** > **Environment Variables** and configure the coll
 | `OTEL_SERVICE_NAME`                  | `<service_name>`           | A name for your Lambda service.                                                             |
 
 <Admonition type="note">
-  If S3 URI is used, ensure the S3 bucket is accessible from the Lambda function by creating
-  relevant IAM roles and permissions.
+If S3 URI is used, ensure the S3 bucket is accessible from the Lambda function by creating relevant IAM roles and permissions.
 </Admonition>
 
 </TabItem>
