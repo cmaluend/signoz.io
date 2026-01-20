@@ -227,13 +227,17 @@ import { AppService } from './app.service';
 export class AppModule {}
 ```
 
+<Admonition type="info">
+This example shows a Counter, which only increases. OpenTelemetry supports other metric types like UpDownCounter, Histogram, and Observable Gauge. See [Custom Instrumentation](#custom-instrumentation) for complete examples of each type.
+</Admonition>
+
 ## Validate
 
 Once you have configured your application to start sending metrics to SigNoz, you can start visualizing the metrics in the [metrics explorer](https://signoz.io/docs/metrics-management/metrics-explorer/).
 
 <details>
 <ToggleHeading>
-## Manual Instrumentation
+## Custom Instrumentation
 </ToggleHeading>
 
 Create custom metrics to track business logic with all metric types: Counter, UpDownCounter, Histogram, and Observable Gauge.
@@ -258,46 +262,29 @@ export class MetricsService implements OnModuleInit {
   // The version should match your application version for tracking
   private meter = metrics.getMeter('nestjs-app', '1.0.0');
 
-  // HTTP request metrics
-  public httpRequestCounter: Counter;
-  public httpRequestDuration: Histogram;
-  public httpActiveRequests: UpDownCounter;
-
   // Business metrics
   public ordersCreated: Counter;
   public orderValue: Histogram;
   public activeUsers: UpDownCounter;
 
   onModuleInit() {
-    // HTTP metrics
-    this.httpRequestCounter = this.meter.createCounter('http.requests.total', {
-      description: 'Total number of HTTP requests',
-    });
-
-    this.httpRequestDuration = this.meter.createHistogram('http.request.duration', {
-      description: 'HTTP request duration in milliseconds',
-      unit: 'ms',
-    });
-
-    this.httpActiveRequests = this.meter.createUpDownCounter('http.requests.active', {
-      description: 'Number of active HTTP requests',
-    });
-
-    // Business metrics
+    // Counter - value that only goes up
     this.ordersCreated = this.meter.createCounter('orders.created.total', {
       description: 'Total number of orders created',
     });
 
+    // Histogram - distribution of values
     this.orderValue = this.meter.createHistogram('orders.value', {
       description: 'Distribution of order values',
       unit: 'USD',
     });
 
+    // UpDownCounter - value that can go up or down
     this.activeUsers = this.meter.createUpDownCounter('users.active', {
       description: 'Number of currently active users',
     });
 
-    // Observable gauge for queue size
+    // Observable Gauge - current value measured asynchronously
     this.meter.createObservableGauge('queue.size', {
       description: 'Current size of the processing queue',
     }).addCallback((observableResult) => {
@@ -325,138 +312,6 @@ import { MetricsService } from './metrics.service';
 export class MetricsModule {}
 ```
 
-### Create a Metrics Interceptor
-
-Create an interceptor to automatically track HTTP request metrics:
-
-```typescript:src/metrics/metrics.interceptor.ts
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { MetricsService } from './metrics.service';
-
-@Injectable()
-export class MetricsInterceptor implements NestInterceptor {
-  constructor(private readonly metricsService: MetricsService) {}
-
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const request = context.switchToHttp().getRequest();
-    const { method, url } = request;
-    const startTime = Date.now();
-
-    // Track active requests
-    this.metricsService.httpActiveRequests.add(1);
-
-    return next.handle().pipe(
-      tap(() => {
-        const response = context.switchToHttp().getResponse();
-        const duration = Date.now() - startTime;
-
-        this.recordMetrics(method, url, response.statusCode, duration);
-      }),
-      catchError((error) => {
-        const duration = Date.now() - startTime;
-        const statusCode = error.status || 500;
-
-        this.recordMetrics(method, url, statusCode, duration);
-        throw error;
-      }),
-    );
-  }
-
-  private recordMetrics(
-    method: string,
-    url: string,
-    statusCode: number,
-    duration: number,
-  ) {
-    const attributes = {
-      method,
-      route: url,
-      status: statusCode,
-    };
-
-    this.metricsService.httpRequestCounter.add(1, attributes);
-    this.metricsService.httpRequestDuration.record(duration, attributes);
-    this.metricsService.httpActiveRequests.add(-1);
-  }
-}
-```
-
-### Use Metrics in Services
-
-Use the MetricsService in your business logic:
-
-```typescript:src/orders/orders.service.ts
-import { Injectable } from '@nestjs/common';
-import { MetricsService } from '../metrics/metrics.service';
-
-interface CreateOrderDto {
-  items: { productId: string; quantity: number; price: number }[];
-  customerId: string;
-  region: string;
-}
-
-@Injectable()
-export class OrdersService {
-  constructor(private readonly metricsService: MetricsService) {}
-
-  async createOrder(orderData: CreateOrderDto) {
-    // Calculate order total
-    const total = orderData.items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    );
-
-    // Business logic to create order...
-    const order = {
-      id: `order-${Date.now()}`,
-      ...orderData,
-      total,
-      createdAt: new Date(),
-    };
-
-    // Record metrics
-    this.metricsService.ordersCreated.add(1, {
-      region: orderData.region,
-    });
-
-    this.metricsService.orderValue.record(total, {
-      region: orderData.region,
-    });
-
-    return order;
-  }
-}
-```
-
-### Register the Interceptor Globally
-
-```typescript:src/app.module.ts
-import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
-import { TelemetryModule } from './telemetry/telemetry.module';
-import { MetricsModule } from './metrics/metrics.module';
-import { MetricsInterceptor } from './metrics/metrics.interceptor';
-import { OrdersModule } from './orders/orders.module';
-
-@Module({
-  imports: [TelemetryModule, MetricsModule, OrdersModule],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: MetricsInterceptor,
-    },
-  ],
-})
-export class AppModule {}
-```
-
 <details>
 <ToggleHeading>
 ### Exported Metrics
@@ -464,12 +319,6 @@ export class AppModule {}
 
 The custom instrumentation example above exports the following metrics:
 
-**HTTP Metrics:**
-- `http.requests.total` (Counter) - Total count of HTTP requests with method, route, and status attributes
-- `http.request.duration` (Histogram) - Distribution of HTTP request latencies in milliseconds
-- `http.requests.active` (UpDownCounter) - Current number of active HTTP requests
-
-**Business Metrics:**
 - `orders.created.total` (Counter) - Total number of orders created with region attribute
 - `orders.value` (Histogram) - Distribution of order values in USD
 - `users.active` (UpDownCounter) - Number of currently active users
