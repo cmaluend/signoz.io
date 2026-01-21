@@ -65,7 +65,9 @@ receivers:
 - `<gpu-node-host>`: Hostname or IP of the node running the DCGM exporter
 
 <Admonition type="info">
-If the OTel Collector runs on the same machine as the exporter, use `localhost:9400` as the target.
+<Admonition type="info">
+If the OTel Collector runs on the same host as the exporter (non-containerized), use `localhost:9400` as the target. In containerized environments, use the container name or service name instead.
+</Admonition>
 </Admonition>
 
 ### Step 4: Enable the Pipeline
