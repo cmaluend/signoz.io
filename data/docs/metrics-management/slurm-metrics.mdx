@@ -53,7 +53,12 @@ Add the receiver to your metrics pipeline:
 ```yaml:config.yaml
 service:
   pipelines:
+service:
+  pipelines:
     metrics:
+      receivers: [prometheus]  # append prometheus to your existing receivers list
+      processors: [batch]
+      exporters: [otlp]
       receivers: [prometheus]
       processors: [batch]
       exporters: [otlp]
