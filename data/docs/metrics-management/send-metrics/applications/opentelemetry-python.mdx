@@ -2,21 +2,15 @@
 date: 2026-01-17
 id: opentelemetry-python
 title: Send Metrics from Python application
-description: Learn how to instrument your Python application with OpenTelemetry to send metrics to SigNoz
+description: Learn how to send metrics from Python applications (Flask, Django, FastAPI, Celery, Runtime) to SigNoz using OpenTelemetry
 
 doc_type: howto
 ---
 
-This guide shows you how to instrument your Python application with OpenTelemetry to send metrics to SigNoz. You will learn how to set up the OpenTelemetry SDK, create custom metrics, and export them to SigNoz.
+This guide shows you how to send metrics from your Python application (Flask, Django, FastAPI, Celery, Runtime) to SigNoz using OpenTelemetry.
 
 <KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
     Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
-</KeyPointCallout>
-
-<KeyPointCallout title="Want zero-code instrumentation instead?" defaultCollapsed={true}>
-This guide covers manual SDK setup where you write code to initialize OpenTelemetry. This gives you full control over exporters, export intervals, and filtering.
-
-If you want a quick setup without configuring the SDK yourself, see [Zero-Code Instrumentation](#zero-code-instrumentation). It auto-configures the SDK and collects framework metrics automatically, but you have less control over settings.
 </KeyPointCallout>
 
 ## Prerequisites
@@ -43,11 +37,16 @@ Set the following environment variables to configure the OpenTelemetry exporter:
 export OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
 export OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
 export OTEL_SERVICE_NAME="<service-name>"
+export OTEL_METRICS_EXPORTER="otlp"
+export OTEL_TRACES_EXPORTER="none"
+export OTEL_LOGS_EXPORTER="none"
+export OTEL_METRIC_EXPORT_INTERVAL="<export-interval>"
 ```
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
+- `<export-interval>`: How often to export metrics in milliseconds (default: `60000` for 60 seconds).
 
 </TabItem>
 
@@ -62,11 +61,20 @@ env:
   value: 'signoz-ingestion-key=<your-ingestion-key>'
 - name: OTEL_SERVICE_NAME
   value: '<service-name>'
+- name: OTEL_METRICS_EXPORTER
+  value: 'otlp'
+- name: OTEL_TRACES_EXPORTER
+  value: 'none'
+- name: OTEL_LOGS_EXPORTER
+  value: 'none'
+- name: OTEL_METRIC_EXPORT_INTERVAL
+  value: '<export-interval>'
 ```
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
+- `<export-interval>`: How often to export metrics in milliseconds (default: `60000` for 60 seconds).
 
 </TabItem>
 
@@ -76,11 +84,16 @@ Replace the following:
 $env:OTEL_EXPORTER_OTLP_ENDPOINT = "https://ingest.<region>.signoz.cloud:443"
 $env:OTEL_EXPORTER_OTLP_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
 $env:OTEL_SERVICE_NAME = "<service-name>"
+$env:OTEL_METRICS_EXPORTER = "otlp"
+$env:OTEL_TRACES_EXPORTER = "none"
+$env:OTEL_LOGS_EXPORTER = "none"
+$env:OTEL_METRIC_EXPORT_INTERVAL = "<export-interval>"
 ```
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service.
+- `<export-interval>`: How often to export metrics in milliseconds (default: `60000` for 60 seconds).
 
 </TabItem>
 
@@ -94,8 +107,12 @@ Add environment variables to your Dockerfile:
 ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
 ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
 ENV OTEL_SERVICE_NAME="<service-name>"
+ENV OTEL_METRICS_EXPORTER="otlp"
+ENV OTEL_TRACES_EXPORTER="none"
+ENV OTEL_LOGS_EXPORTER="none"
+ENV OTEL_METRIC_EXPORT_INTERVAL="<export-interval>"
 
-CMD ["python", "app.py"]
+CMD ["opentelemetry-instrument", "python", "app.py"]
 ```
 
 Or pass them at runtime using `docker run`:
@@ -103,6 +120,10 @@ Or pass them at runtime using `docker run`:
 docker run -e OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443" \
     -e OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
     -e OTEL_SERVICE_NAME="<service-name>" \
+    -e OTEL_METRICS_EXPORTER="otlp" \
+    -e OTEL_TRACES_EXPORTER="none" \
+    -e OTEL_LOGS_EXPORTER="none" \
+    -e OTEL_METRIC_EXPORT_INTERVAL="<export-interval>" \
     your-image:latest
 ```
 
@@ -110,91 +131,66 @@ Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
+- `<export-interval>`: How often to export metrics in milliseconds (default: `60000` for 60 seconds).
 
 </TabItem>
 </Tabs>
 
+<KeyPointCallout title="Why disable traces and logs?" defaultCollapsed={true}>
+Setting `OTEL_TRACES_EXPORTER="none"` and `OTEL_LOGS_EXPORTER="none"` disables trace and log export since this guide focuses on metrics only. If you want traces, see the [Python traces instrumentation guide](https://signoz.io/docs/instrumentation/opentelemetry-python/).
+</KeyPointCallout>
+
 ### Step 2. Install OpenTelemetry packages
 
 ```bash
-pip install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp-proto-grpc
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+```
+
+### Step 3. Install instrumentation for your dependencies
+
+This command detects your installed packages and adds the corresponding instrumentation libraries:
+
+```bash
+opentelemetry-bootstrap --action=install
 ```
 
 <Admonition type="info">
-If you are behind a proxy that only supports HTTP/1.1, use the HTTP exporter instead:
-```bash
-pip install opentelemetry-api opentelemetry-sdk opentelemetry-exporter-otlp-proto-http
-```
+Run this after installing all your application dependencies. It will only instrument packages that are already installed.
 </Admonition>
 
-### Step 3. Initialize the MeterProvider
+### Step 4. Add custom metrics
 
-Create a setup module to initialize the OpenTelemetry MeterProvider with the OTLP exporter:
-
-```python:otel_setup.py
-from opentelemetry import metrics
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.sdk.resources import Resource, SERVICE_NAME
-import os
-
-# Create resource with service name
-resource = Resource.create({
-    SERVICE_NAME: os.environ.get("OTEL_SERVICE_NAME", "python-app")
-})
-
-# Create OTLP exporter (reads OTEL_EXPORTER_OTLP_* env vars automatically)
-exporter = OTLPMetricExporter()
-
-# Create periodic reader to export metrics every 60 seconds
-reader = PeriodicExportingMetricReader(exporter)
-
-# Create and set the global MeterProvider
-provider = MeterProvider(resource=resource, metric_readers=[reader])
-metrics.set_meter_provider(provider)
-```
-
-<Admonition type="tip">
-If using the HTTP exporter, replace the import:
-```python
-from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter
-```
-</Admonition>
-
-### Step 4. Create and record metrics
-
-Get a meter and create instruments to record metrics. Here's an example using a Counter:
+Add custom metrics to your application using `metrics.get_meter()`:
 
 ```python:app.py
 from opentelemetry import metrics
-import otel_setup  # Initialize the MeterProvider
 
-# Get a meter from the global provider
+# Get a meter - MeterProvider is auto-configured by opentelemetry-instrument
 meter = metrics.get_meter("my.meter.name")
 
 # Create a counter instrument
-work_counter = meter.create_counter(
-    name="work.counter",
+request_counter = meter.create_counter(
+    name="requests.total",
     unit="1",
-    description="Counts the amount of work done"
+    description="Total number of requests"
 )
 
-def do_work(work_item):
-    # ... do the work ...
-
+def handle_request(endpoint: str):
     # Record the metric with attributes
-    work_counter.add(1, {"work.type": work_item.work_type})
+    request_counter.add(1, {"endpoint": endpoint})
+    # ... handle the request ...
 ```
 
 <Admonition type="info">
-This example shows a Counter, which only increases. OpenTelemetry supports other metric types like UpDownCounter, Histogram, and Observable Gauge. See [All Metric Types](#all-metric-types) for complete examples of each type.
+This example shows a Counter, which only increases. OpenTelemetry supports other metric types like UpDownCounter, Histogram, and Observable Gauge. See [Custom Metrics Examples](#custom-metrics-examples) for complete examples of each type.
 </Admonition>
 
 ### Step 5. Run your application
 
+Use `opentelemetry-instrument` to run your application. This command auto-configures the OpenTelemetry SDK based on your environment variables:
+
 ```bash
-python app.py
+opentelemetry-instrument <your_run_command>
 ```
 
 ## Validate
@@ -202,12 +198,128 @@ python app.py
 Once you have configured your application to start sending metrics to SigNoz, you can start visualizing the metrics in the [metrics explorer](https://signoz.io/docs/metrics-management/metrics-explorer/).
 
 <Admonition type="info">
-Want to collect system metrics like CPU, memory, and disk usage? See [Runtime Metrics](#runtime-metrics) to add the `SystemMetricsInstrumentor` to your application.
+Want more metrics? See [Library Metrics](#library-metrics) to collect framework-specific metrics from Flask, Django, FastAPI, and other libraries. For system-level metrics like CPU, memory, and disk usage, see [Runtime Metrics](#runtime-metrics).
 </Admonition>
 
 <details>
 <ToggleHeading>
-## All Metric Types
+## Library Metrics
+</ToggleHeading>
+
+Library instrumentation automatically collects metrics from supported frameworks like Flask, Django, and FastAPI. Choose your framework below to see the specific run command:
+
+<LibraryTabs
+    className="mb-8"
+    defaultCategory="all"
+    defaultLibrary="flask"
+    categoryLabels={{
+        web: 'Web Frameworks',
+        worker: 'Background Workers',
+    }}
+>
+    <LibraryTab value="flask" label="Flask" category="web">
+
+        ```bash
+        opentelemetry-instrument flask run --no-reload
+        ```
+
+        Or if running directly:
+
+        ```bash
+        opentelemetry-instrument python app.py
+        ```
+
+        <Admonition type="warning">
+        Always use `--no-reload` with Flask. The reloader spawns a child process that breaks OpenTelemetry instrumentation.
+        </Admonition>
+
+        <KeyPointCallout title="Exported metrics" defaultCollapsed={true}>
+        - `http.server.request.duration` - Duration of HTTP server requests (histogram, seconds)
+        - `http.server.active_requests` - Number of active HTTP server requests (up-down counter)
+
+        <a href="https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/flask/flask.html" target="_blank" rel="noopener noreferrer nofollow">Instrumentation docs</a>
+        </KeyPointCallout>
+
+    </LibraryTab>
+    <LibraryTab value="django" label="Django" category="web">
+
+        Set the `DJANGO_SETTINGS_MODULE` environment variable first:
+
+        ```bash
+        export DJANGO_SETTINGS_MODULE=myproject.settings
+        ```
+
+        Then run:
+
+        ```bash
+        opentelemetry-instrument python manage.py runserver --noreload
+        ```
+
+        <Admonition type="warning">
+        Always use `--noreload` with Django. The auto-reload mechanism spawns child processes that break OpenTelemetry instrumentation.
+        </Admonition>
+
+        <KeyPointCallout title="Exported metrics" defaultCollapsed={true}>
+        - `http.server.request.duration` - Duration of HTTP server requests (histogram, seconds)
+        - `http.server.active_requests` - Number of active HTTP server requests (up-down counter)
+
+        <a href="https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/django/django.html" target="_blank" rel="noopener noreferrer nofollow">Instrumentation docs</a>
+        </KeyPointCallout>
+
+    </LibraryTab>
+    <LibraryTab value="fastapi" label="FastAPI" category="web">
+
+        ```bash
+        opentelemetry-instrument uvicorn main:app --host 0.0.0.0 --port 8000
+        ```
+
+        <Admonition type="warning">
+        Do not use `--reload` with Uvicorn when instrumenting. The reload mode spawns new processes that break instrumentation.
+        </Admonition>
+
+        <KeyPointCallout title="Exported metrics" defaultCollapsed={true}>
+        - `http.server.request.duration` - Duration of HTTP server requests (histogram, seconds)
+        - `http.server.active_requests` - Number of active HTTP server requests (up-down counter)
+        - `http.server.request.body.size` - Size of HTTP request body (histogram, bytes)
+        - `http.server.response.body.size` - Size of HTTP response body (histogram, bytes)
+
+        <a href="https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/fastapi/fastapi.html" target="_blank" rel="noopener noreferrer nofollow">Instrumentation docs</a>
+        </KeyPointCallout>
+
+    </LibraryTab>
+    <LibraryTab value="celery" label="Celery" category="worker">
+
+        ```bash
+        opentelemetry-instrument celery -A tasks worker --loglevel=info
+        ```
+
+        Replace `tasks` with your Celery app module name.
+
+        <KeyPointCallout title="Exported metrics" defaultCollapsed={true}>
+        - `flower.task.runtime.seconds` - The time it took to run the task (histogram, seconds)
+
+        <a href="https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/celery/celery.html" target="_blank" rel="noopener noreferrer nofollow">Instrumentation docs</a>
+        </KeyPointCallout>
+
+    </LibraryTab>
+    <LibraryTab value="other" label="Other" category="web">
+
+        For any Python script:
+
+        ```bash
+        opentelemetry-instrument python app.py
+        ```
+
+        <a href="https://opentelemetry-python-contrib.readthedocs.io/en/latest/" target="_blank" rel="noopener noreferrer nofollow">View all instrumentations →</a>
+
+    </LibraryTab>
+</LibraryTabs>
+
+</details>
+
+<details>
+<ToggleHeading>
+## Custom Metrics Examples
 </ToggleHeading>
 
 OpenTelemetry supports six metric instrument types. Here's a complete example demonstrating all of them:
@@ -308,252 +420,6 @@ gauge = meter.create_observable_gauge(
 )
 ```
 
-### Complete Example
-
-Here's a complete example showing all instrument types:
-
-```python:metrics_example.py
-from typing import Iterable
-from opentelemetry import metrics
-from opentelemetry.sdk.metrics import MeterProvider
-from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
-from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
-from opentelemetry.metrics import CallbackOptions, Observation
-
-# Setup
-exporter = OTLPMetricExporter()
-reader = PeriodicExportingMetricReader(exporter)
-provider = MeterProvider(metric_readers=[reader])
-metrics.set_meter_provider(provider)
-
-meter = metrics.get_meter("example.meter", "1.0.0")
-
-# Callback functions for async instruments
-def observable_counter_func(options: CallbackOptions) -> Iterable[Observation]:
-    yield Observation(1, {})
-
-def observable_updown_func(options: CallbackOptions) -> Iterable[Observation]:
-    yield Observation(-10, {})
-
-def observable_gauge_func(options: CallbackOptions) -> Iterable[Observation]:
-    yield Observation(9, {})
-
-# Counter
-counter = meter.create_counter("counter")
-counter.add(1)
-
-# Observable Counter
-observable_counter = meter.create_observable_counter(
-    "observable_counter",
-    [observable_counter_func],
-)
-
-# UpDownCounter
-updown_counter = meter.create_up_down_counter("updown_counter")
-updown_counter.add(1)
-updown_counter.add(-5)
-
-# Observable UpDownCounter
-observable_updown = meter.create_observable_up_down_counter(
-    "observable_updown_counter",
-    [observable_updown_func]
-)
-
-# Histogram
-histogram = meter.create_histogram("histogram")
-histogram.record(99.9)
-
-# Observable Gauge
-gauge = meter.create_observable_gauge("gauge", [observable_gauge_func])
-
-# Keep running to allow metrics to be exported
-import time
-while True:
-    counter.add(1)
-    time.sleep(1)
-```
-
-</details>
-
-<details>
-<ToggleHeading>
-## Zero-Code Instrumentation
-</ToggleHeading>
-
-Zero-code instrumentation automatically collects metrics from supported frameworks without code changes. This approach is ideal if you want quick setup with framework-provided metrics.
-
-### Step 1. Set environment variables
-
-Use the same environment variables from Step 1 above, but add `OTEL_TRACES_EXPORTER="none"` to disable traces if you only want metrics:
-
-<Tabs entityName="deployment">
-<TabItem value="vm" label="VM" default>
-```bash
-export OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
-export OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
-export OTEL_SERVICE_NAME="<service-name>"
-export OTEL_TRACES_EXPORTER="none"
-```
-</TabItem>
-
-<TabItem value="k8s" label="Kubernetes">
-```yaml
-env:
-- name: OTEL_EXPORTER_OTLP_ENDPOINT
-  value: 'https://ingest.<region>.signoz.cloud:443'
-- name: OTEL_EXPORTER_OTLP_HEADERS
-  value: 'signoz-ingestion-key=<your-ingestion-key>'
-- name: OTEL_SERVICE_NAME
-  value: '<service-name>'
-- name: OTEL_TRACES_EXPORTER
-  value: 'none'
-```
-</TabItem>
-
-<TabItem value="windows" label="Windows">
-```powershell
-$env:OTEL_EXPORTER_OTLP_ENDPOINT = "https://ingest.<region>.signoz.cloud:443"
-$env:OTEL_EXPORTER_OTLP_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
-$env:OTEL_SERVICE_NAME = "<service-name>"
-$env:OTEL_TRACES_EXPORTER = "none"
-```
-</TabItem>
-
-<TabItem value="docker" label="Docker">
-```dockerfile:Dockerfile
-ENV OTEL_EXPORTER_OTLP_ENDPOINT="https://ingest.<region>.signoz.cloud:443"
-ENV OTEL_EXPORTER_OTLP_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
-ENV OTEL_SERVICE_NAME="<service-name>"
-ENV OTEL_TRACES_EXPORTER="none"
-```
-</TabItem>
-</Tabs>
-
-<KeyPointCallout title="Why explicitly disable traces?" defaultCollapsed={true}>
-The bootstrap command installs instrumentations for all detected libraries, including web frameworks like Flask, Django, and FastAPI. These instrumentations generate traces (spans) for every incoming request.
-
-Since `opentelemetry-distro` enables traces by default, these traces would be sent to SigNoz even though you may only want metrics. For apps handling many requests, this can generate significant trace volume and costs.
-
-Setting `OTEL_TRACES_EXPORTER="none"` disables traces while keeping metrics working. If you want traces later, see the [Python traces instrumentation guide](https://signoz.io/docs/instrumentation/opentelemetry-python/).
-</KeyPointCallout>
-
-### Step 2. Install OpenTelemetry packages
-
-```bash
-pip install opentelemetry-distro opentelemetry-exporter-otlp
-```
-
-### Step 3. Install instrumentation for your dependencies
-
-This command detects your installed packages and adds the corresponding instrumentation libraries:
-
-```bash
-opentelemetry-bootstrap --action=install
-```
-
-<Admonition type="info">
-Run this after installing all your application dependencies. It will only instrument packages that are already installed.
-
-The metrics exported depend on which libraries are instrumented. Check the <a href="https://opentelemetry.io/ecosystem/registry/?language=python&component=instrumentation" target="_blank" rel="noopener noreferrer nofollow">OpenTelemetry Python Instrumentation Registry</a> to see which metrics each instrumentation exports.
-</Admonition>
-
-### Step 4. Run your application
-
-```bash
-opentelemetry-instrument <your_run_command>
-```
-
-Choose your framework below to see the specific run command:
-
-<LibraryTabs
-    className="mb-8"
-    defaultCategory="all"
-    defaultLibrary="flask"
-    categoryLabels={{
-        web: 'Web Frameworks',
-        worker: 'Background Workers',
-    }}
->
-    <LibraryTab value="flask" label="Flask" category="web">
-
-        ```bash
-        opentelemetry-instrument flask run --no-reload
-        ```
-
-        Or if running directly:
-
-        ```bash
-        opentelemetry-instrument python app.py
-        ```
-
-        <Admonition type="warning">
-        Always use `--no-reload` with Flask. The reloader spawns a child process that breaks OpenTelemetry instrumentation.
-        </Admonition>
-
-    </LibraryTab>
-    <LibraryTab value="django" label="Django" category="web">
-
-        Set the `DJANGO_SETTINGS_MODULE` environment variable first:
-
-        ```bash
-        export DJANGO_SETTINGS_MODULE=myproject.settings
-        ```
-
-        Then run:
-
-        ```bash
-        opentelemetry-instrument python manage.py runserver --noreload
-        ```
-
-        <Admonition type="warning">
-        Always use `--noreload` with Django. The auto-reload mechanism spawns child processes that break OpenTelemetry instrumentation.
-        </Admonition>
-
-    </LibraryTab>
-    <LibraryTab value="fastapi" label="FastAPI" category="web">
-
-        ```bash
-        opentelemetry-instrument uvicorn main:app --host 0.0.0.0 --port 8000
-        ```
-
-        <Admonition type="warning">
-        Do not use `--reload` with Uvicorn when instrumenting. The reload mode spawns new processes that break instrumentation.
-        </Admonition>
-
-    </LibraryTab>
-    <LibraryTab value="celery" label="Celery" category="worker">
-
-        ```bash
-        opentelemetry-instrument celery -A tasks worker --loglevel=info
-        ```
-
-        Replace `tasks` with your Celery app module name.
-
-        <Admonition type="info">
-        Celery instrumentation has limited metrics support. It only exports `flower.task.runtime.seconds` (task execution time). For comprehensive task metrics, consider adding custom instrumentation.
-        </Admonition>
-
-    </LibraryTab>
-    <LibraryTab value="other" label="Other" category="web">
-
-        For any Python script:
-
-        ```bash
-        opentelemetry-instrument python app.py
-        ```
-
-    </LibraryTab>
-</LibraryTabs>
-
-<KeyPointCallout title="What metrics are exported by zero-code instrumentation?" defaultCollapsed={true}>
-Zero-code instrumentation exports **library-specific metrics** from supported frameworks. For example, **Flask instrumentation** exports:
-- `http.server.request.duration` - Duration of HTTP server requests (histogram)
-- `http.server.active_requests` - Number of concurrent HTTP requests currently in-flight (up-down counter)
-
-Other HTTP frameworks (Django, FastAPI) export similar metrics. Database clients may export connection pool and query metrics. See the <a href="https://opentelemetry.io/ecosystem/registry/?language=python&component=instrumentation" target="_blank" rel="noopener noreferrer nofollow">OpenTelemetry Python Instrumentation Registry</a> for the complete list of available instrumentations.
-
-</KeyPointCallout>
-
 </details>
 
 <details>
@@ -561,7 +427,7 @@ Other HTTP frameworks (Django, FastAPI) export similar metrics. Database clients
 ## Runtime Metrics
 </ToggleHeading>
 
-To collect system metrics (CPU, memory, disk, network) and Python runtime metrics (garbage collection, thread counts), use the `SystemMetricsInstrumentor`. This works with both manual SDK setup and zero-code instrumentation.
+To collect system metrics (CPU, memory, disk, network) and Python runtime metrics (garbage collection, thread counts), use the `SystemMetricsInstrumentor`.
 
 ### Install
 
@@ -570,29 +436,6 @@ pip install opentelemetry-instrumentation-system-metrics
 ```
 
 ### Usage
-
-<Tabs>
-<TabItem value="manual" label="Manual SDK" default>
-
-Add the instrumentor after initializing your MeterProvider:
-
-```python:app.py
-from opentelemetry.instrumentation.system_metrics import SystemMetricsInstrumentor
-import otel_setup  # Your MeterProvider setup from Step 3
-
-# Start collecting system and runtime metrics
-SystemMetricsInstrumentor().instrument()
-
-# Your application code here...
-```
-
-Run your application:
-```bash
-python app.py
-```
-
-</TabItem>
-<TabItem value="zero-code" label="Zero-Code">
 
 Add the instrumentor to your application code:
 
@@ -609,9 +452,6 @@ Then run with `opentelemetry-instrument`:
 ```bash
 opentelemetry-instrument python app.py
 ```
-
-</TabItem>
-</Tabs>
 
 ### Exported Metrics
 
