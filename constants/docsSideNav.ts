@@ -1557,6 +1557,11 @@ const docsSideNav = [
                 route: '/docs/metrics-management/send-metrics/applications/golang',
                 label: 'Golang',
               },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-python',
+                label: 'Python',
+              },
             ],
           },
           {
