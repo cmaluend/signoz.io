@@ -38,28 +38,17 @@ Most steps are identical. To adapt this guide, update the endpoint and remove th
 
 ## Sample Application
 
-We've published a complete example application at <a href="https://github.com/SigNoz/temporal-typescript-opentelemetry" target="_blank" rel="noopener noreferrer nofollow">github.com/SigNoz/temporal-typescript-opentelemetry</a>. Follow along with the code as you work through this guide.
+We've published a complete example application at <a href="https://github.com/SigNoz/temporal-typescript-opentelemetry" target="_blank" rel="noopener noreferrer nofollow">GitHub</a>. Follow along with the code as you work through this guide.
 
 ## Architecture Overview
 
 Here's how OpenTelemetry integrates with your Temporal application:
 
-```
-┌─────────────────┐
-│ Temporal Client │──┐
-│ (starts workflow)│  │
-└─────────────────┘  │
-                     │ Telemetry
-┌─────────────────┐  │  ┌──────────────┐
-│ Temporal Worker │──┼─→│ OpenTelemetry│──→ SigNoz
-│ (runs workflow) │  │  │     SDK      │
-└─────────────────┘  │  └──────────────┘
-                     │
-┌─────────────────┐  │
-│   Activities    │──┘
-│ (business logic)│
-└─────────────────┘
-```
+<Figure
+  src="/img/docs/integrations/temporal/golang/architecture.svg"
+  alt="Architecture Diagram"
+  caption="Architecture Diagram"
+/>
 
 Each component (client, worker, workflows, activities) gets instrumented to capture traces, metrics, and logs.
 
