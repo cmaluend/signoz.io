@@ -202,6 +202,12 @@ const DashboardTemplatesData: IconCardData[] = [
     clickName: 'ECS Infra Metrics Dashboard Template',
   },
   {
+    name: 'Envoy Proxy',
+    href: '/docs/dashboards/dashboard-templates/envoy-dashboard',
+    icon: <Network className="h-7 w-7 text-purple-500" />,
+    clickName: 'Envoy Proxy Dashboard Template',
+  },
+  {
     name: 'Flask Monitoring',
     href: '/docs/dashboards/dashboard-templates/flask-monitoring',
     icon: <Globe className="h-7 w-7 text-black" />,
