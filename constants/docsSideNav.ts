@@ -2064,6 +2064,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            label: 'Supabase',
+            route: '/docs/dashboards/dashboard-templates/supabase',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/temporal-dashboard',
             label: 'Temporal',
           },
