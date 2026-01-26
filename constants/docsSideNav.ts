@@ -1918,6 +1918,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/envoy-dashboard',
+            label: 'Envoy Proxy',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/frontend-monitoring',
             label: 'Frontend Monitoring',
           },
