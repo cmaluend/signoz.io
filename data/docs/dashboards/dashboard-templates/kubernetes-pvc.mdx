@@ -9,7 +9,7 @@ doc_type: explanation
 Monitor the health and capacity of your Kubernetes Persistent Volume Claims (PVCs). This dashboard provides insights into volume usage, capacity, and inode consumption to help prevent storage issues.
 
 <Admonition type="note">
-  To use this dashboard, ensure you are collecting Kubernetes volume metrics.
+  To use this dashboard, ensure you are collecting Kubernetes volume metrics. [Learn how to configure Kubernetes metrics collection](https://signoz.io/docs/opentelemetry-collection-agents/k8s/k8s-infra/configure-k8s-infra/#4-kubernetes-metrics-collection).
 </Admonition>
 
 ## Dashboard Preview
@@ -41,3 +41,12 @@ This dashboard monitors the state of Persistent Volume Claims in your cluster, h
 - **Volume Inodes**: Average inode usage.
 - **Volume Inodes Free**: Number of free inodes.
 - **Volume Inodes Used**: Number of used inodes.
+
+## Next Steps
+
+- **[Set Alerts](https://signoz.io/docs/userguide/alerts-management/)**: Create alerts for low disk space or high inode usage.
+
+## Related Dashboards
+
+- [Host Metrics K8s](https://signoz.io/docs/dashboards/dashboard-templates/hostmetrics-k8s)
+- [Kubernetes Pod Metrics - Detailed](https://signoz.io/docs/dashboards/dashboard-templates/kubernetes-pod-metrics-detailed)

@@ -9,7 +9,7 @@ doc_type: explanation
 This dashboard displays specific event and object kind counts, as well as their respective time-series charts, allowing the viewer to understand what's happening inside a cluster at a glance.
 
 <Admonition type="note">
-  To use this dashboard, ensure you are collecting Kubernetes events.
+  To use this dashboard, ensure you are collecting Kubernetes events. [Learn how to configure Kubernetes events collection](https://signoz.io/docs/opentelemetry-collection-agents/k8s/k8s-infra/configure-k8s-infra/#7-kubernetes-events).
 </Admonition>
 
 ## Dashboard Preview
@@ -50,3 +50,13 @@ This dashboard tracks Kubernetes events to provide a high-level view of cluster 
   - **Successful Delete**: Count of successful deletion events.
   - **Killing**: Count of pod termination events.
   - **Pulled vs Created**: Comparison of image pull events vs successful pod creation events.
+
+## Next Steps
+
+- **[Set Alerts](https://signoz.io/docs/userguide/alerts-management/)**: Create alerts for critical events such as pod failures, scaling issues, or image pull errors.
+- **Explore Logs**: Correlate events with logs to troubleshoot issues effectively.
+
+## Related Dashboards
+
+- [Kubernetes Pod Metrics - Detailed](https://signoz.io/docs/dashboards/dashboard-templates/kubernetes-pod-metrics-detailed)
+- [Kubernetes Node Metrics - Detailed](https://signoz.io/docs/dashboards/dashboard-templates/kubernetes-node-metrics-detailed)
