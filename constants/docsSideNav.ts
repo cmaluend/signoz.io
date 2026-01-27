@@ -2478,6 +2478,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/codex-monitoring',
+        label: 'Codex (OpenAI)',
+        type: 'doc',
+      },
+      {
         route: '/docs/crewai-observability',
         label: 'Crew AI',
         type: 'doc',
