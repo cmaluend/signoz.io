@@ -1898,6 +1898,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/codex-dashboard',
+            label: 'Codex (OpenAI)',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/cost-meter',
             label: 'Cost Meter',
           },
