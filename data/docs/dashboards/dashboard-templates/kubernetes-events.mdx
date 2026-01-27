@@ -1,0 +1,52 @@
+---
+date: 2026-01-27
+id: kubernetes-events
+title: Kubernetes Events Dashboard
+description: This dashboard displays specific event and object kind counts, as well as their respective time-series charts, allowing the viewer to understand what's happening inside a cluster at a glance.
+doc_type: explanation
+---
+
+This dashboard displays specific event and object kind counts, as well as their respective time-series charts, allowing the viewer to understand what's happening inside a cluster at a glance.
+
+<Admonition type="note">
+  To use this dashboard, ensure you are collecting Kubernetes events.
+</Admonition>
+
+## Dashboard Preview
+
+<Figure
+  src="/img/docs/dashboards/dashboard-templates/k8s-events.webp"
+  alt="Kubernetes Events Dashboard"
+  caption="Kubernetes Events Dashboard"
+/>
+
+<div className="flex justify-center">
+  <DashboardActions
+    dashboardJsonUrl="https://raw.githubusercontent.com/SigNoz/dashboards/refs/heads/main/k8s-infra-metrics/k8s-events-receiver.json"
+    dashboardName="Kubernetes Events"
+  />
+</div>
+
+## What This Dashboard Monitors
+
+This dashboard tracks Kubernetes events to provide a high-level view of cluster activities, specifically distinguishing between different event reasons and resource kinds.
+
+## Metrics Included
+
+### Overview
+- **Event Count**: Total number of events and trend over time.
+
+### Resource-Specific Events
+- **Deployments**: Current count and time-series of deployment-related events.
+- **Pods vs Deployments**: Comparative view of events affecting Pods versus Deployments.
+- **Bootcamp Container**: Specific field path monitoring for container specs.
+
+### Event Reasons
+- **Pulled Images**: Count and trend of image pulling events.
+- **Scaling**: Metrics for `ScalingReplicaSet` events.
+- **Scheduling**: Count of `Scheduled` events.
+- **Lifecycle Events**:
+  - **Successful Create**: Count of successful resource creation events.
+  - **Successful Delete**: Count of successful deletion events.
+  - **Killing**: Count of pod termination events.
+  - **Pulled vs Created**: Comparison of image pull events vs successful pod creation events.

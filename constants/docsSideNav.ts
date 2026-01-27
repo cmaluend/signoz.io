@@ -1992,6 +1992,11 @@ const docsSideNav = [
               },
               {
                 type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/kubernetes-events',
+                label: 'Kubernetes Events',
+              },
+              {
+                type: 'doc',
                 route: '/docs/dashboards/dashboard-templates/kubernetes-pod-metrics-detailed',
                 label: 'Kubernetes Pod Metrics (Detailed)',
               },

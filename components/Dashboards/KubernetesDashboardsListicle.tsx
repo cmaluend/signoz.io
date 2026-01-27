@@ -26,6 +26,12 @@ const KubernetesDashboardsData: IconCardData[] = [
     clickName: 'Kubernetes Cluster Metrics Dashboard Template',
   },
   {
+    name: 'Kubernetes Events',
+    href: '/docs/dashboards/dashboard-templates/kubernetes-events',
+    icon: <SiKubernetes className="h-7 w-7 text-blue-600" />,
+    clickName: 'Kubernetes Events Dashboard Template',
+  },
+  {
     name: 'Kubernetes Pod Metrics (Detailed)',
     href: '/docs/dashboards/dashboard-templates/kubernetes-pod-metrics-detailed',
     icon: <Container className="h-7 w-7 text-blue-600" />,
