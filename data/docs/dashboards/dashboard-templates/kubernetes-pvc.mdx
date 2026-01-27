@@ -1,0 +1,43 @@
+---
+date: 2026-01-27
+id: kubernetes-pvc
+title: Kubernetes PVC Metrics Dashboard
+description: Monitor Kubernetes Persistent Volume Claim (PVC) metrics for capacity and usage.
+doc_type: explanation
+---
+
+Monitor the health and capacity of your Kubernetes Persistent Volume Claims (PVCs). This dashboard provides insights into volume usage, capacity, and inode consumption to help prevent storage issues.
+
+<Admonition type="note">
+  To use this dashboard, ensure you are collecting Kubernetes volume metrics.
+</Admonition>
+
+## Dashboard Preview
+
+<Figure
+  src="/img/docs/dashboards/dashboard-templates/k8s-pvc.webp"
+  alt="Kubernetes PVC Metrics Dashboard"
+  caption="Kubernetes PVC Metrics Dashboard"
+/>
+
+<div className="flex justify-center">
+  <DashboardActions
+    dashboardJsonUrl="https://raw.githubusercontent.com/SigNoz/dashboards/refs/heads/main/k8s-infra-metrics/kubernetes-pvc-metrics.json"
+    dashboardName="Kubernetes PVC Metrics"
+  />
+</div>
+
+## What This Dashboard Monitors
+
+This dashboard monitors the state of Persistent Volume Claims in your cluster, helping you track storage consumption and availability.
+
+## Metrics Included
+
+### Volume Capacity
+- **Volume Available**: The amount of storage space available on the PVC.
+- **Volume Capacity**: The total capacity of the PVC.
+
+### Inode Usage
+- **Volume Inodes**: Average inode usage.
+- **Volume Inodes Free**: Number of free inodes.
+- **Volume Inodes Used**: Number of used inodes.

@@ -1997,6 +1997,11 @@ const docsSideNav = [
               },
               {
                 type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/kubernetes-pvc',
+                label: 'Kubernetes PVC Metrics',
+              },
+              {
+                type: 'doc',
                 route: '/docs/dashboards/dashboard-templates/kubernetes-pod-metrics-detailed',
                 label: 'Kubernetes Pod Metrics (Detailed)',
               },
