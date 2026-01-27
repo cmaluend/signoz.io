@@ -14,6 +14,12 @@ interface IconCardData {
 
 const KubernetesDashboardsData: IconCardData[] = [
   {
+    name: 'Host Metrics',
+    href: '/docs/dashboards/dashboard-templates/hostmetrics-k8s',
+    icon: <SiKubernetes className="h-7 w-7 text-blue-600" />,
+    clickName: 'Host Metrics Dashboard Template',
+  },
+  {
     name: 'Kubernetes Cluster Metrics (Overview)',
     href: '/docs/dashboards/dashboard-templates/kubernetes-cluster-metrics',
     icon: <SiKubernetes className="h-7 w-7 text-blue-600" />,

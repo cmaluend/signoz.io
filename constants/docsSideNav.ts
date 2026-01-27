@@ -1983,7 +1983,12 @@ const docsSideNav = [
               {
                 type: 'doc',
                 route: '/docs/dashboards/dashboard-templates/kubernetes-cluster-metrics',
-                label: 'Kubernetes Cluster Metrics Dashboard',
+                label: 'Kubernetes Cluster Metrics',
+              },
+              {
+                type: 'doc',
+                route: '/docs/dashboards/dashboard-templates/hostmetrics-k8s',
+                label: 'Host Metrics',
               },
               {
                 type: 'doc',
