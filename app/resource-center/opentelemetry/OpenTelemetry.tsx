@@ -129,7 +129,7 @@ export default function OpenTelemetry({ articles = [] }: OpenTelemetryProps) {
       const normalizedDocMap = new Map<string, HubDoc>()
 
       // Merge collections
-      const allDocs: (Blog | Comparison | Guide | HubDoc)[] = [...docCollections]
+      const allDocs: (Blog | Guide | HubDoc)[] = [...docCollections]
 
       // Add Strapi opentelemetry articles
       articles.forEach((article) => {

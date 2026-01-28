@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors, Comparison, Guide } from 'contentlayer/generated'
+import type { Blog, Authors, Guide } from 'contentlayer/generated'
 import { ExternalLink } from 'lucide-react'
 
 import SectionContainer from '@/components/SectionContainer'
@@ -20,6 +20,7 @@ import { ProgressBar } from '@/components/ProgressBar/ProgressBar'
 import NewsletterSubscription from '@/components/NewsletterSubscription/NewsletterSubscription'
 import authorsDirectory from '@/constants/authors.json'
 import { useScrollToHash } from '@/hooks/useScrollToHash'
+import type { MDXContent } from '@/utils/strapi'
 
 const MAIN_CONTENT_ID = 'article-main'
 
@@ -29,7 +30,7 @@ export interface TocItemProps {
   value: string
 }
 
-type ContentType = Blog | Comparison | Guide
+type ContentType = Blog | Guide | MDXContent
 
 type ArticleContent = ContentType & {
   cta_title?: string

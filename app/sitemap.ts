@@ -26,6 +26,9 @@ export const revalidate = 60
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = siteMetadata.siteUrl
 
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
   const blogRoutes = allBlogs
     .filter((post) => !post.draft)
     .map((post) => ({
@@ -58,7 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const cleanPath = path.startsWith('/') ? path.slice(1) : path
       return {
         url: `${siteUrl}/${cleanPath}/`,
-        lastModified: post.updatedAt || post.publishedAt || post.date,
+        lastModified: post.date || post.updatedAt || post.publishedAt,
         changeFrequency: mapChangeFrequency('weekly'),
         priority: 0.5,
       }
@@ -76,9 +79,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.7,
     }))
-
-  const isProduction = process.env.VERCEL_ENV === 'production'
-  const deploymentStatus = isProduction ? 'live' : 'staging'
 
   // Fetch FAQs from Strapi CMS at runtime
   let faqRoutes: MetadataRoute.Sitemap = []
@@ -130,7 +130,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     opentelemetryRoutes = opentelemetryRoutesResponse.data.map((opentelemetry) => ({
       url: `${siteUrl}/opentelemetry${opentelemetry.path}/`,
-      lastModified: opentelemetry.updatedAt || opentelemetry.publishedAt,
+      lastModified: opentelemetry.date || opentelemetry.updatedAt || opentelemetry.publishedAt,
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
     }))
