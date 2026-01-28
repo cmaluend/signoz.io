@@ -965,6 +965,11 @@ const docsSideNav = [
                 route: '/docs/instrumentation/javascript/nodejs-selective-instrumentation',
                 label: 'Selective Instrumentation',
               },
+              {
+                type: 'doc',
+                route: '/docs/instrumentation/javascript/nodejs-exclude-http-endpoints',
+                label: 'Exclude HTTP Endpoints',
+              },
             ],
           },
           {
