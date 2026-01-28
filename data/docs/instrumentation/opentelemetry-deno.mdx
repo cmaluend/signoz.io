@@ -278,6 +278,14 @@ Replace the following:
 </TabItem>
 </Tabs>
 
+## Validate
+
+After running your Deno application with OpenTelemetry enabled, you should see traces appearing in SigNoz:
+
+1. Navigate to the **Services** tab in SigNoz
+2. Look for your service name (the value you set in `OTEL_SERVICE_NAME`)
+3. Click on your service to view traces and spans
+4. You should see spans for HTTP requests handled by `Deno.serve` and outgoing `fetch` calls
 
 <details>
 <ToggleHeading>
@@ -298,6 +306,7 @@ The OTel Collector acts as a middleman between your app and SigNoz. Instead of s
 
 See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions.
 
+For more details, see [Why use the OpenTelemetry Collector?](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/why-to-use-collector/) and the [Collector configuration guide](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/).
 </details>
 
 <details>
@@ -319,10 +328,15 @@ Deno captures `console.log` and `console.error` by default when `OTEL_DENO=true`
 
 You can configure this behavior with `OTEL_DENO_CONSOLE`:
 - `capture`: Logs are emitted to stdout/stderr AND exported (default).
-- `replace`: Logs are ONLY exported (not printed to console).
 - `ignore`: Logs are ONLY printed to console (not exported).
 
 </details>
+
+## Next Steps
+
+- [Explore your traces in SigNoz](https://signoz.io/docs/product-features/trace-explorer/)
+- [Query and filter traces](https://signoz.io/docs/product-features/query-builder/)
+- [Set up alerts for your Deno service](https://signoz.io/docs/product-features/alert-management/)
 
 ## Get Help
 
