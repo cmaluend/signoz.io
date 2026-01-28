@@ -999,6 +999,19 @@ const docsSideNav = [
             ],
           },
           {
+            type: 'category',
+            isExpanded: false,
+            label: 'Ruby',
+            route: '/docs/instrumentation/opentelemetry-ruby',
+            items: [
+              {
+                type: 'doc',
+                label: 'Manual Instrumentation',
+                route: '/docs/instrumentation/manual-instrumentation/ruby/manual-instrumentation',
+              },
+            ],
+          },
+          {
             type: 'doc',
             label: 'PHP',
             route: '/docs/instrumentation/opentelemetry-php',
@@ -1007,11 +1020,6 @@ const docsSideNav = [
             type: 'doc',
             label: 'Laravel',
             route: '/docs/instrumentation/opentelemetry-laravel',
-          },
-          {
-            type: 'doc',
-            label: 'Ruby on Rails',
-            route: '/docs/instrumentation/opentelemetry-ruby-on-rails',
           },
           {
             type: 'doc',
@@ -1174,12 +1182,12 @@ const docsSideNav = [
       },
       {
         type: 'doc',
-        route: '/docs/userguide/hostmetrics',
-        label: 'Host Setup',
+        route: '/docs/infrastructure-monitoring/hostmetrics',
+        label: 'Host Metrics',
       },
       {
         type: 'doc',
-        route: '/docs/userguide/k8s-metrics',
+        route: '/docs/infrastructure-monitoring/k8s-metrics',
         label: 'Kubernetes Metrics',
       },
       {
@@ -1549,6 +1557,21 @@ const docsSideNav = [
                 route: '/docs/metrics-management/send-metrics/applications/golang',
                 label: 'Golang',
               },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-dotnet',
+                label: '.NET',
+              },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-nodejs',
+                label: 'Node.js',
+              },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-python',
+                label: 'Python',
+              },
             ],
           },
           {
@@ -1875,6 +1898,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/codex-dashboard',
+            label: 'Codex (OpenAI)',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/cost-meter',
             label: 'Cost Meter',
           },
@@ -1902,6 +1930,11 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/dashboards/dashboard-templates/frontend-monitoring',
             label: 'Frontend Monitoring',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/google-adk-dashboard',
+            label: 'Google ADK',
           },
           {
             type: 'doc',
@@ -1935,6 +1968,11 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/dashboards/dashboard-templates/grok-dashboard',
             label: 'Grok',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/groq-dashboard',
+            label: 'Groq',
           },
           {
             type: 'doc',
@@ -2445,6 +2483,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/codex-monitoring',
+        label: 'Codex (OpenAI)',
+        type: 'doc',
+      },
+      {
         route: '/docs/crewai-observability',
         label: 'Crew AI',
         type: 'doc',
@@ -2455,6 +2498,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/google-adk-observability',
+        label: 'Google ADK',
+        type: 'doc',
+      },
+      {
         route: '/docs/google-gemini-monitoring',
         label: 'Google Gemini',
         type: 'doc',
@@ -2462,6 +2510,11 @@ const docsSideNav = [
       {
         route: '/docs/grok-monitoring',
         label: 'Grok',
+        type: 'doc',
+      },
+      {
+        route: '/docs/groq-observability',
+        label: 'Groq',
         type: 'doc',
       },
       {
