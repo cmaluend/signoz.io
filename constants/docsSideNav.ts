@@ -1013,6 +1013,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            label: 'Deno',
+            route: '/docs/instrumentation/opentelemetry-deno',
+          },
+          {
+            type: 'doc',
             label: 'PHP',
             route: '/docs/instrumentation/opentelemetry-php',
           },
