@@ -955,6 +955,16 @@ const docsSideNav = [
                 route: '/docs/instrumentation/javascript/opentelemetry-nuxtjs',
                 label: 'Nuxt.js',
               },
+              {
+                type: 'doc',
+                route: '/docs/instrumentation/javascript/nodejs-manual-instrumentation',
+                label: 'Manual Instrumentation',
+              },
+              {
+                type: 'doc',
+                route: '/docs/instrumentation/javascript/nodejs-selective-instrumentation',
+                label: 'Selective Instrumentation',
+              },
             ],
           },
           {
@@ -989,6 +999,19 @@ const docsSideNav = [
             ],
           },
           {
+            type: 'category',
+            isExpanded: false,
+            label: 'Ruby',
+            route: '/docs/instrumentation/opentelemetry-ruby',
+            items: [
+              {
+                type: 'doc',
+                label: 'Manual Instrumentation',
+                route: '/docs/instrumentation/manual-instrumentation/ruby/manual-instrumentation',
+              },
+            ],
+          },
+          {
             type: 'doc',
             label: 'PHP',
             route: '/docs/instrumentation/opentelemetry-php',
@@ -997,11 +1020,6 @@ const docsSideNav = [
             type: 'doc',
             label: 'Laravel',
             route: '/docs/instrumentation/opentelemetry-laravel',
-          },
-          {
-            type: 'doc',
-            label: 'Ruby on Rails',
-            route: '/docs/instrumentation/opentelemetry-ruby-on-rails',
           },
           {
             type: 'doc',
@@ -1037,40 +1055,6 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/instrumentation/opentelemetry-cloudflare',
             label: 'Cloudflare Workers',
-          },
-          {
-            type: 'category',
-            isExpanded: false,
-            label: 'Manual Instrumentation',
-            // route: '',
-            // link: {
-            // type: 'doc',
-            // },
-            items: [
-              {
-                type: 'category',
-                isExpanded: false,
-                label: 'JavaScript',
-                // route: '',
-                // link: {
-                // type: 'doc',
-                // },
-                items: [
-                  {
-                    type: 'doc',
-                    label: 'NodeJS',
-                    route:
-                      '/docs/instrumentation/manual-instrumentation/javascript/opentelemetry-nodejs',
-                  },
-                  {
-                    type: 'doc',
-                    label: 'Enable/disable Instrumentation',
-                    route:
-                      '/docs/instrumentation/manual-instrumentation/javascript/nodejs-selective-instrumentation',
-                  },
-                ],
-              },
-            ],
           },
           // {
           //   type: 'category',
@@ -1198,12 +1182,12 @@ const docsSideNav = [
       },
       {
         type: 'doc',
-        route: '/docs/userguide/hostmetrics',
-        label: 'Host Setup',
+        route: '/docs/infrastructure-monitoring/hostmetrics',
+        label: 'Host Metrics',
       },
       {
         type: 'doc',
-        route: '/docs/userguide/k8s-metrics',
+        route: '/docs/infrastructure-monitoring/k8s-metrics',
         label: 'Kubernetes Metrics',
       },
       {
@@ -1569,9 +1553,38 @@ const docsSideNav = [
             isExpanded: false,
             items: [
               {
+                type: 'category',
+                label: 'Java',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-java',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/metrics-management/send-metrics/applications/opentelemetry-java/jmx-metrics',
+                    label: 'JMX Metrics',
+                  },
+                ],
+              },
+              {
                 type: 'doc',
                 route: '/docs/metrics-management/send-metrics/applications/golang',
                 label: 'Golang',
+              },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-dotnet',
+                label: '.NET',
+              },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-nodejs',
+                label: 'Node.js',
+              },
+              {
+                type: 'doc',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-python',
+                label: 'Python',
               },
               {
                 type: 'doc',
@@ -1643,23 +1656,6 @@ const docsSideNav = [
                 type: 'doc',
                 route: '/docs/metrics-management/nginx-metrics',
                 label: 'NGINX',
-              },
-            ],
-          },
-          {
-            type: 'category',
-            label: 'Runtimes',
-            isExpanded: false,
-            items: [
-              {
-                type: 'doc',
-                route: '/docs/tutorial/jvm-metrics',
-                label: 'JVM',
-              },
-              {
-                type: 'doc',
-                route: '/docs/tutorial/jmx-metrics',
-                label: 'JMX Metrics',
               },
             ],
           },
@@ -1904,6 +1900,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/codex-dashboard',
+            label: 'Codex (OpenAI)',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/cost-meter',
             label: 'Cost Meter',
           },
@@ -1931,6 +1932,11 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/dashboards/dashboard-templates/frontend-monitoring',
             label: 'Frontend Monitoring',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/google-adk-dashboard',
+            label: 'Google ADK',
           },
           {
             type: 'doc',
@@ -1964,6 +1970,11 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/dashboards/dashboard-templates/grok-dashboard',
             label: 'Grok',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/groq-dashboard',
+            label: 'Groq',
           },
           {
             type: 'doc',
@@ -2444,11 +2455,6 @@ const docsSideNav = [
 
     items: [
       {
-        route: '/docs/llm-community-integrations',
-        label: 'LLM Community Integrations',
-        type: 'doc',
-      },
-      {
         route: '/docs/agno-monitoring',
         label: 'Agno',
         type: 'doc',
@@ -2479,6 +2485,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/codex-monitoring',
+        label: 'Codex (OpenAI)',
+        type: 'doc',
+      },
+      {
         route: '/docs/crewai-observability',
         label: 'Crew AI',
         type: 'doc',
@@ -2486,6 +2497,11 @@ const docsSideNav = [
       {
         route: '/docs/deepseek-monitoring',
         label: 'DeepSeek',
+        type: 'doc',
+      },
+      {
+        route: '/docs/google-adk-observability',
+        label: 'Google ADK',
         type: 'doc',
       },
       {
@@ -2499,6 +2515,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/groq-observability',
+        label: 'Groq',
+        type: 'doc',
+      },
+      {
         route: '/docs/inkeep-monitoring',
         label: 'Inkeep',
         type: 'doc',
@@ -2506,6 +2527,11 @@ const docsSideNav = [
       {
         route: '/docs/langchain-observability',
         label: 'LangChain/LangGraph',
+        type: 'doc',
+      },
+      {
+        route: '/docs/langtrace',
+        label: 'Langtrace',
         type: 'doc',
       },
       {
@@ -2534,6 +2560,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/openlit',
+        label: 'OpenLIT',
+        type: 'doc',
+      },
+      {
         route: '/docs/pipecat-monitoring',
         label: 'Pipecat',
         type: 'doc',
@@ -2551,6 +2582,11 @@ const docsSideNav = [
       {
         route: '/docs/temporal-observability',
         label: 'Temporal',
+        type: 'doc',
+      },
+      {
+        route: '/docs/traceloop',
+        label: 'Traceloop(OpenLLMetry)',
         type: 'doc',
       },
       {
