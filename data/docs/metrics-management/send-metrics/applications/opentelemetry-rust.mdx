@@ -259,142 +259,6 @@ This example shows a Counter, which only increases. OpenTelemetry supports other
 
 Run your application using your usual method (e.g., `cargo run` for development or executing the compiled binary for production).
 
-<details>
-<ToggleHeading>
-## Library instrumentation
-</ToggleHeading>
-
-Unlike languages with runtime environments (Go, Java, Python), **Rust does not have a built-in runtime metrics** package for memory usage, goroutine counts, or similar statistics. Below is a practical example of instrumenting an HTTP server with custom metrics.
-
-```rust:src/main.rs
-use opentelemetry::global;
-use opentelemetry::metrics::{Counter, Histogram, UpDownCounter};
-use opentelemetry::KeyValue;
-use std::convert::Infallible;
-use std::sync::Arc;
-use std::time::Instant;
-
-// Metrics holder for easy access
-struct Metrics {
-    request_counter: Counter<u64>,
-    request_duration: Histogram<f64>,
-    active_requests: UpDownCounter<i64>,
-}
-
-impl Metrics {
-    fn new() -> Self {
-        let meter = global::meter("http-server");
-
-        Self {
-            request_counter: meter
-                .u64_counter("http_server_requests_total")
-                .with_description("Total HTTP requests")
-                .with_unit("requests")
-                .build(),
-            request_duration: meter
-                .f64_histogram("http_server_request_duration_seconds")
-                .with_description("HTTP request duration")
-                .with_unit("s")
-                .build(),
-            active_requests: meter
-                .i64_up_down_counter("http_server_active_requests")
-                .with_description("Currently active requests")
-                .with_unit("requests")
-                .build(),
-        }
-    }
-
-    fn record_request(&self, method: &str, route: &str, status: u16, duration: f64) {
-        let attrs = [
-            KeyValue::new("method", method.to_string()),
-            KeyValue::new("route", route.to_string()),
-            KeyValue::new("status", status.to_string()),
-        ];
-
-        self.request_counter.add(1, &attrs);
-        self.request_duration.record(duration, &attrs[..2]); // Exclude status from histogram
-    }
-
-    fn track_active(&self, delta: i64) {
-        self.active_requests.add(delta, &[]);
-    }
-}
-
-// Example handler function
-async fn handle_request(
-    metrics: Arc<Metrics>,
-    method: String,
-    path: String,
-) -> Result<(u16, String), Infallible> {
-    let start = Instant::now();
-
-    // Track active request
-    metrics.track_active(1);
-
-    // Simulate processing
-    tokio::time::sleep(std::time::Duration::from_millis(50)).await;
-
-    let status = 200u16;
-    let body = format!("Hello from {}", path);
-
-    // Record metrics
-    let duration = start.elapsed().as_secs_f64();
-    metrics.record_request(&method, &path, status, duration);
-
-    // Decrement active requests
-    metrics.track_active(-1);
-
-    Ok((status, body))
-}
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-    // Initialize Meter Provider
-    let meter_provider = init_meter_provider()?;
-
-    // Create metrics
-    let metrics = Arc::new(Metrics::new());
-
-    // Simulate HTTP requests
-    let routes = vec!["/api/users", "/api/orders", "/api/products", "/health"];
-    let methods = vec!["GET", "POST", "GET", "GET"];
-
-    for (route, method) in routes.iter().zip(methods.iter()) {
-        let m = metrics.clone();
-        let _ = handle_request(m, method.to_string(), route.to_string()).await;
-        println!("Handled {} {}", method, route);
-    }
-
-    // Wait for metrics to be collected
-    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-
-    // Shutdown
-    meter_provider.shutdown()?;
-    println!("Server metrics exported");
-
-    Ok(())
-}
-```
-
-<details>
-<ToggleHeading>
-### Exported Metrics
-</ToggleHeading>
-
-The HTTP server example exports the following metrics:
-
-- `http_server_requests_total` (Counter) - Total count of HTTP requests with attributes for method, route, and status code
-- `http_server_request_duration_seconds` (Histogram) - Distribution of HTTP request durations in seconds
-- `http_server_active_requests` (UpDownCounter) - Current number of requests being processed
-
-<Admonition type="info">
-When naming your custom metrics, follow the [OpenTelemetry Metrics Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/general/metrics/) for consistency and interoperability.
-</Admonition>
-
-</details>
-
-</details>
-
 ## Validate
 
 Once you have configured your application to start sending metrics to SigNoz, you can start visualizing the metrics in the [metrics explorer](https://signoz.io/docs/metrics-management/metrics-explorer/).
@@ -656,6 +520,142 @@ Common compilation issues:
 - **Missing features**: Ensure all crates have matching versions (e.g., all `0.31`)
 - **Async runtime**: The `rt-tokio` feature requires `tokio` with the `full` feature
 - **HTTP client**: The `reqwest-client` feature requires `reqwest` to be available
+
+</details>
+
+<details>
+<ToggleHeading>
+## HTTP Metric Example
+</ToggleHeading>
+
+Unlike languages with runtime environments (Go, Java, Python), **Rust does not have a built-in runtime metrics** package for memory usage, goroutine counts, or similar statistics. Below is a practical example of instrumenting an HTTP server with custom metrics.
+
+```rust:src/main.rs
+use opentelemetry::global;
+use opentelemetry::metrics::{Counter, Histogram, UpDownCounter};
+use opentelemetry::KeyValue;
+use std::convert::Infallible;
+use std::sync::Arc;
+use std::time::Instant;
+
+// Metrics holder for easy access
+struct Metrics {
+    request_counter: Counter<u64>,
+    request_duration: Histogram<f64>,
+    active_requests: UpDownCounter<i64>,
+}
+
+impl Metrics {
+    fn new() -> Self {
+        let meter = global::meter("http-server");
+
+        Self {
+            request_counter: meter
+                .u64_counter("http_server_requests_total")
+                .with_description("Total HTTP requests")
+                .with_unit("requests")
+                .build(),
+            request_duration: meter
+                .f64_histogram("http_server_request_duration_seconds")
+                .with_description("HTTP request duration")
+                .with_unit("s")
+                .build(),
+            active_requests: meter
+                .i64_up_down_counter("http_server_active_requests")
+                .with_description("Currently active requests")
+                .with_unit("requests")
+                .build(),
+        }
+    }
+
+    fn record_request(&self, method: &str, route: &str, status: u16, duration: f64) {
+        let attrs = [
+            KeyValue::new("method", method.to_string()),
+            KeyValue::new("route", route.to_string()),
+            KeyValue::new("status", status.to_string()),
+        ];
+
+        self.request_counter.add(1, &attrs);
+        self.request_duration.record(duration, &attrs[..2]); // Exclude status from histogram
+    }
+
+    fn track_active(&self, delta: i64) {
+        self.active_requests.add(delta, &[]);
+    }
+}
+
+// Example handler function
+async fn handle_request(
+    metrics: Arc<Metrics>,
+    method: String,
+    path: String,
+) -> Result<(u16, String), Infallible> {
+    let start = Instant::now();
+
+    // Track active request
+    metrics.track_active(1);
+
+    // Simulate processing
+    tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+
+    let status = 200u16;
+    let body = format!("Hello from {}", path);
+
+    // Record metrics
+    let duration = start.elapsed().as_secs_f64();
+    metrics.record_request(&method, &path, status, duration);
+
+    // Decrement active requests
+    metrics.track_active(-1);
+
+    Ok((status, body))
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    // Initialize Meter Provider
+    let meter_provider = init_meter_provider()?;
+
+    // Create metrics
+    let metrics = Arc::new(Metrics::new());
+
+    // Simulate HTTP requests
+    let routes = vec!["/api/users", "/api/orders", "/api/products", "/health"];
+    let methods = vec!["GET", "POST", "GET", "GET"];
+
+    for (route, method) in routes.iter().zip(methods.iter()) {
+        let m = metrics.clone();
+        let _ = handle_request(m, method.to_string(), route.to_string()).await;
+        println!("Handled {} {}", method, route);
+    }
+
+    // Wait for metrics to be collected
+    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+
+    // Shutdown
+    meter_provider.shutdown()?;
+    println!("Server metrics exported");
+
+    Ok(())
+}
+```
+
+<details>
+<ToggleHeading>
+### Exported Metrics
+</ToggleHeading>
+
+The HTTP server example exports the following metrics:
+
+- `http_server_requests_total` (Counter) - Total count of HTTP requests with attributes for method, route, and status code
+- `http_server_request_duration_seconds` (Histogram) - Distribution of HTTP request durations in seconds
+- `http_server_active_requests` (UpDownCounter) - Current number of requests being processed
+
+<Admonition type="info">
+When naming your custom metrics, follow the [OpenTelemetry Metrics Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/general/metrics/) for consistency and interoperability.
+</Admonition>
+
+</details>
 
 </details>
 
