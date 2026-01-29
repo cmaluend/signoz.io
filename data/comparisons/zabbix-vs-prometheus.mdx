@@ -35,11 +35,7 @@ This comparison breaks down the key differences in 2026, paying close attention 
 
 ## What is Prometheus?
 
-<Figure
-  src="/img/comparisons/2025/11/zabbix-vs-prometheus-CleanShot_2025-11-06_at_11.08.022x.webp"
-  alt="Prometheus showing top 5 busiest cores %"
-  caption="Prometheus showing top 5 busiest cores %"
-/>
+<Figure src="/img/comparisons/2025/11/zabbix-vs-prometheus-CleanShot_2025-11-06_at_11.08.022x.webp" alt="Prometheus showing top 5 busiest cores %" caption="Prometheus showing top 5 busiest cores %" />
 
 Prometheus is an open-source monitoring and alerting toolkit originally built at SoundCloud and now a graduated project of the Cloud Native Computing Foundation (CNCF).
 
@@ -49,11 +45,7 @@ Prometheus operates on a pull-based model, where the server actively scrapes met
 
 ## What is Zabbix?
 
-<Figure
-  src="/img/comparisons/2025/11/zabbix-vs-prometheus-image.webp"
-  alt="Linux Server Dashboard in Zabbix (credits: zabbix)"
-  caption="Linux Server Dashboard in Zabbix (credits: zabbix)"
-/>
+<Figure src="/img/comparisons/2025/11/zabbix-vs-prometheus-image.webp" alt="Linux Server Dashboard in Zabbix (credits: zabbix)" caption="Linux Server Dashboard in Zabbix (credits: zabbix)" />
 
 Zabbix is an all-in-one, enterprise-grade open-source monitoring solution. It provides a complete package that includes data collection, storage, a rich web-based UI for visualization, and a flexible alerting system.
 
@@ -71,12 +63,7 @@ While both tools monitor infrastructure, their approach and design differ signif
 - Data is stored in its own local time-series database (TSDB) on disk.
 - This design is simple to start with (a single binary) and scales horizontally. For long-term storage and a global view, it integrates with tools like Thanos or Mimir.
 
-<Figure
-  src="/img/comparisons/2025/11/zabbix-vs-prometheus-image%201.webp"
-  alt="Diagram illustrating Prometheus architecture (credits: prometheus docs)"
-  caption="Diagram illustrating Prometheus architecture (credits: prometheus docs)"
-  className="rounded-lg bg-stone-100 p-4"
-/>
+<Figure src="/img/comparisons/2025/11/zabbix-vs-prometheus-image%201.webp" alt="Diagram illustrating Prometheus architecture (credits: prometheus docs)" caption="Diagram illustrating Prometheus architecture (credits: prometheus docs)" className="rounded-lg bg-stone-100 p-4" />
 
 **Zabbix** uses a centralized, server-agent architecture.
 
@@ -84,11 +71,7 @@ While both tools monitor infrastructure, their approach and design differ signif
 - **Zabbix agents** run on monitored hosts and can operate in two modes: passive (the server polls the agent) or active (the agent pushes data to the server).
 - For distributed environments, **Zabbix proxies** can be deployed to collect data locally before forwarding it to the server, reducing server load and simplifying network configuration.
 
-<Figure
-  src="/img/comparisons/2025/11/zabbix-vs-prometheus-CleanShot_2025-11-06_at_11.29.452x.webp"
-  alt="Diagram illustrating Zabbix architecture"
-  caption="Diagram illustrating Zabbix architecture"
-/>
+<Figure src="/img/comparisons/2025/11/zabbix-vs-prometheus-CleanShot_2025-11-06_at_11.29.452x.webp" alt="Diagram illustrating Zabbix architecture" caption="Diagram illustrating Zabbix architecture" />
 
 ### 2. Data Collection and Service Discovery
 
@@ -183,11 +166,7 @@ While Prometheus excels at cloud-native metrics and Zabbix covers traditional in
 
 [SigNoz](https://signoz.io/) offers a unified alternative. It is an open-source, all-in-one observability platform that combines metrics, traces, and logs into a single application.
 
-<Figure
-  src="/img/comparisons/2025/11/zabbix-vs-prometheus-image%202.webp"
-  alt="Infrastructure Monitoring Dashboard in SigNoz"
-  caption="Infrastructure Monitoring Dashboard in SigNoz"
-/>
+<Figure src="/img/comparisons/2025/11/zabbix-vs-prometheus-image%202.webp" alt="Infrastructure Monitoring Dashboard in SigNoz" caption="Infrastructure Monitoring Dashboard in SigNoz" />
 
 Crucially, **SigNoz is built to be 100% OpenTelemetry-native**. This means it can ingest OTLP data from any instrumented application without vendor lock-in, acting as a unified backend for all your telemetry.
 
