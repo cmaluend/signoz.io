@@ -1,5 +1,5 @@
 ---
-date: 2026-01-17
+date: 2026-01-28
 id: opentelemetry-rust
 title: Send Metrics from Rust application
 description: Learn how to instrument your Rust application with OpenTelemetry to send metrics to SigNoz
@@ -38,6 +38,8 @@ Set the following environment variables to configure the OpenTelemetry exporter:
 export OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signoz.cloud:443/v1/metrics"
 export OTEL_EXPORTER_OTLP_METRICS_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
 export OTEL_SERVICE_NAME="<service-name>"
+# Optional: Set export interval in milliseconds (default: 60000)
+export OTEL_METRIC_EXPORT_INTERVAL="60000"
 ```
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
@@ -57,6 +59,9 @@ env:
   value: 'signoz-ingestion-key=<your-ingestion-key>'
 - name: OTEL_SERVICE_NAME
   value: '<service-name>'
+# Optional: Set export interval in milliseconds (default: 60000)
+- name: OTEL_METRIC_EXPORT_INTERVAL
+  value: '60000'
 ```
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
@@ -70,6 +75,8 @@ Replace the following:
 $env:OTEL_EXPORTER_OTLP_METRICS_ENDPOINT = "https://ingest.<region>.signoz.cloud:443/v1/metrics"
 $env:OTEL_EXPORTER_OTLP_METRICS_HEADERS = "signoz-ingestion-key=<your-ingestion-key>"
 $env:OTEL_SERVICE_NAME = "<service-name>"
+# Optional: Set export interval in milliseconds (default: 60000)
+$env:OTEL_METRIC_EXPORT_INTERVAL = "60000"
 ```
 Replace the following:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
@@ -87,6 +94,8 @@ Add environment variables to your Dockerfile:
 ENV OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signoz.cloud:443/v1/metrics"
 ENV OTEL_EXPORTER_OTLP_METRICS_HEADERS="signoz-ingestion-key=<your-ingestion-key>"
 ENV OTEL_SERVICE_NAME="<service-name>"
+# Optional: Set export interval in milliseconds (default: 60000)
+ENV OTEL_METRIC_EXPORT_INTERVAL="60000"
 
 CMD ["./your-app"]
 ```
@@ -96,6 +105,7 @@ Or pass them at runtime using `docker run`:
 docker run -e OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signoz.cloud:443/v1/metrics" \
     -e OTEL_EXPORTER_OTLP_METRICS_HEADERS="signoz-ingestion-key=<your-ingestion-key>" \
     -e OTEL_SERVICE_NAME="<service-name>" \
+    -e OTEL_METRIC_EXPORT_INTERVAL="60000" \
     your-image:latest
 ```
 
@@ -112,7 +122,7 @@ Add the following dependencies to your `Cargo.toml` file:
 
 ```toml:Cargo.toml
 [dependencies]
-opentelemetry = { version = "0.31", features = ["metrics", "otel_unstable"] }
+opentelemetry = { version = "0.31", features = ["metrics"] }
 opentelemetry_sdk = { version = "0.31", features = ["metrics", "rt-tokio"] }
 opentelemetry-otlp = { version = "0.31", features = ["metrics", "http-proto", "reqwest-client", "tls-roots"] }
 tokio = { version = "1", features = ["full"] }
@@ -130,7 +140,7 @@ Create a helper function to configure the OpenTelemetry Meter Provider. This pro
 use opentelemetry::global;
 use opentelemetry::KeyValue;
 use opentelemetry_otlp::{MetricExporter, WithExportConfig, WithHttpConfig};
-use opentelemetry_sdk::metrics::SdkMeterProvider;
+use opentelemetry_sdk::metrics::{PeriodicReader, SdkMeterProvider};
 use opentelemetry_sdk::Resource;
 use std::time::Duration;
 
@@ -141,6 +151,12 @@ fn init_meter_provider() -> Result<SdkMeterProvider, Box<dyn std::error::Error +
 
     let service_name = std::env::var("OTEL_SERVICE_NAME")
         .unwrap_or_else(|_| "unknown-service".to_string());
+
+    // Read export interval from environment (default: 60000ms)
+    let export_interval = std::env::var("OTEL_METRIC_EXPORT_INTERVAL")
+        .ok()
+        .and_then(|v| v.parse::<u64>().ok())
+        .unwrap_or(60000);
 
     // Parse headers from environment
     let headers: Vec<(String, String)> = std::env::var("OTEL_EXPORTER_OTLP_METRICS_HEADERS")
@@ -172,9 +188,13 @@ fn init_meter_provider() -> Result<SdkMeterProvider, Box<dyn std::error::Error +
         .build();
 
     // Build the MeterProvider with periodic export
+    let reader = PeriodicReader::builder(exporter)
+        .with_interval(Duration::from_millis(export_interval))
+        .build();
+
     let meter_provider = SdkMeterProvider::builder()
         .with_resource(resource)
-        .with_periodic_exporter(exporter)
+        .with_reader(reader)
         .build();
 
     // Set as global provider
@@ -233,21 +253,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 }
 ```
 
+<Admonition type="info">
+This example shows a Counter, which only increases. OpenTelemetry supports other metric types like UpDownCounter, Histogram, and Observable Gauge. See [Manual/Custom Instrumentation](#manualcustom-instrumentation) for complete examples of each type.
+</Admonition>
+
+Run your application using your usual method (e.g., `cargo run` for development or executing the compiled binary for production).
+
+<details>
+<ToggleHeading>
 ## Library instrumentation
+</ToggleHeading>
 
-Unlike languages with runtime environments (Go, Java, Python), Rust does not have a built-in runtime metrics package for memory usage, goroutine counts, or similar statistics. You will need to create custom instrumentation for your specific metrics needs.
-
-<Tabs>
-<TabItem value="http-server" label="HTTP Server Example" default>
-
-A practical example of instrumenting an HTTP server with custom metrics.
+Unlike languages with runtime environments (Go, Java, Python), **Rust does not have a built-in runtime metrics** package for memory usage, goroutine counts, or similar statistics. Below is a practical example of instrumenting an HTTP server with custom metrics.
 
 ```rust:src/main.rs
 use opentelemetry::global;
 use opentelemetry::metrics::{Counter, Histogram, UpDownCounter};
 use opentelemetry::KeyValue;
 use std::convert::Infallible;
-use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Instant;
 
@@ -370,8 +393,7 @@ When naming your custom metrics, follow the [OpenTelemetry Metrics Semantic Conv
 
 </details>
 
-</TabItem>
-</Tabs>
+</details>
 
 ## Validate
 
