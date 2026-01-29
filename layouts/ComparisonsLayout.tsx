@@ -2,14 +2,20 @@
 
 import { ReactNode } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Comparison, Authors } from 'contentlayer/generated'
+import type { Authors } from 'contentlayer/generated'
+import { MDXContent } from '@/utils/strapi'
 import ArticleLayout, { TocItemProps } from './ArticleLayout'
 import PageFeedback from '@/components/PageFeedback/PageFeedback'
 
-// Extend the Comparison type to include CTA fields
-interface ComparisonContent extends Comparison {
+// Extend the MDXContent type to include CTA fields
+interface ComparisonContent extends MDXContent {
   cta_title?: string
   cta_text?: string
+  readingTime?: { text: string; minutes: number; time: number; words: number }
+  tags?: any
+  date: string
+  lastmod?: string
+  relatedArticles?: Array<{ title: string; url: string; publishedOn: string }>
 }
 
 interface LayoutProps {
@@ -29,6 +35,7 @@ export default function ComparisonsLayout({
 }: LayoutProps) {
   return (
     <ArticleLayout
+      // @ts-ignore
       content={content}
       authorDetails={authorDetails}
       authors={authors}

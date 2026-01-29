@@ -6,7 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors, Comparison, Guide } from 'contentlayer/generated'
+import type { Blog, Authors, Guide } from 'contentlayer/generated'
+import { MDXContent } from '@/utils/strapi'
 import { ExternalLink } from 'lucide-react'
 
 import SectionContainer from '@/components/SectionContainer'
@@ -29,7 +30,7 @@ export interface TocItemProps {
   value: string
 }
 
-type ContentType = Blog | Comparison | Guide
+type ContentType = Blog | Guide | MDXContent
 
 type ArticleContent = ContentType & {
   cta_title?: string
@@ -162,7 +163,12 @@ export default function ArticleLayout({
   const readingTimeText = getReadingTimeText(content)
 
   const MAX_VISIBLE_TAGS = 2
-  const tagsArray = Array.isArray(content.tags) ? content.tags : []
+  const tagsArray =
+    Array.isArray(content.tags) && content.tags.length > 0
+      ? typeof content.tags?.[0] === 'object'
+        ? content.tags.map((tag) => tag?.value)
+        : content.tags
+      : []
   const primaryTags = tagsArray.slice(0, MAX_VISIBLE_TAGS)
   const hiddenTags = tagsArray.slice(MAX_VISIBLE_TAGS)
   const hiddenTagsTitle = hiddenTags.length ? hiddenTags.join(', ') : undefined

@@ -1,18 +1,41 @@
 import ListLayout from '@/layouts/ListLayoutWithTags'
-import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
-import { allBlogs } from 'contentlayer/generated'
+import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
 const POSTS_PER_PAGE = 5
 
 export const generateStaticParams = async () => {
-  const totalPages = Math.ceil(allBlogs.length / POSTS_PER_PAGE)
-  const paths = Array.from({ length: totalPages }, (_, i) => ({ page: (i + 1).toString() }))
-
-  return paths
+  return []
 }
 
-export default function Page({ params }: { params: { page: string } }) {
-  const posts = allCoreContent(sortPosts(allBlogs))
+export default async function Page({ params }: { params: { page: string } }) {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  let posts: any[] = []
+  try {
+    const response = (await fetchMDXContentByPath(
+      'comparisons',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+
+    if (response && response.data) {
+      posts = response.data.map((post) => ({
+        title: post.title,
+        summary: post.excerpt || post.description,
+        date: post.publishedAt,
+        tags: post.tags?.map((t: any) => t.value) || [],
+        path: post.path || `comparisons/${post.slug}`,
+        slug: post.slug,
+      }))
+    }
+  } catch (error) {
+    console.error('Error fetching comparisons:', error)
+  }
+
+  posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
   const pageNumber = parseInt(params.page as string)
   const initialDisplayPosts = posts.slice(
     POSTS_PER_PAGE * (pageNumber - 1),
@@ -28,7 +51,7 @@ export default function Page({ params }: { params: { page: string } }) {
       posts={posts}
       initialDisplayPosts={initialDisplayPosts}
       pagination={pagination}
-      title="All Posts"
+      title="All Comparisons"
     />
   )
 }

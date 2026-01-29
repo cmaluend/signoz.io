@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allDocs, allGuides, allComparisons } from 'contentlayer/generated'
+import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -36,15 +36,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
 
   const docRoutes = allDocs
-    .filter((post) => !post.draft)
-    .map((post) => ({
-      url: `${siteUrl}/${post.path}/`,
-      lastModified: post.lastmod || post.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.5,
-    }))
-
-  const comparisonRoutes = allComparisons
     .filter((post) => !post.draft)
     .map((post) => ({
       url: `${siteUrl}/${post.path}/`,
@@ -125,6 +116,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Return empty array if fetching fails
   }
 
+  let comparisonRoutes: MetadataRoute.Sitemap = []
+  try {
+    const comparisonsResponse = (await fetchMDXContentByPath(
+      'comparisons',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+
+    comparisonRoutes = comparisonsResponse.data.map((comparison) => ({
+      url: `${siteUrl}/comparisons${comparison.path}/`,
+      lastModified: comparison.date || comparison.updatedAt || comparison.publishedAt,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.5,
+    }))
+  } catch (error) {
+    console.error('Error fetching comparisons for sitemap:', error)
+    // Return empty array if fetching fails
+  }
+
   const routes = [
     '',
     'blog',
@@ -140,6 +151,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'guides', // Add the main guides page
     'faqs', // Add the main FAQs page
     'opentelemetry',
+    'comparisons',
   ].map((route) => ({
     url: `${siteUrl}/${route}${route ? '/' : ''}`,
     lastModified: new Date().toISOString().split('T')[0],
@@ -154,5 +166,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guideRoutes,
     ...faqRoutes,
     ...caseStudyRoutes,
+    ...comparisonRoutes,
   ]
 }
