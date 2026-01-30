@@ -41,7 +41,7 @@ export OTEL_SERVICE_NAME="<service-name>"
 # Optional: Set export interval in milliseconds (default: 60000)
 export OTEL_METRIC_EXPORT_INTERVAL="60000"
 ```
-Replace the following:
+Verify these values:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
@@ -63,7 +63,7 @@ env:
 - name: OTEL_METRIC_EXPORT_INTERVAL
   value: '60000'
 ```
-Replace the following:
+Verify these values:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
@@ -78,7 +78,7 @@ $env:OTEL_SERVICE_NAME = "<service-name>"
 # Optional: Set export interval in milliseconds (default: 60000)
 $env:OTEL_METRIC_EXPORT_INTERVAL = "60000"
 ```
-Replace the following:
+Verify these values:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service.
@@ -109,7 +109,7 @@ docker run -e OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signo
     your-image:latest
 ```
 
-Replace the following:
+Verify these values:
 - `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
 - `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
@@ -147,7 +147,7 @@ use std::time::Duration;
 fn init_meter_provider() -> Result<SdkMeterProvider, Box<dyn std::error::Error + Send + Sync>> {
     // Read configuration from environment variables
     let endpoint = std::env::var("OTEL_EXPORTER_OTLP_METRICS_ENDPOINT")
-        .unwrap_or_else(|_| "https://ingest.us.signoz.cloud:443/v1/metrics".to_string());
+        .unwrap_or_else(|_| "https://ingest.<region>.signoz.cloud:443/v1/metrics".to_string());
 
     let service_name = std::env::var("OTEL_SERVICE_NAME")
         .unwrap_or_else(|_| "unknown-service".to_string());
