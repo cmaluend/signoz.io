@@ -216,19 +216,17 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     date: post.publishedAt,
     lastmod: post.updatedAt,
     slug: slug,
-    path: post.path || currentRoute,
+    path: `comparisons${post.path}` || currentRoute,
     tags: post.tags?.map((tag: any) => tag.value) || [],
     readingTime: readingTimeData,
     toc: toc,
     authors: post.authors?.map((author: any) => author?.name) || [],
     structuredData: structuredData,
     relatedArticles:
-      post.related_comparisons?.data?.map((comp: any) => ({
-        title: comp.attributes?.title,
-        url: comp.attributes?.path?.startsWith('/')
-          ? comp.attributes?.path
-          : `/${comp.attributes?.path}`,
-        publishedOn: comp.attributes?.publishedAt || comp.attributes?.date,
+      post.related_comparisons?.map((comp: any) => ({
+        ...comp,
+        url: `/comparisons${comp.path}`,
+        publishedOn: comp.date || comp.updatedAt || comp.publishedAt,
       })) || [],
     cta_title: post.cta_title,
     cta_text: post.cta_text,
