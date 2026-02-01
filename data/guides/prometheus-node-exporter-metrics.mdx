@@ -1,7 +1,6 @@
 ---
 
 title: Prometheus Node Exporter - Metrics Configuration & Alerting
-slug: prometheus-node-exporter-metrics 
 date: 2025-12-17
 tags: [prometheus, node-exporter] 
 authors: [saurabh_patil] 
@@ -144,11 +143,7 @@ echo "custom_failed_ssh_logins_total $(grep -c 'Failed password' /var/log/auth.l
 curl http://localhost:9100/metrics | grep custom_failed
 ```
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporte-custom-collector.webp"
-  alt="Custom Node Exporter metric exposed via textfile collector"
-  caption="Custom Node Exporter metric exposed via textfile collector"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporte-custom-collector.webp" alt="Custom Node Exporter metric exposed via textfile collector" caption="Custom Node Exporter metric exposed via textfile collector" />
 
 Now that you have both built-in and custom host metrics available, the next step is to set up alerting rules so Prometheus can notify you when your system enters an unhealthy state.
 
@@ -276,27 +271,15 @@ To do this, navigate to the following paths on your Prometheus server:
 
 **Loaded rules page:** `/rules`
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporter-rules.webp"
-  alt="Prometheus Rule Health view showing Node Exporter alerting rules loaded successfully"
-  caption="Prometheus Rule Health view showing Node Exporter alerting rules loaded successfully"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporter-rules.webp" alt="Prometheus Rule Health view showing Node Exporter alerting rules loaded successfully" caption="Prometheus Rule Health view showing Node Exporter alerting rules loaded successfully" />
 
 **Active alerts page:** `/alerts`
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporter-alerts.webp"
-  alt="Prometheus Alerts view showing Node Exporter alerting rules loaded and currently inactive"
-  caption="Prometheus Alerts view showing Node Exporter alerting rules loaded and currently inactive"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporter-alerts.webp" alt="Prometheus Alerts view showing Node Exporter alerting rules loaded and currently inactive" caption="Prometheus Alerts view showing Node Exporter alerting rules loaded and currently inactive" />
 
 **Scrape the target's page:** `/targets`
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporter-targets.webp"
-  alt="Prometheus Target Health view confirming the Node Exporter scrape target"
-  caption="Prometheus Target Health view confirming the Node Exporter scrape target"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporter-targets.webp" alt="Prometheus Target Health view confirming the Node Exporter scrape target" caption="Prometheus Target Health view confirming the Node Exporter scrape target" />
 
 For example, if Prometheus is running locally on `port 9090`, these pages will be available at: `http://<your-prometheus-host>:9090/rules`, `/alerts`, and `/targets`.
 

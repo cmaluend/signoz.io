@@ -1,6 +1,5 @@
 ---
 title: Is It Possible to Use Grafana Without Prometheus? - Prometheus Monitoring
-slug: is-it-possible-to-use-grafana-without-prometheus
 date: 2024-07-02
 tags: [faq, prometheus]
 authors: [yuvraj]
@@ -169,30 +168,18 @@ CREATE TABLE metrics (
 INSERT INTO metrics (metric_name, value) VALUES ('cpu_usage', 23.5), ('memory_usage', 55.1);
 ```
 
-<Figure
-  src="/img/guides/2024/07/1-mysql-setup.webp"
-  alt="MySQL setup for Grafana"
-  caption="Setting up MySQL for Grafana data source."
-/>
+<Figure src="/img/guides/2024/07/1-mysql-setup.webp" alt="MySQL setup for Grafana" caption="Setting up MySQL for Grafana data source." />
 
 **Step 3: Configure Grafana to Connect to MySQL**
 
 - Open Grafana in your browser (default URL is http://localhost:3000).
 - Log in with the default credentials (admin/admin, you an read detailed guide to login [here](https://grafana.com/docs/grafana/latest/setup-grafana/sign-in-to-grafana/)).
 
-<Figure
-  src="/img/guides/2024/07/2-grafana-start.webp"
-  alt="Grafana login page"
-  caption="Logging into Grafana with default credentials"
-/>
+<Figure src="/img/guides/2024/07/2-grafana-start.webp" alt="Grafana login page" caption="Logging into Grafana with default credentials" />
 
 - Navigate to Configuration > Data Sources and click Add data source.
 
-<Figure
-  src="/img/guides/2024/07/3-grafana-add-source.webp"
-  alt="Grafana add data source page"
-  caption="Navigating to add a new data source in Grafana"
-/>
+<Figure src="/img/guides/2024/07/3-grafana-add-source.webp" alt="Grafana add data source page" caption="Navigating to add a new data source in Grafana" />
 
 - Select MySQL from the list of data sources.
 - Enter the necessary connection details (e.g., host, database name, user, and password) and click Save & Test to verify the connection.
@@ -200,21 +187,13 @@ INSERT INTO metrics (metric_name, value) VALUES ('cpu_usage', 23.5), ('memory_us
   - Database Name: `sample_db`
   - Add your database username and password in the authentication.
 
-<Figure
-  src="/img/guides/2024/07/4-grafana-mysql-setup.webp"
-  alt="Configuring MySQL in Grafana"
-  caption="Entering MySQL connection details in Grafana"
-/>
+<Figure src="/img/guides/2024/07/4-grafana-mysql-setup.webp" alt="Configuring MySQL in Grafana" caption="Entering MySQL connection details in Grafana" />
 
 **Step 4: Create a Simple Dashboard Using MySQL Data**
 
 - Navigate to Create > Dashboard and click Add new panel.
 
-<Figure
-  src="/img/guides/2024/07/5-grafana-add-dashboard.webp"
-  alt="Creating a new Grafana dashboard"
-  caption="Adding a new panel to create a Grafana dashboard."
-/>
+<Figure src="/img/guides/2024/07/5-grafana-add-dashboard.webp" alt="Creating a new Grafana dashboard" caption="Adding a new panel to create a Grafana dashboard." />
 
 - Select your MySQL data source.
 - Write a simple SQL query to fetch data from your sample table:
@@ -229,11 +208,7 @@ FROM metrics
 
 Customize the visualization as needed and save your dashboard.
 
-<Figure
-  src="/img/guides/2024/07/6-grafana-mysql-dashboard.webp"
-  alt="Grafana dashboard with MySQL data"
-  caption="Visualizing MySQL data on a Grafana dashboard"
-/>
+<Figure src="/img/guides/2024/07/6-grafana-mysql-dashboard.webp" alt="Grafana dashboard with MySQL data" caption="Visualizing MySQL data on a Grafana dashboard" />
 
 ## Real-World Use Cases
 

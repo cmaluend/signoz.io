@@ -1,6 +1,5 @@
 ---
 title: Complete Guide to VPC Flow Logs
-slug: vpc-flow-logs
 date: 2024-07-03
 tags: [logging]
 authors: [daniel]
@@ -194,11 +193,7 @@ Once the flow logs are enabled, the log data is aggregated and stored in the spe
 
 Users can create VPC flow logs for an entire VPC, a specific subnet, or an individual network interface. They can also customize the fields captured in the logs to meet their specific needs, such as logging only specific IP ranges or traffic types.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-aws.webp"
-  alt="How flow logs are stored"
-  caption="How flow logs are stored"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-aws.webp" alt="How flow logs are stored" caption="How flow logs are stored" />
 <br></br>
 
 ### Importance of VPC Flow Logs
@@ -285,25 +280,13 @@ Step 1: Navigate to your AWS account. In the AWS management console, search for 
 <Figure src="/img/guides/2024/07/vpc-flow-logs-S3.webp" alt="Amazon S3" caption="Amazon S3" />
 <br></br>Step 2: Click on the `Create bucket` button.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-s3_bucket.webp"
-  alt="Create an S3 bucket"
-  caption="Create an S3 bucket"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-s3_bucket.webp" alt="Create an S3 bucket" caption="Create an S3 bucket" />
 <br></br>Give the bucket a unique name and leave all other settings as default.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-create_bucket.webp"
-  alt="Bucket configuration"
-  caption="Bucket configuration"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-create_bucket.webp" alt="Bucket configuration" caption="Bucket configuration" />
 <br></br>Scroll to the bottom of the page and click on the `Create bucket` button.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-created_bucket.webp"
-  alt="S3 bucket created"
-  caption="S3 bucket created"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-created_bucket.webp" alt="S3 bucket created" caption="S3 bucket created" />
 <br></br>
 
 ### Create the VPC
@@ -317,19 +300,11 @@ Step 1: In the AWS management console, search for `VPC` and select it.
 <Figure src="/img/guides/2024/07/vpc-flow-logs-VPC.webp" alt="Amazon VPC" caption="Amazon VPC" />
 <br></br>Step 2: Once redirected to the VPC page, click on the `Create VPC` button.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-VPc_page.webp"
-  alt="Create VPC"
-  caption="Create VPC"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-VPc_page.webp" alt="Create VPC" caption="Create VPC" />
 <br></br>For your VPC settings, select `VPC and more`, give the VPC a name, and leave other settings
 as default. Scroll to the bottom of the page and click on `Create VPC`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-VPC_config.webp"
-  alt="VPC configuration"
-  caption="VPC configuration"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-VPC_config.webp" alt="VPC configuration" caption="VPC configuration" />
 <br></br>
 
 ### Create the VPC Flow Logs
@@ -338,36 +313,20 @@ Once the VPC has been created, you can proceed to create the VPC flow logs using
 
 Step 1: Right-click on the VPC you created and select `Create flow log`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-create_VPC_flow_log.webp"
-  alt="VPC Created"
-  caption="VPC Created"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-create_VPC_flow_log.webp" alt="VPC Created" caption="VPC Created" />
 <br></br>Step 2: Give the flow log a name and set the filter to `all`. This allows the flow log to
 capture all traffic. For destination, select `Send to an Amazon S3 bucket` and paste the ARN of the
 S3 bucket you created.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-create_flow_log.webp"
-  alt="Flow log configuration"
-  caption="Flow log configuration"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-create_flow_log.webp" alt="Flow log configuration" caption="Flow log configuration" />
 <br></br>To get your bucket’s ARN, navigate to the Amazon S3 page on a different tab. Open the
 bucket you created and copy the ARN under the bucket’s properties.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-buckets_ARN.webp"
-  alt="Bucket’s properties"
-  caption="Bucket’s properties"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-buckets_ARN.webp" alt="Bucket’s properties" caption="Bucket’s properties" />
 <br></br>Go back to the VPC flow log creation tab, paste the copied ARN, leave all other settings as
 default, and create the flow log.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-VPC_flow_log__created.webp"
-  alt="Created VPC flow log"
-  caption="Created VPC flow log"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-VPC_flow_log__created.webp" alt="Created VPC flow log" caption="Created VPC flow log" />
 <br></br>
 
 ### Generate traffic for the VPC
@@ -382,21 +341,13 @@ Step 1: In the AWS management console, search `EC2`, and open the page.
 <br></br>Step 2: Click on the `Launch instance` button to create an instance. Give the instance a
 name and select the Ubuntu image.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-create_instance.webp"
-  alt="Create an instance"
-  caption="Create an instance"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-create_instance.webp" alt="Create an instance" caption="Create an instance" />
 <br></br>Create a key pair if you don’t have an existing one to use. For the network settings,
 create a new security group and allow SSH and HTTP traffic.{' '}
 
 Note: In a production environment, you should be careful when opening up these ports and ensure access is limited to your IP address.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-instance_network_settings.webp"
-  alt="Network settings for the instance"
-  caption="Network settings for the instance"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-instance_network_settings.webp" alt="Network settings for the instance" caption="Network settings for the instance" />
 <br></br>Leave all other settings as default and create the VPC.
 
 Step 3: Log into your instance using the created key pair. Once logged in, run the following commands:
@@ -414,27 +365,15 @@ The above commands install the Apache2 web server on the instance, overwrite the
 
 On the EC2 page, copy the public IP address of the instance and load it in the browser.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-instance_webpage.webp"
-  alt="Instance webpage"
-  caption="Instance webpage"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-instance_webpage.webp" alt="Instance webpage" caption="Instance webpage" />
 <br></br>You can reload the page multiple times to generate traffic.
 
 Step 4: Navigate back to the Amazon S3 page. Open the bucket you previously created, and you should see some compressed log files generated.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-s3_bucket_log_files.webp"
-  alt="Flow logs in S3 bucket"
-  caption="Flow logs in S3 bucket"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-s3_bucket_log_files.webp" alt="Flow logs in S3 bucket" caption="Flow logs in S3 bucket" />
 <br></br>Download and open one of the log files locally to see the generated logs from your VPC.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-s3_bucket_vpc_flow_log_file.webp"
-  alt="VPC flow logs"
-  caption="VPC flow logs"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-s3_bucket_vpc_flow_log_file.webp" alt="VPC flow logs" caption="VPC flow logs" />
 <br></br>This is the default format in which VPC logs are presented:
 
 ```jsx
@@ -476,11 +415,7 @@ To send the VPC flow logs from the S3 buckets to SigNoz for analysis, you need t
 
 The architectural diagram below shows a visualization of the process.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-aws_signoz_architecture_diagram.webp"
-  alt="How flow logs are forwarded to SigNoz"
-  caption="How flow logs are forwarded to SigNoz"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-aws_signoz_architecture_diagram.webp" alt="How flow logs are forwarded to SigNoz" caption="How flow logs are forwarded to SigNoz" />
 <br></br>
 
 ### Create a Lambda Function
@@ -489,33 +424,17 @@ Follow the below steps to create your Lambda function.
 
 Step 1: In the AWS management console, search Lambda. Open it and select `Create a function`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-AWS_lambda.webp"
-  alt="AWS Lambda"
-  caption="AWS Lambda"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-AWS_lambda.webp" alt="AWS Lambda" caption="AWS Lambda" />
 <br></br>Step 2: For the configurations, select `Author from scratch`, give the function a name,
 select the latest Python version for runtime, and use `x86_64` for the architecture.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-create_function.webp"
-  alt="Create Lambda function"
-  caption="Create Lambda function"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-create_function.webp" alt="Create Lambda function" caption="Create Lambda function" />
 <br></br>Step 3: For permissions, select `Create a new role with basic Lambda permissions`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-lambda_permissions.webp"
-  alt="Permissions for Lambda function"
-  caption="Permissions for Lambda function"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-lambda_permissions.webp" alt="Permissions for Lambda function" caption="Permissions for Lambda function" />
 <br></br>Proceed to create the function.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-function_created.webp"
-  alt="Created Lambda function"
-  caption="Created Lambda function"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-function_created.webp" alt="Created Lambda function" caption="Created Lambda function" />
 <br></br>
 
 ### Configure Policies for the Function
@@ -524,27 +443,15 @@ The created Lambda function will be used to fetch new or updated VPC flow log fi
 
 Step 1: Open the Lambda function you created, under `Configuration`, click on `Permissions` on the left-hand side and select the `Role name`. This will redirect you to the AWS IAM Role page.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-lambda_role.webp"
-  alt="IAM role for Lambda function"
-  caption="IAM role for Lambda function"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-lambda_role.webp" alt="IAM role for Lambda function" caption="IAM role for Lambda function" />
 <br></br>Step 2: To give permission to the role to access Amazon S3, click on `Add permission`, and
 in the drop-down, click on `Attach Policies`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-add_permission.webp"
-  alt="Attach policies to the function’s IAM role"
-  caption="Attach policies to the function’s IAM role"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-add_permission.webp" alt="Attach policies to the function’s IAM role" caption="Attach policies to the function’s IAM role" />
 <br></br>Search for `S3`, and you will see a policy named `AmazonS3FullAccess`. Select the policy
 and click on `Add permissions`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-s3_full_access_policy.webp"
-  alt="S3 permission policy"
-  caption="S3 permission policy"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-s3_full_access_policy.webp" alt="S3 permission policy" caption="S3 permission policy" />
 <br></br>
 
 ### Trigger the Function
@@ -553,21 +460,13 @@ Now that the Lambda function can access Amazon S3, you need to add a trigger. Th
 
 Step 1: Open your Lambda function and click on the `Add trigger` button.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-add_trigger.webp"
-  alt="Add trigger for function"
-  caption="Add trigger for function"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-add_trigger.webp" alt="Add trigger for function" caption="Add trigger for function" />
 <br></br>Step 2: For your trigger configuration, choose `S3` as your source, and for the bucket
 field, select the bucket containing the VPC flow logs. For the event types field, you can select the
 events of your choice. The trigger will occur depending on what option(s) you choose here. By
 default, the `All object create events` will be selected.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-trigger_config.webp"
-  alt="Trigger configuration"
-  caption="Trigger configuration"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-trigger_config.webp" alt="Trigger configuration" caption="Trigger configuration" />
 <br></br>Verify the settings, scroll to the bottom of the page, and click on the `Add` button to add
 this trigger.
 
@@ -595,20 +494,12 @@ zip -r dependencies.zip ../python
 
 Step 2: To upload your zip file, go to AWS Lambda, and on the Layers page, click on `Create Layer`. [This is not inside your specific Lambda function, just the landing page of AWS Lambda.]
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-create_layer.webp"
-  alt="Create layer"
-  caption="Create layer"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-create_layer.webp" alt="Create layer" caption="Create layer" />
 <br></br>Step 3: Give the layer a name and an optional description. Select `Upload a .zip file`,
 click on `Upload` and select your generated zip file from the directory where it is saved on your
 system.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-upload_zip_file.webp"
-  alt="Layer configuration"
-  caption="Layer configuration"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-upload_zip_file.webp" alt="Layer configuration" caption="Layer configuration" />
 <br></br>Step 4: Select your desired architecture and pick `Python 3.x` as your runtime. Click
 on `Create` to create the layer.
 
@@ -620,26 +511,14 @@ For the request layer to be associated with the Lambda function, it needs to be 
 
 Step 1: Go to function, select the function you created, click on `Code`, and scroll to the end of the page. Under `Layers` click on `Add a layer`.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-add_new_layer.webp"
-  alt="Add a new layer"
-  caption="Add a new layer"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-add_new_layer.webp" alt="Add a new layer" caption="Add a new layer" />
 <br></br>Step 2: Select `Custom layers`. From the drop-down, select the `request package` and the
 version, then add the layer.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-add_the_new_layer.webp"
-  alt="Use a custom layer"
-  caption="Use a custom layer"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-add_the_new_layer.webp" alt="Use a custom layer" caption="Use a custom layer" />
 <br></br>Go back to your function and you should see the layer added.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-new_layer_added.webp"
-  alt="New layer added"
-  caption="New layer added"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-new_layer_added.webp" alt="New layer added" caption="New layer added" />
 <br></br>
 
 ### Write the Lambda Function
@@ -733,47 +612,27 @@ Follow the steps below to increase the timeout and to deploy and test the functi
 
 Step 1: To increase the timeout time, under your Lambda function, go to `Configuration` → `General Configuration` → Edit button and set it under 10 mins. Usually, the code is executed within 1-4 minutes at maximum.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-timeout_increase.webp"
-  alt="Increase timeout"
-  caption="Increase timeout"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-timeout_increase.webp" alt="Increase timeout" caption="Increase timeout" />
 <br></br>Step 2: After increasing the timeout setting, go to your Lambda function. Under `Code`,
 click on the `test` button dropdown option, and select `Configure test event`.{' '}
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-test_event.webp"
-  alt="Configure test event"
-  caption="Configure test event"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-test_event.webp" alt="Configure test event" caption="Configure test event" />
 <br></br>For test event action, select `Create new event` and give the test event a name. Under the
 template drop-down menu, search for `S3 Put` and click on `Save`.
 
 This test event simulates the scenario where a new object (like a VPC Flow Log file) is uploaded or updated in your S3 bucket, triggering the Lambda function to process the event as if an actual file upload occurred.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-lambda_test_event.webp"
-  alt="Test event"
-  caption="Test event"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-lambda_test_event.webp" alt="Test event" caption="Test event" />
 <br></br>Step 3: Go back to your function. Under `Code`, select `lambda_function` and paste in the
 Lambda function code that you copied and saved on your local earlier.{' '}
 
 Click on the `Deploy` button and then the `Test` button to deploy and test the function.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-test_and_deploy_lambda_code.webp"
-  alt="Deploy and test the Lambda function"
-  caption="Deploy and test the Lambda function"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-test_and_deploy_lambda_code.webp" alt="Deploy and test the Lambda function" caption="Deploy and test the Lambda function" />
 <br></br>Below is a successful execution result. The flow logs are printed out, and the data is sent
 to the SigNoz endpoint.{' '}
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-logs_sent_to_signoz.webp"
-  alt="Execution successful"
-  caption="Execution successful"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-logs_sent_to_signoz.webp" alt="Execution successful" caption="Execution successful" />
 <br></br>
 
 ### Visualize the VPC Flow Logs in SigNoz
@@ -782,33 +641,17 @@ Once your VPC Flow Logs are successfully forwarded to SigNoz, you can gain valua
 
 Step 1: Open your SigNoz cloud account in your browser and click on the `Logs` section.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-signoz_account.webp"
-  alt="SigNoz cloud account"
-  caption="SigNoz cloud account"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-signoz_account.webp" alt="SigNoz cloud account" caption="SigNoz cloud account" />
 <br></br>Step 2: The time filter is located at the top right corner of the `Logs` page. From the
 drop-down menu, select `Live` to see the most recent logs.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-filter_live_logs.webp"
-  alt="Live logs view"
-  caption="Live logs view"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-filter_live_logs.webp" alt="Live logs view" caption="Live logs view" />
 <br></br>You should see the recent logs sent from the S3 bucket.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-54957ad1-e5e5-45da-9d1a-b032d0fb5cfc.webp"
-  alt="Logs from the S3 bucket"
-  caption="Logs from the S3 bucket"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-54957ad1-e5e5-45da-9d1a-b032d0fb5cfc.webp" alt="Logs from the S3 bucket" caption="Logs from the S3 bucket" />
 <br></br>You can also click on any of the logs to see more information.
 
-<Figure
-  src="/img/guides/2024/07/vpc-flow-logs-b8b68791-01ee-4554-9b09-f331868e8b8c.webp"
-  alt="Log details"
-  caption="Log details"
-/>
+<Figure src="/img/guides/2024/07/vpc-flow-logs-b8b68791-01ee-4554-9b09-f331868e8b8c.webp" alt="Log details" caption="Log details" />
 <br></br>
 
 ## Conclusion

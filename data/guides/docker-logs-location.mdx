@@ -1,6 +1,5 @@
 ---
 title: "Docker Logs Location: Where are Docker Logs Stored?"
-slug: "docker-logs-location"
 date: "2025-09-03"
 tags: [docker, logging]
 authors: [daniel]
@@ -92,11 +91,7 @@ journalctl -xu docker.service
 tail -f /var/log/syslog | grep docker
 ```
 
-<Figure
-  src="/img/guides/2024/07/docker-logs-location-journal_docker_service.webp"
-  alt="Docker daemon logs via journalctl"
-  caption="Viewing Docker daemon logs using journalctl command"
-/>
+<Figure src="/img/guides/2024/07/docker-logs-location-journal_docker_service.webp" alt="Docker daemon logs via journalctl" caption="Viewing Docker daemon logs using journalctl command" />
 
 ### Windows Systems
 
@@ -135,11 +130,7 @@ tail -f ~/Library/Containers/com.docker.docker/Data/log/vm/containerd.log
 **Docker Desktop UI Access:**
 You can also access container logs through the Docker Desktop interface:
 
-<Figure
-  src="/img/guides/2024/07/docker-logs-location-docker_container_logs.webp"
-  alt="Docker container logs in Docker Desktop"
-  caption="Accessing container logs through Docker Desktop UI"
-/>
+<Figure src="/img/guides/2024/07/docker-logs-location-docker_container_logs.webp" alt="Docker container logs in Docker Desktop" caption="Accessing container logs through Docker Desktop UI" />
 
 ## Mastering the Docker Logs Command
 
@@ -339,11 +330,7 @@ While direct log access works for debugging, production environments need scalab
 
 **Real-time Analysis**: Advanced log querying capabilities with structured filtering, search builders, and JSON views for efficient troubleshooting.
 
-<Figure
-  src="/img/guides/2024/07/docker-logs-location-Untitled.webp"
-  alt="SigNoz Dashboard for Docker log management"
-  caption="SigNoz Dashboard provides comprehensive log management capabilities"
-/>
+<Figure src="/img/guides/2024/07/docker-logs-location-Untitled.webp" alt="SigNoz Dashboard for Docker log management" caption="SigNoz Dashboard provides comprehensive log management capabilities" />
 
 **Integration Benefits**: 
 - Pre-configured setup with ready-to-use `docker-compose.yaml` files
@@ -357,19 +344,11 @@ While direct log access works for debugging, production environments need scalab
 - Anomaly detection for proactive issue identification
 - Advanced retention and archiving policies
 
-<Figure
-  src="/img/guides/2024/07/docker-logs-location-Untitled%201.webp"
-  alt="Live tail logging in SigNoz"
-  caption="Real-time log monitoring with live tail logging"
-/>
+<Figure src="/img/guides/2024/07/docker-logs-location-Untitled%201.webp" alt="Live tail logging in SigNoz" caption="Real-time log monitoring with live tail logging" />
 
 **Advanced Filtering and Search**:
 
-<Figure
-  src="/img/guides/2024/07/docker-logs-location-Untitled%202.webp"
-  alt="SigNoz Log Query Builder"
-  caption="Advanced Log Query Builder for filtering and searching logs"
-/>
+<Figure src="/img/guides/2024/07/docker-logs-location-Untitled%202.webp" alt="SigNoz Log Query Builder" caption="Advanced Log Query Builder for filtering and searching logs" />
 
 ### Setup Process
 

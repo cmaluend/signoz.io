@@ -1,7 +1,6 @@
 ---
 
 title: What are Kubernetes Pods? Not Just a Container Wrapper
-slug: kubernetes-pod
 date: 2025-12-21
 tags: [kubernetes, pods]
 authors: [saurabh_patil]
@@ -27,11 +26,7 @@ By using Pods, Kubernetes make sure that these tightly coupled containers always
 
 ## Pod vs Container vs Node
 
-<Figure 
-  src="/img/guides/2025/12/kubernetes-pod-pod-node-container.webp"
-  alt="Overview diagram of Node, Pod and Container in Kubernetes"
-  caption="Overview diagram of Node, Pod and Container in Kubernetes" 
-/>
+<Figure  src="/img/guides/2025/12/kubernetes-pod-pod-node-container.webp" alt="Overview diagram of Node, Pod and Container in Kubernetes" caption="Overview diagram of Node, Pod and Container in Kubernetes" />
 
 Containers, Pods, and Nodes represent different levels of abstraction in Kubernetes.
 
@@ -84,11 +79,7 @@ A sidecar is a helper container that enhances the main application without chang
 
 - **Example:** Your main container runs a web server. A sidecar container runs a log agent that reads the server's log files and ships them to an observability backend like SigNoz.
     
-<Figure
-  src="/img/guides/2025/12/kubernetes-pod-sidecar-pattern.webp"
-  alt="Diagram of sidecar pattern with main container and log-agent sidecar"
-  caption="Diagram of sidecar pattern with main container and log-agent sidecar"
-/>
+<Figure src="/img/guides/2025/12/kubernetes-pod-sidecar-pattern.webp" alt="Diagram of sidecar pattern with main container and log-agent sidecar" caption="Diagram of sidecar pattern with main container and log-agent sidecar" />
 
 ### The Ambassador Pattern
 
@@ -96,11 +87,7 @@ An ambassador container acts as a proxy for the main container, abstracting away
 
 - **Example:** Your application connects to `localhost:5432` for a database. The ambassador proxies that connection to the correct remote database cluster, handling authentication and routing automatically.
 
-<Figure
-  src="/img/guides/2025/12/kubernetes-pod-ambassador-pattern.webp"
-  alt="Diagram of Ambassador pattern with Ambassador container handling routing and authentication"
-  caption="Diagram of Ambassador pattern with Ambassador container handling routing and authentication"
-/>
+<Figure src="/img/guides/2025/12/kubernetes-pod-ambassador-pattern.webp" alt="Diagram of Ambassador pattern with Ambassador container handling routing and authentication" caption="Diagram of Ambassador pattern with Ambassador container handling routing and authentication" />
 
 ## How Kubernetes Tracks and Maintains Pod Health
 
@@ -187,11 +174,7 @@ kubectl get pods
 
 You should see `demo-pod` with a status such as Pending, Running, Succeeded, Failed, or Unknown. Once the image is pulled and the container starts, the status should be Running.
 
-<Figure 
-  src="/img/guides/2025/12/kubernetes-pod-get-pods.webp"
-  alt="Screenshot of kubectl get pods showing demo-pod in Running state"
-  caption="Screenshot of kubectl get pods showing demo-pod in Running state"
-/>
+<Figure  src="/img/guides/2025/12/kubernetes-pod-get-pods.webp" alt="Screenshot of kubectl get pods showing demo-pod in Running state" caption="Screenshot of kubectl get pods showing demo-pod in Running state" />
 
 ### Step 4: Inspect Pod details
 
@@ -203,10 +186,7 @@ kubectl describe pod demo-pod
 
 This command helps you understand why a Pod is in its current state by showing scheduling details, container status, and events. It's most useful for quick Pod-level debugging before diving into logs or node issues.
 
-<Figure
-src="/img/guides/2025/12/kubernetes-pod-describe.webp"
-alt="Screenshot of kubectl describe pod showing demo-pod details"
-caption="Screenshot of kubectl describe pod showing demo-pod details" />
+<Figure src="/img/guides/2025/12/kubernetes-pod-describe.webp" alt="Screenshot of kubectl describe pod showing demo-pod details" caption="Screenshot of kubectl describe pod showing demo-pod details" />
 
 ### Step 5: View pod logs
 
@@ -218,11 +198,7 @@ To inspect the container's stdout and stderr output, use:
 kubectl logs demo-pod
 ```
 
-<Figure
-  src="/img/guides/2025/12/kubernetes-pod-pod-logs.webp"
-  alt="Screenshot of kubectl logs demo-pod showing demo-pod logs"
-  caption="Screenshot of kubectl logs demo-pod showing demo-pod logs"
-/>
+<Figure src="/img/guides/2025/12/kubernetes-pod-pod-logs.webp" alt="Screenshot of kubectl logs demo-pod showing demo-pod logs" caption="Screenshot of kubectl logs demo-pod showing demo-pod logs" />
 
 For a deeper, step-by-step guide to viewing, filtering, and troubleshooting Kubernetes logs (including multi-container Pods and common pitfalls), see the <a href="https://signoz.io/blog/kubectl-logs/" rel="noopener noreferrer nofollow" target="_blank">SigNoz Guide to Kubectl Logs</a>.
 
@@ -283,11 +259,7 @@ SigNoz builds on this foundation as an OpenTelemetry-native observability platfo
 
 SigNoz provides out-of-the-box visibility into the core signals that define Pod health:
 
-<Figure 
-  src="/img/guides/2025/12/kubernetes-pod-pod-health-dash.webp"
-  alt="Out of the box visibility core signal provided by SigNoz"
-  caption="Out of the box visibility core signal provided by SigNoz"
-/>
+<Figure src="/img/guides/2025/12/kubernetes-pod-pod-health-dash.webp" alt="Out of the box visibility core signal provided by SigNoz" caption="Out of the box visibility core signal provided by SigNoz" />
 
 - **Infrastructure Metrics:** Track CPU and memory usage at the Pod and container level and compare them against configured requests and limits. This helps identify noisy neighbours, understand Quality of Service (QoS) behaviour, and prevent resource contention. Learn more in the [Kubernetes Metrics Documentation](https://signoz.io/docs/userguide/k8s-metrics/).
 - **Pod Logs:** Automatically collect and analyze logs from every container in a Pod. This makes it easy to debug failures such as `CrashLoopBackOff` or `OOMKilled` by inspecting the final logs emitted before a restart or termination. See the guide on [Collecting Kubernetes Pod Logs](https://signoz.io/docs/userguide/collect_kubernetes_pod_logs/).

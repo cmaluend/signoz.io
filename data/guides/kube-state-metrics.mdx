@@ -1,7 +1,6 @@
 ---
 
 title: Kube State Metrics - Production Grade Kubernetes Monitoring with Helm & OpenTelemetry
-slug: kube-state-metrics
 date: 2026-01-02
 tags: [kubernetes, observability]
 authors: [saurabh_patil]
@@ -33,21 +32,13 @@ In summary, kube-state-metrics is essential for state-based monitoring, compleme
 
 Kube-state-metrics (KSM) is a lightweight Go-based service that runs as a Deployment in your Kubernetes cluster. Here is its core workflow:
 
-<Figure
-  src="/img/guides/2026/01/kube-state-metrics-ksm-workflow.webp"
-  alt="Workflow of Kube State Metrics"
-  caption="Workflow of Kube State Metrics"
-/>
+<Figure src="/img/guides/2026/01/kube-state-metrics-ksm-workflow.webp" alt="Workflow of Kube State Metrics" caption="Workflow of Kube State Metrics" />
 
 1. **Connection to API Server**: KSM uses the Kubernetes client-go library to establish an informer-based connection. It performs initial **LIST** calls to fetch all relevant objects (e.g., Pods, Deployments) and sets up **WATCH** streams for real-time updates.
 2. **Resource Watching**: It monitors a predefined set of Kubernetes resources via informers. On events (add, update, delete), it caches the object states in memory without persisting data.
 3. **Metric Generation**: For each watched object, KSM generates Prometheus-compatible metrics by extracting metadata and status fields (e.g., pod phase, replica counts). This is done via generator functions that produce key-value pairs like `kube_pod_status_phase{phase="Running"} 1`.
 
-<Figure
-  src="/img/guides/2026/01/kube-state-metrics-generated-metrics.webp"
-  alt="Generated metrics, exposed over /metrics endpoint"
-  caption="Generated metrics, exposed over /metrics endpoint"
-/>
+<Figure src="/img/guides/2026/01/kube-state-metrics-generated-metrics.webp" alt="Generated metrics, exposed over /metrics endpoint" caption="Generated metrics, exposed over /metrics endpoint" />
 
 4. **Exposure**: An HTTP server (default port 8080) serves these metrics at `/metrics` endpoint. Prometheus scrapes this endpoint periodically (e.g., every 30s) and stores the results for querying/alerting.
 
@@ -252,11 +243,7 @@ Metrics should start appearing in your SigNoz Cloud dashboard within 1-2 minutes
 
 In production, a dedicated dashboard provides you with at-a-glance cluster health. We have created a dashboard for this demo, as shown below.
 
-<Figure
-  src="/img/guides/2026/01/kube-state-metrics-demo-dashboard.webp"
-  alt="Kube State Metrics Demo Dashboard"
-  caption="Kube State Metrics Demo Dashboard"
-/>
+<Figure src="/img/guides/2026/01/kube-state-metrics-demo-dashboard.webp" alt="Kube State Metrics Demo Dashboard" caption="Kube State Metrics Demo Dashboard" />
 
 You can import this dashboard as JSON from <a href="https://github.com/SigNoz/examples/blob/main/dashboards/kubernetes/kube-state-metrics/k8s-state-metrics.json" rel="noopener noreferrer nofollow" target="_blank">Kube-State-Metrics: Dashboard</a>.
 
@@ -288,18 +275,10 @@ Let’s set up alerts now. Go to `Alerts` → `Rules` → `+ New Alert`. We'll c
 
 - Once you click  the `+ New Alert` button, you will be prompted with a form to define your metrics and alert conditions. You can create a query in our case to monitor the pods in a failed state. You can set an alert on this query to check for pods in a failed state in the last 5 minutes and generate an alert.
 
-<Figure
-  src="/img/guides/2026/01/kube-state-metrics-define-alert.webp"
-  alt="Defining the Metric and Alert Conditions"
-  caption="Defining the Metric and Alert Conditions"
-/>
+<Figure src="/img/guides/2026/01/kube-state-metrics-define-alert.webp" alt="Defining the Metric and Alert Conditions" caption="Defining the Metric and Alert Conditions" />
 - Below you will see an Alert Configuration box. You can configure your alert severity, name, description and notification channels here.
 
-<Figure
-  src="/img/guides/2026/01/kube-state-metrics-config-alert.webp"
-  alt="Configuring Alert with Threshold and Notification Channel"
-  caption="Configuring Alert with Threshold and Notification Channel"
-/>
+<Figure src="/img/guides/2026/01/kube-state-metrics-config-alert.webp" alt="Configuring Alert with Threshold and Notification Channel" caption="Configuring Alert with Threshold and Notification Channel" />
 - Save the rule.
 
 SigNoz provides different types of alerts, including Anomaly, Metrics, Logs, Traces, and Exception-based alerts. You can read more about them in [Creating a New Alert in SigNoz](https://signoz.io/docs/userguide/alerts-management/#creating-a-new-alert-in-signoz).
@@ -318,11 +297,7 @@ Wait 1-5 minutes → Check Alerts → Triggered tab in SigNoz for fired alerts a
 
 An alert will be generated, and you will receive an email if selected as a notification channel, similar to below.
 
-<Figure 
-  src="/img/guides/2026/01/kube-state-metrics-email-notification.webp"
-  alt="Example Email Alert for Pod in Failed State"
-  caption="Example Email Alert for Pod in Failed State"
-/>
+<Figure  src="/img/guides/2026/01/kube-state-metrics-email-notification.webp" alt="Example Email Alert for Pod in Failed State" caption="Example Email Alert for Pod in Failed State" />
 
 Congratulations! You've successfully built a production-grade Kubernetes monitoring setup using kube-state-metrics, Helm, OpenTelemetry Collector, and SigNoz Cloud.
 

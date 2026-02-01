@@ -1,6 +1,5 @@
 ---
 title: "Fixing Upstream Connect Errors (Docker, Kubernetes, Spring Boot & More)"
-slug: "upstream-connect-error"
 date: "2025-09-08"
 tags: [devops]
 authors: ["niyati_thakkar"]
@@ -65,21 +64,13 @@ Docker's containerized networking creates isolated namespaces that often confuse
 
 Here's what happens when you misconfigure localhost in Docker:
 
-<Figure
-  src="/img/guides/2025/09/upstream-connect-error-docker-localhost-problem.webp"
-  alt="Docker localhost problem causing upstream connect error"
-  caption="When nginx in a container tries to connect to localhost:3000, it looks inside its own container, not at the host or other containers"
-/>
+<Figure src="/img/guides/2025/09/upstream-connect-error-docker-localhost-problem.webp" alt="Docker localhost problem causing upstream connect error" caption="When nginx in a container tries to connect to localhost:3000, it looks inside its own container, not at the host or other containers" />
 
 When nginx runs in a container and you configure it to connect to `localhost:3000`, it looks for port 3000 inside the nginx container itself, not on your host machine or in other containers. Each container has its own network namespace with its own localhost.
 
 This is how Docker networking should work:
 
-<Figure
-  src="/img/guides/2025/09/upstream-connect-error-docker-networking-correct.webp"
-  alt="Docker networking with correct configuration"
-  caption="Docker's internal DNS resolves container names to IP addresses for seamless inter-container communication"
-/>
+<Figure src="/img/guides/2025/09/upstream-connect-error-docker-networking-correct.webp" alt="Docker networking with correct configuration" caption="Docker's internal DNS resolves container names to IP addresses for seamless inter-container communication" />
 
 Docker's internal DNS automatically resolves container names to their IP addresses, enabling seamless communication between containers on the same network.
 
@@ -97,11 +88,7 @@ Kubernetes abstracts networking through Services and Endpoints, which introduces
 
 Here's how service discovery works in Kubernetes:
 
-<Figure
-  src="/img/guides/2025/09/upstream-connect-error-kubernetes-service-discovery.webp"
-  alt="Kubernetes service discovery flow"
-  caption="Kubernetes Service uses selectors to find matching Pods and create Endpoints for traffic routing"
-/>
+<Figure src="/img/guides/2025/09/upstream-connect-error-kubernetes-service-discovery.webp" alt="Kubernetes service discovery flow" caption="Kubernetes Service uses selectors to find matching Pods and create Endpoints for traffic routing" />
 
 The service discovery flow works like this:
 1. Client Pod makes a request to a Service (ClusterIP)
@@ -123,11 +110,7 @@ Cloud providers add their own layer of complexity through security groups, healt
 
 Here's how cloud load balancers manage traffic:
 
-<Figure
-  src="/img/guides/2025/09/upstream-connect-error-load-balancer-architecture.webp"
-  alt="Load balancer architecture and health checks"
-  caption="Cloud load balancers continuously monitor target health and only route traffic to healthy instances"
-/>
+<Figure src="/img/guides/2025/09/upstream-connect-error-load-balancer-architecture.webp" alt="Load balancer architecture and health checks" caption="Cloud load balancers continuously monitor target health and only route traffic to healthy instances" />
 The load balancer continuously monitors target health and only routes traffic to healthy instances. 
 When health checks fail, the load balancer removes instances from rotation. If ALL
 instances fail health checks (even if they're actually running), the load balancer has no upstream
@@ -169,11 +152,7 @@ Rather than randomly checking configurations, follow this systematic approach to
 
 Start with this decision tree to quickly narrow down the issue:
 
-<Figure
-  src="/img/guides/2025/09/upstream-connect-error-diagnosis-decision-tree.webp"
-  alt="Upstream error diagnosis decision tree"
-  caption="Decision tree to quickly identify whether you're dealing with a service availability issue (502/503) or network connectivity problem (timeout)"
-/>
+<Figure src="/img/guides/2025/09/upstream-connect-error-diagnosis-decision-tree.webp" alt="Upstream error diagnosis decision tree" caption="Decision tree to quickly identify whether you're dealing with a service availability issue (502/503) or network connectivity problem (timeout)" />
 
 This decision tree helps you quickly identify whether you're dealing with a service availability issue (502/503) or a network connectivity problem (timeout), directing your troubleshooting efforts appropriately.
 
@@ -471,11 +450,7 @@ Istio adds mTLS and traffic management, which can cause upstream errors if misco
 
 Here's how requests flow through an Istio service mesh:
 
-<Figure
-  src="/img/guides/2025/09/upstream-connect-error-istio-service-mesh-flow.webp"
-  alt="Istio service mesh request flow"
-  caption="Each pod's sidecar proxy intercepts all network traffic in an Istio service mesh"
-/>
+<Figure src="/img/guides/2025/09/upstream-connect-error-istio-service-mesh-flow.webp" alt="Istio service mesh request flow" caption="Each pod's sidecar proxy intercepts all network traffic in an Istio service mesh" />
 
 Each pod's sidecar proxy intercepts all network traffic, adding security and observability but also introducing potential failure points.
 

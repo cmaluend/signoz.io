@@ -1,7 +1,6 @@
 ---
 
 title: Total Blocking Time (TBT) - All You Need to Know
-slug: total-blocking-time
 date: 2025-12-22
 tags: [frontend, monitoring]
 authors: [saurabh_patil]
@@ -42,35 +41,19 @@ Blocking Time = Task Duration - 50 ms
 
 Imagine a page load has three tasks after FCP:
 
-<Figure 
-  src="/img/guides/2025/12/total-blocking-time-three-tasks.webp"
-  alt="Task A, B & C on MainThread after FCP."
-  caption="Task A, B & C on MainThread after FCP."
-/>
+<Figure  src="/img/guides/2025/12/total-blocking-time-three-tasks.webp" alt="Task A, B & C on MainThread after FCP." caption="Task A, B & C on MainThread after FCP." />
 
 1. Task A takes 250 ms. Since it is above 50 ms, we can apply the formula (250 - 50), so it contributes 200 ms to TBT.
 
-<Figure
-  src="/img/guides/2025/12/total-blocking-time-task-a.webp"
-  alt="Task A TBT time breakdown"
-  caption="Task A TBT time breakdown"
-/>
+<Figure src="/img/guides/2025/12/total-blocking-time-task-a.webp" alt="Task A TBT time breakdown" caption="Task A TBT time breakdown" />
 
 2. Task B takes 30 ms. As it's not more than 50 ms, it is not significant. Hence, its contribution to TBT will be 0 ms.
 
-<Figure
-  src="/img/guides/2025/12/total-blocking-time-task-b.webp"
-  alt="Task B less than 50 ms"
-  caption="Task B less than 50 ms"
-/>
+<Figure src="/img/guides/2025/12/total-blocking-time-task-b.webp" alt="Task B less than 50 ms" caption="Task B less than 50 ms" />
 
 3. Task C takes 60 ms, similar to above, we can apply the formula (60 - 50), so it contributes 10 ms to TBT.
 
-<Figure
-  src="/img/guides/2025/12/total-blocking-time-task-c.webp"
-  alt="Task C TBT time breakdown"
-  caption="Task C TBT time breakdown"
-/>
+<Figure src="/img/guides/2025/12/total-blocking-time-task-c.webp" alt="Task C TBT time breakdown" caption="Task C TBT time breakdown" />
 
 Total Blocking Time is simply the sum of all these blocking portions, i.e, `200 + 10 =  210 ms`.
 
@@ -219,11 +202,7 @@ Open Chrome DevTools → Lighthouse, select Performance, and click `Analyze page
 
 Lighthouse will now surface Total Blocking Time.
 
-<Figure
-  src="/img/guides/2025/12/total-blocking-time-unoptimize-lighthouse.webp"
-  alt="High TBT as a result of java script blocking main thread"
-  caption="High TBT as a result of java script blocking main thread"
-/>
+<Figure src="/img/guides/2025/12/total-blocking-time-unoptimize-lighthouse.webp" alt="High TBT as a result of java script blocking main thread" caption="High TBT as a result of java script blocking main thread" />
 
 **Step 4: Reduce TBT by Breaking Up Long Tasks**
 
@@ -248,11 +227,7 @@ Replace long synchronous tasks with smaller chunks that yield control back to th
 
 Re-running Lighthouse after this change shows a significant drop in Total Blocking Time.
 
-<Figure
-  src="/img/guides/2025/12/total-blocking-time-imporved-lighthouse.webp"
-  alt="Improved TBT after splitting the java script tasks"
-  caption="Improved TBT after splitting the java script tasks"
-/>
+<Figure src="/img/guides/2025/12/total-blocking-time-imporved-lighthouse.webp" alt="Improved TBT after splitting the java script tasks" caption="Improved TBT after splitting the java script tasks" />
 
 ### Measuring TBT Using PageSpeed Insights (PSI)
 

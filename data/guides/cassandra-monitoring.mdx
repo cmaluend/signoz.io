@@ -1,7 +1,6 @@
 ---
 
 title: Apache Cassandra Monitoring with OpenTelemetry [including dashboards and alerts]
-slug: cassandra-monitoring 
 date: 2026-01-10
 tags: [monitoring, cassandra]
 authors: [saurabh_patil]
@@ -42,11 +41,7 @@ OTel includes the [OpenTelemetry Collector](/blog/opentelemetry-collector-comple
 
 **`OTel Collector`**: It acts as the bridge. We configure it with a JMX Receiver that connects to Cassandra's port `7199`. It queries the specific metrics we care about and translates them from internal Java Objects (MBeans) into standard OTel metrics. The OTel Collector then uses an Exporter to push this data to your observability platform for visualization.
 
-<Figure 
-  src="/img/guides/2026/01/cassandra-monitoring-gemini-cassarch.webp"
-  alt="Architecture diagram illustrating Apache Cassandra monitoring pipeline: JMX metrics moving to OpenTelemetry Collector via JMX Receiver, then exporting to SigNoz cloud backend."
-  caption="Production Architecture: JMX metrics flowing from Cassandra nodes to the OpenTelemetry Collector and SigNoz."
-/>
+<Figure  src="/img/guides/2026/01/cassandra-monitoring-gemini-cassarch.webp" alt="Architecture diagram illustrating Apache Cassandra monitoring pipeline: JMX metrics moving to OpenTelemetry Collector via JMX Receiver, then exporting to SigNoz cloud backend." caption="Production Architecture: JMX metrics flowing from Cassandra nodes to the OpenTelemetry Collector and SigNoz." />
 
 ## Cassandra Monitoring Checklist: Key Metrics for Production
 
@@ -254,11 +249,7 @@ docker compose exec cassandra nodetool status
 
 You should see output similar to:
 
-<Figure
-  src="/img/guides/2026/01/cassandra-monitoring-nodetool-status.webp"
-  alt="Cassandra nodetool status output showing a single node in UN (Up & Normal) state"
-  caption="Cassandra nodetool status output showing a single node in UN (Up & Normal) state"
-/>
+<Figure src="/img/guides/2026/01/cassandra-monitoring-nodetool-status.webp" alt="Cassandra nodetool status output showing a single node in UN (Up & Normal) state" caption="Cassandra nodetool status output showing a single node in UN (Up & Normal) state" />
 
 The key part is the **Status/State** column:
 
@@ -459,11 +450,7 @@ As the metrics are being sent to SigNoz, let's visualize them using the ready-ma
 
     Locate the global variable **`$host.name`** at the top of the dashboard.
 
-<Figure
-  src="/img/guides/2026/01/cassandra-monitoring-dashboard-hostname.webp"
-  alt="SigNoz Cassandra dashboard showing the Token Range Read Request Latency panel"
-  caption="SigNoz Cassandra dashboard showing the Token Range Read Request Latency panel"
-/>
+<Figure src="/img/guides/2026/01/cassandra-monitoring-dashboard-hostname.webp" alt="SigNoz Cassandra dashboard showing the Token Range Read Request Latency panel" caption="SigNoz Cassandra dashboard showing the Token Range Read Request Latency panel" />
 
   <KeyPointCallout defaultCollapsed="true" title="Find your hostname">
     In SigNoz, open the `host.name` dropdown (or use Metrics Explorer) and select an existing `host.name` value emitted with your metrics.
@@ -473,11 +460,7 @@ As the metrics are being sent to SigNoz, let's visualize them using the ready-ma
 
 Update the variable value with the correct hostname. Click the dropdown arrow to see available values and select yours. Once set, the dashboard panels will populate.
 
-<Figure
-  src="/img/guides/2026/01/cassandra-monitoring-dashboard-cassandra.webp"
-  alt="SigNoz Cassandra Dashboard with key metrics panels"
-  caption="SigNoz Cassandra Dashboard with key metrics panels"
-/>
+<Figure src="/img/guides/2026/01/cassandra-monitoring-dashboard-cassandra.webp" alt="SigNoz Cassandra Dashboard with key metrics panels" caption="SigNoz Cassandra Dashboard with key metrics panels" />
 
 3. **Key panels in the Cassandra dashboard**
 
@@ -552,11 +535,7 @@ python3 test_metrics.py --test requests
 
 Once the threshold is breached, you should receive an email alert similar to:
 
-<Figure
-src="/img/guides/2026/01/cassandra-monitoring-email-alert.webp"
-alt="SigNoz email notification showing a fired Cassandra read request latency alert, triggered when observed latency (8.24 ms) exceeded the configured 4 ms warning threshold."
-caption="SigNoz email notification showing a fired Cassandra read request latency alert"
-/>
+<Figure src="/img/guides/2026/01/cassandra-monitoring-email-alert.webp" alt="SigNoz email notification showing a fired Cassandra read request latency alert, triggered when observed latency (8.24 ms) exceeded the configured 4 ms warning threshold." caption="SigNoz email notification showing a fired Cassandra read request latency alert" />
 
 If you want to deep-dive into all the alerts provided by SigNoz, check out our [Alert Management Docs](/docs/alerts/).
 

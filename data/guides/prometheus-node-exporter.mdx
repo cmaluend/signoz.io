@@ -1,6 +1,5 @@
 ---
 title: Prometheus Node Exporter - Install, Run & Visualize
-slug: prometheus-node-exporter
 date: 2025-12-15
 tags: [prometheus, node-exporter]
 authors: [saurabh_patil]
@@ -65,11 +64,7 @@ cd node_exporter-<VERSION>.<OS>-<ARCH>
 
 Once Node Exporter is running, your terminal output should look similar to the screenshot below:
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporte-cli-output.webp"
-  alt="Command-line output after starting Node Exporter"
-  caption="Command-line output after starting Node Exporter"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporte-cli-output.webp" alt="Command-line output after starting Node Exporter" caption="Command-line output after starting Node Exporter" />
 
 <KeyPointCallout title="Exporter for Windows OS." defaultCollapsed="true">
   For Windows-based systems, host metrics can be collected using the <a href="https://github.com/prometheus-community/windows_exporter" rel="noopener noreferrer nofollow" target="_blank">Windows Exporter</a>. 
@@ -88,11 +83,7 @@ All host and system metrics exposed by Node Exporter are prefixed with `node_`, 
 
 You should now see output similar to the screenshot below, confirming that Node Exporter is successfully exposing your machine's CPU, memory, disk, network, and other system metrics.
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporter-host-metrics.webp"
-  alt="Hostmetrics exported by Node Exporter"
-  caption="Hostmetrics exported by Node Exporter"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporter-host-metrics.webp" alt="Hostmetrics exported by Node Exporter" caption="Hostmetrics exported by Node Exporter" />
 
 ## Setting Up Prometheus
 
@@ -154,11 +145,7 @@ rate(node_cpu_seconds_total{mode="system"}[1m])
 
 This gives you a real-time view of how your system’s CPU is behaving, directly sourced from Node Exporter.
 
-<Figure
-  src="/img/guides/2025/12/prometheus-node-exporter-cpu-usage.webp"
-  alt="CPU usage calculated from `node_cpu_seconds_total` over a 1-minute window"
-  caption="CPU usage calculated from `node_cpu_seconds_total` over a 1-minute window"
-/>
+<Figure src="/img/guides/2025/12/prometheus-node-exporter-cpu-usage.webp" alt="CPU usage calculated from `node_cpu_seconds_total` over a 1-minute window" caption="CPU usage calculated from `node_cpu_seconds_total` over a 1-minute window" />
 
 Congratulations!! You’ve successfully set up Node Exporter and verified that Prometheus is scraping host-level metrics. While the Prometheus expression browser is great for quick queries and debugging, it’s limited for building rich, interactive dashboards or correlating host metrics with application behaviour. This is where the next step in modern monitoring comes in.
 

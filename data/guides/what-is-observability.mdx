@@ -1,6 +1,5 @@
 ---
 title: 'What Is Observability? And How to Get Started'
-slug: what-is-observability
 date: '2025-12-02'
 tags: [observability, opentelemetry]
 authors: [saurabh_patil]
@@ -37,11 +36,7 @@ Imagine driving a car. You have a dashboard with gauges for speed, fuel, and eng
 - **Monitoring** is the check engine light. It tells you that something is wrong (a boolean state: broken/not broken).
 - **Observability** is hooking the car up to a diagnostic computer. It allows a mechanic to see the rich, granular data from every sensor in the engine to understand why the light turned on, was it a loose gas cap, a misfiring cylinder, or a bad oxygen sensor?
 
-<Figure
-  src="/img/guides/2025/12/car_analogy_observability.webp"
-  alt="Illustration describing the difference between monitoring vs observability"
-  caption="Illustration describing the difference between monitoring vs observability"
-/>
+<Figure src="/img/guides/2025/12/car_analogy_observability.webp" alt="Illustration describing the difference between monitoring vs observability" caption="Illustration describing the difference between monitoring vs observability" />
 
 In distributed software systems, you cannot simply "open the hood" to look at the code running on a server, especially in containerized or serverless environments where that server might disappear in minutes. You rely entirely on the diagnostic data the system emits to recreate what happened.
 
@@ -56,11 +51,7 @@ To achieve this visibility, observability relies on three primary types of telem
 
    Here’s what these metrics often look like when plotted on an operational dashboard:
 
-   <Figure
-     src="/img/guides/2025/12/metrics_what_is_observability.webp"
-     alt="SigNoz’s dashboard showing out of the box RED metrics."
-     caption="SigNoz’s dashboard showing out of the box RED metrics."
-   />
+   <Figure src="/img/guides/2025/12/metrics_what_is_observability.webp" alt="SigNoz’s dashboard showing out of the box RED metrics." caption="SigNoz’s dashboard showing out of the box RED metrics." />
 
 2. **Logs:** Discrete, timestamped records of events, collected and stored to get context of incident to answer questions like “What was the error message?”, “Which function caused the error?”, etc.
 
@@ -69,11 +60,7 @@ To achieve this visibility, observability relies on three primary types of telem
 
    This is how logs typically appear when viewed in a standard logging dashboard. You can click on a log line and explore its attributes and body text.
 
-   <Figure
-     src="/img/guides/2025/12/logs_what_is_observability.webp"
-     alt="SigNoz’s log management module showing a detailed view of a log along with its attributes."
-     caption="SigNoz’s log management module showing a detailed view of a log along with its attributes."
-   />
+   <Figure src="/img/guides/2025/12/logs_what_is_observability.webp" alt="SigNoz’s log management module showing a detailed view of a log along with its attributes." caption="SigNoz’s log management module showing a detailed view of a log along with its attributes." />
 
 3. **Traces:** The journey of a single request as it hops between services.
 
@@ -82,11 +69,7 @@ To achieve this visibility, observability relies on three primary types of telem
 
    Here’s what traces often look like when inspected through a typical tracing interface.
 
-   <Figure
-     src="/img/guides/2025/12/traces_what_is_observability.webp"
-     alt="Example trace showing the journey of a request."
-     caption="Example trace showing the journey of a request."
-   />
+   <Figure src="/img/guides/2025/12/traces_what_is_observability.webp" alt="Example trace showing the journey of a request." caption="Example trace showing the journey of a request." />
 
    <KeyPointCallout title="Are these three pillars enough?" defaultCollapsed="true">
      Observability is often explained using the “Three Pillars” model, but the goal is not to manage
@@ -154,11 +137,7 @@ Understanding observability is the easy part. The real challenge begins when tea
 
 But an observability platform isn't just one tool, it's a pipeline that handles data in four stages:
 
-<Figure
-  src="/img/guides/2025/12/4_step_instrumentation.webp"
-  alt="Illustration showing 4 steps of implementing observability"
-  caption="Illustration showing 4 steps of implementing observability"
-/>
+<Figure src="/img/guides/2025/12/4_step_instrumentation.webp" alt="Illustration showing 4 steps of implementing observability" caption="Illustration showing 4 steps of implementing observability" />
 
 ### 1. Instrumentation (SDKs & Agents)
 

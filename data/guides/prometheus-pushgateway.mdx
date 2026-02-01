@@ -1,7 +1,6 @@
 ---
 
 title: Prometheus Pushgateway - How to Monitor Short Lived Batch Jobs
-slug: prometheus-pushgateway
 date: 2026-01-14
 tags: [prometheus, opentelemetry]
 authors: [saurabh_patil]
@@ -41,11 +40,7 @@ For Example:
 
 Unlike the standard Prometheus model, where the server "pulls" data, the Pushgateway sits in the middle. It accepts "pushed" metrics from your short-lived processes and acts as a metrics cache, holding that data for Prometheus to scrape.
 
-<Figure
-  src="/img/guides/2026/01/prometheus-pushgateway-workflow.webp"
-  alt="The Batch Job pushes data once and dies. The Pushgateway holds the metric. Prometheus scrapes the Gateway later."
-  caption="This diagram illustrates the workflow where Prometheus scrapes metrics from short-lived batch jobs via a Pushgateway intermediary."
-/>
+<Figure src="/img/guides/2026/01/prometheus-pushgateway-workflow.webp" alt="The Batch Job pushes data once and dies. The Pushgateway holds the metric. Prometheus scrapes the Gateway later." caption="This diagram illustrates the workflow where Prometheus scrapes metrics from short-lived batch jobs via a Pushgateway intermediary." />
 
 1. **The Batch Job Runs:** Your backup operation or ephemeral data processing task starts, runs its logic, and calculates metrics (e.g., `backup_duration_seconds`, `records_processed`).
 2. **The Push:** Before the job exits, it sends an HTTP POST request to the Pushgateway containing these metric values.
@@ -626,21 +621,13 @@ As verified in the previous step, metrics are being sent to the pushgateway. Now
 
 You can log in to your SigNoz cloud account and open `metrics` tab. Wait 2-3 minutes, and you should see your metrics flow in.
 
-<Figure
-  src="/img/guides/2026/01/prometheus-pushgateway-metrics-signoz.webp"
-  alt="Metrics Flowing in from Pushgateway to SigNoz Cloud via OTel Collector"
-  caption="Metrics Flowing in from Pushgateway to SigNoz Cloud via OTel Collector"
-/>
+<Figure src="/img/guides/2026/01/prometheus-pushgateway-metrics-signoz.webp" alt="Metrics Flowing in from Pushgateway to SigNoz Cloud via OTel Collector" caption="Metrics Flowing in from Pushgateway to SigNoz Cloud via OTel Collector" />
 
 ### Step 12: Visualization in SigNoz Cloud
 
 You can follow our [Create Custom Dashboard](/docs/userguide/manage-dashboards/#create-a-custom-dashboard) docs to create a similar dashboard. You can also import below dashboard configurations by either downloading or copying the [prometheus-pushgateway.json](https://github.com/SigNoz/examples/tree/main/dashboards/prometheus/pushgateway) and import it while creating the dashboard. You can follow our docs on [Import Dashboard in Signoz](/docs/dashboards/import-dashboard/) for detailed steps.
 
-<Figure
-  src="/img/guides/2026/01/prometheus-pushgateway-dashboard.webp"
-  alt="Prometheus Pushgateway dashboard consisting of end-to-end visibility into backup and ETL job health—tracking duration, size, throughput, failures, and cleanup activity via Prometheus Pushgateway metrics."
-  caption="Prometheus Pushgateway Dashboard"
-/>
+<Figure src="/img/guides/2026/01/prometheus-pushgateway-dashboard.webp" alt="Prometheus Pushgateway dashboard consisting of end-to-end visibility into backup and ETL job health—tracking duration, size, throughput, failures, and cleanup activity via Prometheus Pushgateway metrics." caption="Prometheus Pushgateway Dashboard" />
 
 ### Step 13: Cleanup
 

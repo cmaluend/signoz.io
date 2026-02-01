@@ -1,6 +1,5 @@
 ---
 title: Kubernetes Operators - How to Build Your First One
-slug: kubernetes-operator
 date: 2025-12-26
 tags: [kubernetes, orchestration]
 authors: [saurabh_patil]
@@ -132,11 +131,7 @@ The controller is the brain of the Operator. It is a custom application (often w
     3. **Act**: Emit imperative commands to Kubernetes (via the API) to converge the states (e.g., create a new pod, scale a StatefulSet, or trigger a backup job). If something fails, it retries or logs errors.
     4. **Repeat**: Go back to step 1. This makes the system resilient to failures.
 
-<Figure
-	src="/img/guides/2025/12/kubernetes-operator-reconcilliation.webp"
-	alt="Diagram of Reconciliation loop"
-	caption="Reconciliation loop"
-/>
+<Figure src="/img/guides/2025/12/kubernetes-operator-reconcilliation.webp" alt="Diagram of Reconciliation loop" caption="Reconciliation loop" />
 
 <KeyPointCallout defaultCollapsed="true" title="Observing your Operators in production">
 

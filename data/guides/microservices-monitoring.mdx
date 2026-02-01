@@ -1,6 +1,5 @@
 ---
 title: 'Microservices Monitoring 101 - Fundamentals + How to Monitor with OpenTelemetry'
-slug: microservices-monitoring
 date: '2025-11-11'
 tags: [microservices, opentelemetry]
 authors: [yuvraj]
@@ -51,11 +50,7 @@ Here’s a simple comparison:
 
 To get a complete picture, modern monitoring relies on three types of telemetry, often called the pillars of observability. Let’s understand each of them.
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_14.02.072x.webp"
-  alt="An illustration showing metrics, traces, and logs."
-  caption="An illustration showing metrics, traces, and logs."
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_14.02.072x.webp" alt="An illustration showing metrics, traces, and logs." caption="An illustration showing metrics, traces, and logs." />
 
 ### Metrics
 
@@ -279,29 +274,17 @@ Navigate to the **Services** tab in SigNoz. You will see both `catalog-node` and
 
 Click on the **Service Map** tab to see the automatically generated dependency graph showing how `catalog-node` calls `pricing-fastapi`.
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.13.412x.webp"
-  alt="Service map showing the two services connected with each other"
-  caption="Service map showing the two services connected with each other"
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.13.412x.webp" alt="Service map showing the two services connected with each other" caption="Service map showing the two services connected with each other" />
 
 ### Analyzing APM Metrics and Errors
 
 Click on the `pricing-fastapi` service in the `Services` tab from the left sidebar. SigNoz provides an out-of-the-box dashboard showing its RED metrics.
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.07.232x.webp"
-  alt="APM for Pricing Service Showing the RED metrics"
-  caption="APM for Pricing Service Showing the RED metrics"
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.07.232x.webp" alt="APM for Pricing Service Showing the RED metrics" caption="APM for Pricing Service Showing the RED metrics" />
 
 Because our demo app is designed to fail occasionally, you will see spikes in the **Error Rate** chart.
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.44.152x.webp"
-  alt="Error spiking in the pricing-fastapi service"
-  caption="Error spiking in the pricing-fastapi service"
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.44.152x.webp" alt="Error spiking in the pricing-fastapi service" caption="Error spiking in the pricing-fastapi service" />
 
 ### Analyzing Distributed Traces
 
@@ -309,11 +292,7 @@ To find out **why** errors are happening, go to the **Traces** tab. You can filt
 
 You will see the full end-to-end journey of the request as a flame graph.
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_13.31.102x.webp"
-  alt="Full Trace view showing the journey"
-  caption="Full Trace view showing the journey"
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_13.31.102x.webp" alt="Full Trace view showing the journey" caption="Full Trace view showing the journey" />
 
 This view clearly shows:
 
@@ -325,29 +304,17 @@ Now you know exactly which service caused the failure, allowing you to fix the p
 
 You can also use the attributes we added in the code, like `sku`, to filter and group your traces. This allows you to see if a problem is affecting a specific product or customer:
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.46.232x.webp"
-  alt="per-SKU attributes let you slice performance by product without adding high-cardinality labels."
-  caption="per-SKU attributes let you slice performance by product without adding high-cardinality labels."
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.46.232x.webp" alt="per-SKU attributes let you slice performance by product without adding high-cardinality labels." caption="per-SKU attributes let you slice performance by product without adding high-cardinality labels." />
 
 ### Correlating Logs and Traces
 
 Let's find the exact log for that failed request. Go to the **Logs** tab and filter for the `pricing-fastapi` service. You will see the error logs from the application.
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.40.422x.webp"
-  alt="View logs for the pricing-fastapi service"
-  caption="View logs for the pricing-fastapi service"
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.40.422x.webp" alt="View logs for the pricing-fastapi service" caption="View logs for the pricing-fastapi service" />
 
 Notice that each log line includes a `trace_id`. If you find an error log, you can click the `trace_id`...
 
-<Figure
-  src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.41.042x.webp"
-  alt="Click trace_id from a logs to view the correlated trace."
-  caption="Click trace_id from a logs to view the correlated trace."
-/>
+<Figure src="/img/guides/2025/11/microservices-monitoring-CleanShot_2025-11-11_at_11.41.042x.webp" alt="Click trace_id from a logs to view the correlated trace." caption="Click trace_id from a logs to view the correlated trace." />
 
 ...and SigNoz will immediately take you to the full distributed trace for that exact request. This powerful correlation saves you from manually searching for logs.
 
