@@ -99,7 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let opentelemetryRoutes: MetadataRoute.Sitemap = []
   try {
     const opentelemetryRoutesResponse = (await fetchMDXContentByPath(
-      'opentelemetry',
+      'opentelemetries',
       undefined,
       deploymentStatus,
       true
@@ -107,7 +107,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     opentelemetryRoutes = opentelemetryRoutesResponse.data.map((opentelemetry) => ({
       url: `${siteUrl}/opentelemetry${opentelemetry.path}/`,
-      lastModified: opentelemetry.updatedAt || opentelemetry.publishedAt,
+      lastModified: opentelemetry.date || opentelemetry.updatedAt || opentelemetry.publishedAt,
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
     }))
