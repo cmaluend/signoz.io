@@ -1,6 +1,6 @@
 import OpenTelemetryClient from './OpenTelemetryClient'
 import { Metadata } from 'next'
-import { fetchMDXContentByPath } from '@/utils/strapi'
+import { fetchMDXContentByPath, MDXContent } from '@/utils/strapi'
 
 export const revalidate = 3600
 export const dynamicParams = true
@@ -33,7 +33,7 @@ export default async function OpenTelemetryHome() {
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deployment_status = isProduction ? 'live' : 'staging'
   let articles: any[] = []
-  let comparisons: any[] = []
+  let comparisons: MDXContent[] = []
 
   try {
     const response = await fetchMDXContentByPath(
@@ -51,26 +51,10 @@ export default async function OpenTelemetryHome() {
   try {
     const response = await fetchMDXContentByPath('comparisons', undefined, deployment_status, true)
 
-    comparisons = (response.data || []) as any[]
+    comparisons = (response.data || []) as MDXContent[]
   } catch (error) {
     console.error('Error fetching comparisons:', error)
   }
 
-  // Transform comparisons to match BlogPostCard structure if needed
-  const formattedComparisons = comparisons.map((post) => ({
-    title: post.title,
-    summary: post.excerpt || post.description,
-    date: post.publishedAt,
-    tags: post.tags?.map((t: any) => t.value) || [],
-    path: post.path || `comparisons/${post.slug}`,
-    slug: post.slug,
-    authors:
-      post.authors?.map((author: any) => ({
-        name: author.name,
-        image: author.image_url,
-      })) || [],
-    readingTime: { text: post.readingTime?.text || '5 min read' },
-  }))
-
-  return <OpenTelemetryClient initialArticles={articles} comparisons={formattedComparisons} />
+  return <OpenTelemetryClient initialArticles={articles} comparisons={comparisons} />
 }
