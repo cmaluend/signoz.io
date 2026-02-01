@@ -42,14 +42,17 @@ const mapOpentelemetryEntries = (opentelemetries: MDXContentApiResponse | undefi
 }
 
 const buildComparisonSlug = (slug = '') => {
-  return normaliseSlug(`comparisons/${slug}`)
+  const cleanedPath = slug.startsWith('/') ? slug : `/${slug}`
+  return normaliseSlug(`comparisons${cleanedPath}`)
 }
 
 const mapComparisonEntries = (comparisons: MDXContentApiResponse | undefined) => {
   return comparisons?.data.map((comparison) => ({
     ...comparison,
-    slug: buildComparisonSlug(comparison.slug),
+    slug: buildComparisonSlug(comparison.path),
     date: comparison.date ?? comparison.publishedAt ?? comparison.updatedAt ?? comparison.createdAt,
+    tags: comparison.tags?.map((tag) => tag?.value),
+    authors: comparison?.authors?.map((author) => author?.key),
   }))
 }
 

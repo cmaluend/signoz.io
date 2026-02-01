@@ -14,20 +14,8 @@ import { fetchMDXContentByPath, MDXContent } from '@/utils/strapi'
 import { generateStructuredData } from '@/utils/structuredData'
 import { compileMDX } from 'next-mdx-remote/rsc'
 import readingTime from 'reading-time'
-import GithubSlugger from 'github-slugger'
-
-// Remark and rehype plugins
-import remarkGfm from 'remark-gfm'
-import {
-  remarkExtractFrontmatter,
-  remarkCodeTitles,
-  remarkImgToJsx,
-} from 'pliny/mdx-plugins/index.js'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import rehypePrismPlus from 'rehype-prism-plus'
-import remarkMath from 'remark-math'
-import { fromHtmlIsomorphic } from 'hast-util-from-html-isomorphic'
+import { generateTOC, mdxOptions } from '@/utils/mdxUtils'
+import { CoreContent } from 'pliny/utils/contentlayer'
 
 export const dynamicParams = true
 export const revalidate = 0
@@ -36,69 +24,6 @@ const defaultLayout = 'ComparisonsLayout'
 const layouts = {
   OpenTelemetryLayout,
   ComparisonsLayout,
-}
-
-// Heroicon mini link for auto-linking headers
-const linkIcon = fromHtmlIsomorphic(
-  `<span class="content-header-link">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 linkicon">
-      <path d="M12.232 4.232a2.5 2.5 0 0 1 3.536 3.536l-1.225 1.224a.75.75 0 0 0 1.061 1.06l1.224-1.224a4 4 0 0 0-5.656-5.656l-3 3a4 4 0 0 0 .225 5.865.75.75 0 0 0 .977-1.138 2.5 2.5 0 0 1-.142-3.667l3-3Z" />
-      <path d="M11.603 7.963a.75.75 0 0 0-.977 1.138 2.5 2.5 0 0 1 .142 3.667l-3 3a2.5 2.5 0 0 1-3.536-3.536l1.225-1.224a.75.75 0 0 0-1.061-1.06l-1.224 1.224a4 4 0 1 0 5.656 5.656l3-3a4 4 0 0 0-.225-5.865Z" />
-    </svg>
-  </span>`,
-  { fragment: true }
-)
-
-// MDX processing options with all plugins
-const mdxOptions = {
-  mdxOptions: {
-    remarkPlugins: [
-      remarkExtractFrontmatter,
-      remarkGfm,
-      remarkCodeTitles,
-      remarkMath,
-      remarkImgToJsx,
-    ],
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: 'prepend',
-          headingProperties: {
-            className: ['content-header'],
-          },
-          content: linkIcon,
-        },
-      ],
-      [rehypePrismPlus, { defaultLanguage: 'tsx', ignoreMissing: true }],
-    ],
-  },
-}
-
-// Generate table of contents from MDX content
-function generateTOC(content: string) {
-  const regXHeader = /\n(?<flag>#{1,3})\s+(?<content>.+)/g
-  const slugger = new GithubSlugger()
-
-  // Remove code blocks to avoid parsing headers inside code
-  const regXCodeBlock = /```[\s\S]*?```/g
-  const contentWithoutCodeBlocks = content.replace(regXCodeBlock, '')
-
-  const headings = Array.from(contentWithoutCodeBlocks.matchAll(regXHeader))
-    .map(({ groups }) => {
-      const flag = groups?.flag
-      const content = groups?.content
-      if (!content) return null
-      return {
-        value: content,
-        url: `#${slugger.slug(content)}`,
-        depth: flag?.length == 1 ? 1 : flag?.length == 2 ? 2 : 3,
-      }
-    })
-    .filter((heading): heading is NonNullable<typeof heading> => heading !== null)
-
-  return headings
 }
 
 export async function generateMetadata({
@@ -216,19 +141,17 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     date: post.publishedAt,
     lastmod: post.updatedAt,
     slug: slug,
-    path: post.path || currentRoute,
+    path: `comparisons${post.path}` || currentRoute,
     tags: post.tags?.map((tag: any) => tag.value) || [],
     readingTime: readingTimeData,
     toc: toc,
     authors: post.authors?.map((author: any) => author?.name) || [],
     structuredData: structuredData,
     relatedArticles:
-      post.related_comparisons?.data?.map((comp: any) => ({
-        title: comp.attributes?.title,
-        url: comp.attributes?.path?.startsWith('/')
-          ? comp.attributes?.path
-          : `/${comp.attributes?.path}`,
-        publishedOn: comp.attributes?.publishedAt || comp.attributes?.date,
+      post.related_comparisons?.map((comp: any) => ({
+        ...comp,
+        url: `/comparisons${comp.path}`,
+        publishedOn: comp.date || comp.updatedAt || comp.publishedAt,
       })) || [],
     cta_title: post.cta_title,
     cta_text: post.cta_text,
@@ -273,7 +196,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
           />
         )}
         <OpenTelemetryHubLayout
-          content={mainContent as any}
+          content={mainContent as CoreContent<MDXContent>}
           authorDetails={authorDetails}
           authors={authorNames}
           toc={toc}
@@ -310,12 +233,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       )}
-      <Layout
-        content={mainContent as any}
-        authorDetails={authorDetails}
-        authors={authorNames}
-        toc={toc}
-      >
+      <Layout content={mainContent} authorDetails={authorDetails} authors={authorNames} toc={toc}>
         {compiledContent}
       </Layout>
     </>
