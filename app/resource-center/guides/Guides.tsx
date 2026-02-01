@@ -1,31 +1,11 @@
 'use client'
 
-import { allGuides } from 'contentlayer/generated'
-import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
 import React, { useState, useEffect, useMemo } from 'react'
 import BlogPostCard from '../Shared/BlogPostCard'
 import { filterData } from 'app/utils/common'
 import SearchInput from '../Shared/Search'
 import { Frown } from 'lucide-react'
 import SideBar, { GUIDES_TOPICS } from '@/components/SideBar'
-
-interface HeadingProps {
-  tag: string
-  text: string
-  className?: string
-}
-
-const Heading: React.FC<HeadingProps> = ({ tag, text, className = '' }) => {
-  const Tag = tag as keyof JSX.IntrinsicElements
-  return <Tag className={className}>{text}</Tag>
-}
-
-interface GuidesHeaderProps {
-  title: string
-  description: string
-  searchPlaceholder?: string
-  onSearch: (e) => void
-}
 
 const GuidesHeader = ({ title, description, searchPlaceholder, onSearch }) => {
   return (
@@ -44,8 +24,11 @@ const GuidesHeader = ({ title, description, searchPlaceholder, onSearch }) => {
   )
 }
 
-export default function Guides() {
-  const posts = allCoreContent(sortPosts(allGuides))
+interface GuidesProps {
+  posts?: any[]
+}
+
+export default function Guides({ posts = [] }: GuidesProps) {
   const [activeItem, setActiveItem] = useState(GUIDES_TOPICS.ALL)
   const [searchQuery, setSearchQuery] = useState('')
   const POST_PER_PAGE = 20
@@ -77,7 +60,7 @@ export default function Guides() {
       const postTags = post.tags?.map((tag) => tag.toLowerCase().replace(/\s+/g, ''))
       return postTags?.includes(formattedActiveItem)
     })
-  }, [searchQuery, activeItem])
+  }, [searchQuery, activeItem, posts])
 
   const handleCategoryClick = (category) => {
     setActiveItem(category)

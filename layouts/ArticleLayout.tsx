@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors, Guide } from 'contentlayer/generated'
+import type { Blog, Authors } from 'contentlayer/generated'
 import { MDXContent } from '@/utils/strapi'
 import { ExternalLink } from 'lucide-react'
 
@@ -30,7 +30,7 @@ export interface TocItemProps {
   value: string
 }
 
-type ContentType = Blog | Guide | MDXContent
+type ContentType = Blog | MDXContent
 
 type ArticleContent = ContentType & {
   cta_title?: string
@@ -40,7 +40,7 @@ type ArticleContent = ContentType & {
 
 interface LayoutProps {
   content: CoreContent<ArticleContent>
-  authorDetails: CoreContent<Authors>[]
+  authorDetails: CoreContent<Authors | MDXContent>[]
   authors: string[]
   children: ReactNode
   toc: TocItemProps[]

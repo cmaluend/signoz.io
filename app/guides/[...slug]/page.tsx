@@ -1,21 +1,24 @@
 import 'css/prism.css'
 import { components } from '@/components/MDXComponents'
-import { MDXLayoutRenderer } from 'pliny/mdx-components'
-import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer'
-import { allGuides, allAuthors } from 'contentlayer/generated'
-import type { Authors, Guide } from 'contentlayer/generated'
+import { notFound } from 'next/navigation'
 import OpenTelemetryLayout from '@/layouts/OpenTelemetryLayout'
 import OpenTelemetryHubLayout from '@/layouts/OpenTelemetryHubLayout'
 import GuidesLayout from '@/layouts/GuidesLayout'
 import { getHubContextForRoute } from '@/utils/opentelemetryHub'
 import { Metadata } from 'next'
 import siteMetadata from '@/data/siteMetadata'
-import { notFound } from 'next/navigation'
 import { SidebarIcons } from '@/components/sidebar-icons/icons'
 import PageFeedback from '../../../components/PageFeedback/PageFeedback'
 import React from 'react'
 import GrafanaVsSigNozFloatingCard from '@/components/GrafanaVsSigNoz/GrafanaVsSigNozFloatingCard'
 import Button from '@/components/ui/Button'
+import { fetchMDXContentByPath, MDXContent } from '@/utils/strapi'
+import { generateStructuredData } from '@/utils/structuredData'
+import { compileMDX } from 'next-mdx-remote/rsc'
+import readingTime from 'reading-time'
+import Link from 'next/link'
+import { generateTOC, mdxOptions } from '@/utils/mdxUtils'
+import { CoreContent } from 'pliny/utils/contentlayer'
 
 const defaultLayout = 'GuidesLayout'
 const layouts = {
@@ -23,8 +26,8 @@ const layouts = {
   GuidesLayout,
 }
 
-export const dynamicParams = false
-export const dynamic = 'force-static'
+export const dynamicParams = true
+export const revalidate = 0
 
 export async function generateMetadata({
   params,
@@ -32,59 +35,59 @@ export async function generateMetadata({
   params: { slug: string[] }
 }): Promise<Metadata | undefined> {
   const slug = decodeURI(params.slug.join('/'))
-  const post = allGuides.find((p) => p.slug === slug)
 
-  if (!post) {
-    return notFound()
-  }
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
 
-  const authorList = post?.authors || ['default']
-  const authorDetails = authorList.map((author) => {
-    const authorResults = allAuthors.find((p) => p.slug === author)
-    return coreContent(authorResults as Authors)
-  })
+  try {
+    const response = await fetchMDXContentByPath('guides', slug, deploymentStatus)
+    const post = (response?.data as MDXContent) || null
 
-  const publishedAt = new Date(post.date).toISOString()
-  const modifiedAt = new Date(post.lastmod || post.date).toISOString()
-  const authors = authorDetails.map((author) => author.name)
-  let imageList = [siteMetadata.socialBanner]
-  if (post.image) {
-    imageList = typeof post.image === 'string' ? [post.image] : post.image
-  }
-  const ogImages = imageList.map((img) => {
-    return {
-      url: img.includes('http') ? img : siteMetadata.siteUrl + img,
+    if (!post) {
+      return
     }
-  })
 
-  return {
-    title: post.title,
-    description: post.description,
-    openGraph: {
+    const publishedAt = new Date(post.publishedAt).toISOString()
+    const modifiedAt = new Date(post.updatedAt || post.publishedAt).toISOString()
+    const authors = post.authors?.map((author: any) => ({ name: author?.name })) || [
+      { name: siteMetadata.author },
+    ]
+
+    let imageList = [siteMetadata.socialBanner]
+    if (post.image) {
+      imageList = typeof post.image === 'string' ? [post.image] : post.image
+    }
+
+    return {
       title: post.title,
-      description: post.description,
-      siteName: siteMetadata.title,
-      locale: 'en_US',
-      type: 'article',
-      publishedTime: publishedAt,
-      modifiedTime: modifiedAt,
-      url: './',
-      images: ogImages,
-      authors: authors.length > 0 ? authors : [siteMetadata.author],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: post.title,
-      description: post.summary,
-      images: imageList,
-    },
+      description: post?.description || post?.excerpt,
+      openGraph: {
+        title: post.title,
+        description: post?.description || post?.excerpt,
+        siteName: siteMetadata.title,
+        locale: 'en_US',
+        type: 'article',
+        publishedTime: publishedAt,
+        modifiedTime: modifiedAt,
+        url: './',
+        images: imageList,
+        authors: authors.map((author) => author.name),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: post.title,
+        description: post.summary || post.description || post.excerpt,
+        images: imageList,
+      },
+    }
+  } catch (e) {
+    console.error('Error generating metadata for guide:', e)
+    return
   }
 }
 
 export const generateStaticParams = async () => {
-  const paths = allGuides.map((p) => ({ slug: p.slug?.split('/') }))
-
-  return paths
+  return []
 }
 
 export default async function Page({ params }: { params: { slug: string[] } }) {
@@ -92,50 +95,115 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const currentRoute = `/guides/${slug}`
   const isGrafanaOrPrometheusArticle =
     slug.toLowerCase().includes('grafana') || slug.toLowerCase().includes('prometheus')
-  // Filter out drafts in production
-  const sortedCoreContents = allCoreContent(sortPosts(allGuides))
-  const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
-  if (postIndex === -1) {
+
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  let post: MDXContent | null = null
+  try {
+    const response = await fetchMDXContentByPath('guides', slug, deploymentStatus)
+    post = (response?.data as MDXContent) || null
+  } catch (error) {
+    console.error('Error fetching guide content:', error)
+  }
+
+  if (!post) {
     return notFound()
   }
 
-  const post = allGuides.find((p) => p.slug === slug) as Guide
-  const authorList = post?.authors || ['default']
-  const authorDetails = authorList.map((author) => {
-    const authorResults = allAuthors.find((p) => p.slug === author)
-    return coreContent(authorResults as Authors)
-  })
-  const mainContent = coreContent(post)
-  const jsonLd = post.structuredData
+  const readingTimeData = readingTime(post?.content || '')
+  const toc = generateTOC(post?.content || '')
+
+  let compiledContent
+  try {
+    const { content: mdxContent } = await compileMDX({
+      source: post?.content || '',
+      components,
+      options: mdxOptions as any,
+    })
+    compiledContent = mdxContent
+  } catch (error) {
+    console.error('Error compiling MDX:', error)
+    notFound()
+  }
+
+  const structuredData = generateStructuredData('guides', post)
+
+  const mainContent = {
+    ...post,
+    date: post.publishedAt,
+    lastmod: post.updatedAt,
+    slug: slug,
+    path: post.path || currentRoute,
+    tags: post.tags?.map((tag: any) => tag.value) || [],
+    readingTime: readingTimeData,
+    toc: toc,
+    authors: post.authors?.map((author: any) => author?.name) || [],
+    structuredData: structuredData,
+    relatedArticles:
+      post.related_guides?.map((guide: any) => ({
+        ...guide,
+        url: `/guides${guide.path}`,
+        publishedOn: guide.date || guide.updatedAt || guide.publishedAt,
+      })) || [],
+    cta_title: post.cta_title,
+    cta_text: post.cta_text,
+  }
+
+  const authorDetails = post.authors?.map((author: any) => ({
+    name: author.name || 'Unknown Author',
+    avatar: author.image_url || '/static/images/signoz-logo.png',
+    occupation: author.title || 'Developer Tools',
+    company: 'SigNoz',
+    email: 'team@signoz.io',
+    twitter: 'https://twitter.com/SigNozHQ',
+    linkedin: 'https://www.linkedin.com/company/signoz',
+    github: 'https://github.com/SigNoz/signoz',
+    path: `/authors/${author.key || 'default'}`,
+    type: 'Authors',
+  })) || [
+    {
+      name: 'SigNoz Team',
+      avatar: '/static/images/signoz-logo.png',
+      occupation: 'Developer Tools',
+      company: 'SigNoz',
+      email: 'team@signoz.io',
+      twitter: 'https://twitter.com/SigNozHQ',
+      linkedin: 'https://www.linkedin.com/company/signoz',
+      github: 'https://github.com/SigNoz/signoz',
+      path: '/authors/default',
+      type: 'Authors',
+    },
+  ]
+
+  const authorNames = authorDetails.map((author: any) => author.name)
 
   const hubContext = getHubContextForRoute(currentRoute)
 
   if (hubContext) {
     return (
       <>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        {structuredData && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          />
+        )}
 
         <div className="container mx-auto">
-          <Button
-            variant={'ghost'}
-            to={`/resource-center/guides/`}
-            className="ml-3.5 mt-10 hover:bg-transparent"
-          >
-            <span className="flex items-center">
+          <Button variant={'ghost'} isButton={true} className="ml-3.5 mt-10 hover:bg-transparent">
+            <Link href={`/resource-center/guides/`} className="flex items-center">
               <SidebarIcons.ArrowLeft />
               <span className="pl-1.5 text-sm">Back to Guides</span>
-            </span>
+            </Link>
           </Button>
         </div>
 
         <OpenTelemetryHubLayout
-          content={mainContent}
+          content={mainContent as CoreContent<MDXContent>}
           authorDetails={authorDetails}
-          authors={authorList}
-          toc={post.toc}
+          authors={authorNames}
+          toc={toc}
           navItems={hubContext.items}
           currentHubPath={hubContext.pathKey}
           pathMeta={hubContext.firstRouteByPath}
@@ -143,7 +211,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
           availableLanguages={hubContext.languages}
           currentRoute={currentRoute}
         >
-          <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+          <div className="prose prose-slate max-w-none dark:prose-invert">{compiledContent}</div>
           <PageFeedback />
         </OpenTelemetryHubLayout>
 
@@ -166,31 +234,24 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {structuredData && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      )}
 
       <div className="container mx-auto">
-        <Button
-          variant={'ghost'}
-          to={`/resource-center/guides/`}
-          className="ml-3.5 mt-10 hover:bg-transparent"
-        >
-          <span className="flex items-center">
+        <Button variant={'ghost'} isButton={true} className="ml-3.5 mt-10 hover:bg-transparent">
+          <Link href={`/resource-center/guides/`} className="flex items-center">
             <SidebarIcons.ArrowLeft />
             <span className="pl-1.5 text-sm">Back to Guides</span>
-          </span>
+          </Link>
         </Button>
       </div>
 
-      <Layout
-        content={mainContent}
-        authorDetails={authorDetails}
-        authors={authorList}
-        toc={post.toc}
-      >
-        <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+      <Layout content={mainContent} authorDetails={authorDetails} authors={authorNames} toc={toc}>
+        <div className="prose prose-slate max-w-none dark:prose-invert">{compiledContent}</div>
       </Layout>
 
       {/* Render GrafanaVsSigNozFloatingCard if the slug contains Grafana or Prometheus */}

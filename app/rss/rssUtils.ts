@@ -1,5 +1,5 @@
 import { sortPosts } from 'pliny/utils/contentlayer.js'
-import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
+import { allBlogs, allDocs } from 'contentlayer/generated'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '../../utils/strapi'
 import { normaliseSlug } from '../../scripts/rssFeed.mjs'
 
@@ -56,6 +56,19 @@ const mapComparisonEntries = (comparisons: MDXContentApiResponse | undefined) =>
   }))
 }
 
+const buildGuideSlug = (path = '') => {
+  const cleanedPath = path.startsWith('/') ? path : `/${path}`
+  return normaliseSlug(`guides${cleanedPath}`)
+}
+
+const mapGuideEntries = (guides: MDXContentApiResponse | undefined) => {
+  return guides?.data.map((guide) => ({
+    ...guide,
+    slug: buildGuideSlug(guide.path),
+    date: guide.date ?? guide.publishedAt ?? guide.updatedAt ?? guide.createdAt,
+  }))
+}
+
 export const loadPublishedPosts = async () => {
   const deploymentStatus = getDeploymentStatus()
   const allFaqs = (await fetchMDXContentByPath('faqs', undefined, deploymentStatus, true)) as
@@ -82,13 +95,22 @@ export const loadPublishedPosts = async () => {
 
   const comparisonPosts = mapComparisonEntries(allComparisonsResponse)
 
+  const allGuidesResponse = (await fetchMDXContentByPath(
+    'guides',
+    undefined,
+    deploymentStatus,
+    true
+  )) as MDXContentApiResponse | undefined
+
+  const guidePosts = mapGuideEntries(allGuidesResponse)
+
   const combinedPosts = [
     ...faqPosts,
     ...allBlogs,
     ...(opentelemetryPosts || []),
     ...(comparisonPosts || []),
+    ...(guidePosts || []),
     ...allDocs,
-    ...allGuides,
   ]
 
   return sortPosts(combinedPosts.filter((post: any) => post?.draft !== true) as any[])

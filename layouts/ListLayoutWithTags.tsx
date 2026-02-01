@@ -5,22 +5,23 @@ import { usePathname } from 'next/navigation'
 import { slug } from 'github-slugger'
 import { formatDate } from 'pliny/utils/formatDate'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Doc, Guide } from 'contentlayer/generated'
+import type { Blog, Doc } from 'contentlayer/generated'
 import Link from '@/components/Link'
 import Tag from '@/components/Tag'
 import Button from '@/components/Button/Button'
 import siteMetadata from '@/data/siteMetadata'
 import tagData from 'app/tag-data.json'
 import { RegionProvider } from '@/components/Region/RegionContext'
+import { MDXContent } from '@/utils/strapi'
 
 interface PaginationProps {
   totalPages: number
   currentPage: number
 }
 interface ListLayoutProps {
-  posts: CoreContent<Blog | Doc | Guide>[]
+  posts: CoreContent<Blog | Doc | MDXContent>[]
   title: string
-  initialDisplayPosts?: CoreContent<Blog | Doc | Guide>[]
+  initialDisplayPosts?: CoreContent<Blog | Doc | MDXContent>[]
   pagination?: PaginationProps
   emptyMessage?: string
 }

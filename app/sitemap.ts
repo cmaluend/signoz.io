@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
+import { allBlogs, allDocs } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -42,16 +42,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: post.lastmod || post.date,
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
-    }))
-
-  // New section for guides
-  const guideRoutes = allGuides
-    .filter((guide) => !guide.draft)
-    .map((guide) => ({
-      url: `${siteUrl}/${guide.path}/`,
-      lastModified: guide.lastmod || guide.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.7,
     }))
 
   const isProduction = process.env.VERCEL_ENV === 'production'
@@ -114,6 +104,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch (error) {
     console.error('Error fetching opentelemetry routes for sitemap:', error)
     // Return empty array if fetching fails
+  }
+
+  let guideRoutes: MetadataRoute.Sitemap = []
+  try {
+    const guidesResponse = (await fetchMDXContentByPath(
+      'guides',
+      undefined,
+      deploymentStatus,
+      true
+    )) as MDXContentApiResponse
+
+    guideRoutes = guidesResponse.data.map((guide) => ({
+      url: `${siteUrl}/guides${guide.path}/`,
+      lastModified: guide.date || guide.updatedAt || guide.publishedAt,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.7,
+    }))
+  } catch (error) {
+    console.error('Error fetching guides for sitemap:', error)
   }
 
   let comparisonRoutes: MetadataRoute.Sitemap = []

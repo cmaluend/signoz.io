@@ -1,5 +1,5 @@
 import hubConfig from '@/constants/opentelemetry_hub.json'
-import { allBlogs, allGuides, type Blog, type Guide } from 'contentlayer/generated'
+import { allBlogs, type Blog } from 'contentlayer/generated'
 import { MDXContent } from './strapi'
 
 type RawHubPath = {
@@ -76,15 +76,15 @@ let memoizedHubIndex: HubIndex | null = null
 const contentIndex = [
   {
     prefix: '/blog/',
-    collection: allBlogs as Array<Blog | Guide | MDXContent>,
+    collection: allBlogs as Array<Blog | MDXContent>,
   },
   {
     prefix: '/comparisons/',
-    collection: [] as Array<Blog | Guide | MDXContent>,
+    collection: [] as Array<Blog | MDXContent>,
   },
   {
     prefix: '/guides/',
-    collection: allGuides as Array<Blog | Guide | MDXContent>,
+    collection: [] as Array<Blog | MDXContent>,
   },
 ]
 
