@@ -6,6 +6,7 @@ import type { Authors } from 'contentlayer/generated'
 import { MDXContent } from '@/utils/strapi'
 import ArticleLayout, { TocItemProps } from './ArticleLayout'
 import PageFeedback from '@/components/PageFeedback/PageFeedback'
+import { RegionProvider } from '@/components/Region/RegionContext'
 
 // Extend the MDXContent type to include CTA fields
 interface ComparisonContent extends MDXContent {
@@ -34,18 +35,19 @@ export default function ComparisonsLayout({
   toc,
 }: LayoutProps) {
   return (
-    <ArticleLayout
-      // @ts-ignore
-      content={content}
-      authorDetails={authorDetails}
-      authors={authors}
-      toc={toc}
-      contentType="comparison"
-      showNewsletter={true}
-      showRelatedArticles={true}
-    >
-      {children}
-      <PageFeedback />
-    </ArticleLayout>
+    <RegionProvider>
+      <ArticleLayout
+        content={content}
+        authorDetails={authorDetails}
+        authors={authors}
+        toc={toc}
+        contentType="comparison"
+        showNewsletter={true}
+        showRelatedArticles={true}
+      >
+        {children}
+        <PageFeedback />
+      </ArticleLayout>
+    </RegionProvider>
   )
 }
