@@ -40,7 +40,6 @@ import APMQuickStartOverview from './APM/APMQuickStartOverview'
 import APMInstrumentationListicle from './APM/APMInstrumentationListicle'
 import JavascriptInstrumentationListicle from './APM/JavascriptInstrumentationListicle'
 import JavaInstrumentationListicle from './APM/JavaInstrumentationListicle'
-import PHPInstrumentationListicle from './APM/PHPInstrumentationListicle'
 import LibraryTabs from './LibraryTabs/LibraryTabs'
 import LibraryTab from './LibraryTabs/LibraryTab'
 import MDXButton from './MDXButton/MDXButton'
@@ -126,7 +125,6 @@ export const components: MDXComponents = {
   APMInstrumentationListicle,
   JavascriptInstrumentationListicle,
   JavaInstrumentationListicle,
-  PHPInstrumentationListicle,
   LibraryTabs,
   LibraryTab,
   MDXButton,

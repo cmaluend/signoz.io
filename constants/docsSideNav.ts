@@ -1002,23 +1002,8 @@ const docsSideNav = [
             type: 'category',
             isExpanded: false,
             label: 'PHP',
-            route: '/docs/instrumentation/php/overview',
+            route: '/docs/instrumentation/opentelemetry-php',
             items: [
-              {
-                type: 'doc',
-                route: '/docs/instrumentation/php/opentelemetry-php',
-                label: 'PHP',
-              },
-              {
-                type: 'doc',
-                route: '/docs/instrumentation/php/opentelemetry-laravel',
-                label: 'Laravel',
-              },
-              {
-                type: 'doc',
-                route: '/docs/instrumentation/php/opentelemetry-wordpress',
-                label: 'WordPress',
-              },
               {
                 type: 'doc',
                 route: '/docs/instrumentation/php/manual-instrumentation',
