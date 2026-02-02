@@ -114,6 +114,26 @@ module.exports = () => {
           permanent: true,
         },
         {
+          source: '/docs/instrumentation/php/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/laravel/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-laravel/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-wordpress/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
           source: '/docs/tutorial/jvm-metrics/',
           destination:
             '/docs/metrics-management/send-metrics/applications/opentelemetry-java/#jvm-runtime-metrics',
@@ -519,16 +539,6 @@ module.exports = () => {
         {
           source: '/docs/instrumentation/opentelemetry-react-native/',
           destination: '/docs/instrumentation/javascript/opentelemetry-react-native/',
-          permanent: true,
-        },
-        {
-          source: '/docs/instrumentation/php/',
-          destination: '/docs/instrumentation/opentelemetry-php/',
-          permanent: true,
-        },
-        {
-          source: '/docs/instrumentation/laravel/',
-          destination: '/docs/instrumentation/opentelemetry-laravel/',
           permanent: true,
         },
         {
