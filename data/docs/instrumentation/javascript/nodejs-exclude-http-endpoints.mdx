@@ -1,5 +1,5 @@
 ---
-date: 2026-01-28
+date: 2026-02-01
 id: nodejs-exclude-http-endpoints
 title: Exclude HTTP endpoints in Node.js
 description: Learn how to exclude specific HTTP endpoints from being instrumented in Node.js
@@ -10,22 +10,24 @@ import GetHelp from '@/components/shared/get-help.md'
 
 By default, OpenTelemetry automatically instruments all incoming and outgoing HTTP requests. However, endpoints like health checks (`/health`), readiness probes, or metrics (`/metrics`) can generate a lot of noise in your traces.
 
-This guide shows you how to filter out these requests using `HttpInstrumentation` so they don't produce spans.
+This guide shows you how to filter out these requests by configuring the `HttpInstrumentation` hook so they don't produce spans.
 
 ## Prerequisites
 
-- Node.js version 18.0 or higher
+- Node.js version 18.0 or higher (see official list of [supported versions](https://github.com/open-telemetry/opentelemetry-js?tab=readme-ov-file#supported-runtimes))
 - OpenTelemetry SDK installed and configured
 
 ## Configure HttpInstrumentation
 
 The `HttpInstrumentation` class allows you to define an `ignoreIncomingRequestHook`. This hook is a function that receives the request object (`req`). If it returns `true`, the request is ignored and no span is created.
 
-You can configure this using `@opentelemetry/auto-instrumentations-node` (Recommended) or by manually instantiating `HttpInstrumentation`.
+<Admonition type="important">
+If you're using zero-code instrumentation, method given below will require to make some code changes in your application.
+</Admonition>
 
 <Tabs>
-<TabItem value="automatic" label="Auto-Instrumentation (recommended)" default>
-If you are using `getNodeAutoInstrumentations`, pass the configuration to the `@opentelemetry/instrumentation-http` key:
+<TabItem value="automatic" label="Using Auto-Instrumentation SDK" default>
+If you are using `getNodeAutoInstrumentations`, pass the configuration to the `@opentelemetry/instrumentation-http` key. The `getNodeAutoInstrumentations` helper allows you to configure specific instrumentations by name.
 
 ```javascript:instrumentation.js
 const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
@@ -56,7 +58,7 @@ sdk.start();
 </TabItem>
 <TabItem value="manual" label="Manual Instrumentation">
 
-If you are manually adding instrumentations, configure the class directly:
+If you are manually adding instrumentations, instantiate and configure the `HttpInstrumentation` class directly:
 
 ```javascript:instrumentation.js
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
