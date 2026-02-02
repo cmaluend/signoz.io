@@ -14,7 +14,7 @@ import readingTime from 'reading-time'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import { generateTOC, mdxOptions } from '@/utils/mdxUtils'
 
-export const revalidate = 0
+export const revalidate = 86400
 export const dynamicParams = true
 
 export async function generateMetadata({

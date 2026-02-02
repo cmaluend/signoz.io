@@ -18,7 +18,7 @@ import { generateTOC, mdxOptions } from '@/utils/mdxUtils'
 import { CoreContent } from 'pliny/utils/contentlayer'
 
 export const dynamicParams = true
-export const revalidate = 0
+export const revalidate = 86400
 
 const defaultLayout = 'ComparisonsLayout'
 const layouts = {
