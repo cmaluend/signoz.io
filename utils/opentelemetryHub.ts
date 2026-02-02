@@ -1,6 +1,6 @@
 import hubConfig from '@/constants/opentelemetry_hub.json'
 import { allBlogs, allGuides, type Blog, type Guide } from 'contentlayer/generated'
-import { MDXContent } from './strapi'
+import { MDXContent, fetchMDXContentByPath, MDXContentApiResponse } from './strapi'
 
 type RawHubPath = {
   key: string
@@ -174,7 +174,32 @@ function collectLanguages(items: HubNavItem[], accumulator: Set<string>) {
   }
 }
 
-function buildHubIndex(): HubIndex {
+async function buildHubIndex(): Promise<HubIndex> {
+  const comparisonIndex = contentIndex.find((c) => c.prefix === '/comparisons/')
+  if (comparisonIndex && comparisonIndex.collection.length === 0) {
+    try {
+      const isProduction = process.env.VERCEL_ENV === 'production'
+      const deploymentStatus = isProduction ? 'live' : 'staging'
+
+      const response = (await fetchMDXContentByPath(
+        'comparisons',
+        undefined,
+        deploymentStatus,
+        true
+      )) as MDXContentApiResponse
+
+      if (response?.data) {
+        comparisonIndex.collection = response.data.map((comparison) => ({
+          ...comparison,
+          slug: `comparisons${comparison.path}`,
+          path: `/comparisons${comparison.path}`,
+        }))
+      }
+    } catch (e) {
+      console.error('Failed to fetch comparisons for hub index', e)
+    }
+  }
+
   const lookup = new Map<string, HubLookupEntry>()
   const paths: HubPathNav[] = []
 
@@ -242,17 +267,17 @@ function buildHubIndex(): HubIndex {
   return { lookup, paths }
 }
 
-function getHubIndex(): HubIndex {
+async function getHubIndex(): Promise<HubIndex> {
   if (memoizedHubIndex) {
     return memoizedHubIndex
   }
-  memoizedHubIndex = buildHubIndex()
+  memoizedHubIndex = await buildHubIndex()
   return memoizedHubIndex
 }
 
-export function getHubContextForRoute(route: string) {
+export async function getHubContextForRoute(route: string) {
   const normalized = normalizeRoute(route)
-  const { lookup, paths } = getHubIndex()
+  const { lookup, paths } = await getHubIndex()
 
   const match = lookup.get(normalized)
   if (!match) {
@@ -274,12 +299,12 @@ export function getHubContextForRoute(route: string) {
   }
 }
 
-export function listHubRoutes(): string[] {
-  const { lookup } = getHubIndex()
+export async function listHubRoutes(): Promise<string[]> {
+  const { lookup } = await getHubIndex()
   return Array.from(lookup.keys())
 }
 
-export function getHubPaths(): HubPathNav[] {
-  const { paths } = getHubIndex()
+export async function getHubPaths(): Promise<HubPathNav[]> {
+  const { paths } = await getHubIndex()
   return paths
 }

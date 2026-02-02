@@ -51,6 +51,7 @@ export const mdxOptions = {
 
 // Generate table of contents from MDX content
 export function generateTOC(content: string) {
+  if (!content) return []
   const regXHeader = /\n(?<flag>#{1,3})\s+(?<content>.+)/g
   const slugger = new GithubSlugger()
 

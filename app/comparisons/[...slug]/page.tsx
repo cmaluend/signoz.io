@@ -188,7 +188,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   ]
   const authorNames = authorDetails.map((author: any) => author.name)
 
-  const hubContext = getHubContextForRoute(currentRoute)
+  const hubContext = await getHubContextForRoute(currentRoute)
 
   if (hubContext) {
     return (

@@ -237,7 +237,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       }
     : null
 
-  const hubContext = getHubContextForRoute(currentRoute)
+  const hubContext = await getHubContextForRoute(currentRoute)
 
   if (hubContext) {
     return (
