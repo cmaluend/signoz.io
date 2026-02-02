@@ -1012,14 +1012,17 @@ const docsSideNav = [
             ],
           },
           {
-            type: 'doc',
+            type: 'category',
+            isExpanded: false,
             label: 'PHP',
             route: '/docs/instrumentation/opentelemetry-php',
-          },
-          {
-            type: 'doc',
-            label: 'Laravel',
-            route: '/docs/instrumentation/opentelemetry-laravel',
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/instrumentation/php/manual-instrumentation',
+                label: 'Manual Instrumentation',
+              },
+            ],
           },
           {
             type: 'doc',
@@ -1045,11 +1048,6 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/instrumentation/opentelemetry-nginx',
             label: 'NGINX',
-          },
-          {
-            type: 'doc',
-            route: '/docs/instrumentation/opentelemetry-wordpress',
-            label: 'WordPress',
           },
           {
             type: 'doc',
