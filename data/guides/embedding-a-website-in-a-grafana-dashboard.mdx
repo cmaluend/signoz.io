@@ -216,7 +216,10 @@ Steps for Embedding Grafana Dashboards Using the API
         panelElement.className = 'panel';
         panelElement.innerHTML = `
           <h2>${panel.title}</h2>
-          <img src="${panel.url}" alt="${panel.title}" />
+          <img 
+            src="${panel.url}" 
+            alt="${panel.title}" 
+          />
         `;
         dashboardContainer.appendChild(panelElement);
       });
