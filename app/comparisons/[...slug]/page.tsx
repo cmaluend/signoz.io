@@ -145,7 +145,10 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     tags: post.tags?.map((tag: any) => tag.value) || [],
     readingTime: readingTimeData,
     toc: toc,
-    authors: post.authors?.map((author: any) => author?.name) || [],
+    authors:
+      post.authors?.map((author: any) => {
+        return { ...author, name: author?.name, key: author?.key }
+      }) || [],
     structuredData: structuredData,
     relatedArticles:
       post.related_comparisons?.map((comp: any) => ({
@@ -158,6 +161,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   }
 
   const authorDetails = post.authors?.map((author: any) => ({
+    ...author,
     name: author.name || 'Unknown Author',
     avatar: author.image_url || '/static/images/signoz-logo.png',
     occupation: author.title || 'Developer Tools',
