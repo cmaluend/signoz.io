@@ -32,7 +32,7 @@ const layouts = {
   OpenTelemetryLayout,
 }
 
-export const revalidate = 86400
+export const revalidate = 0
 export const dynamicParams = true
 
 export async function generateMetadata({

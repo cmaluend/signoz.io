@@ -2,7 +2,7 @@ import ComparisonsClient from './ComparisonsClient'
 import { fetchMDXContentByPath, MDXContent } from '@/utils/strapi'
 import readingTime from 'reading-time'
 
-export const revalidate = 86400
+export const revalidate = 3600
 export const dynamicParams = true
 
 export default async function ComparisonsHome() {

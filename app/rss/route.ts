@@ -4,7 +4,7 @@ import { generateRss } from '../../scripts/rssFeed.mjs'
 import { loadPublishedPosts } from './rssUtils'
 
 export const runtime = 'nodejs'
-export const revalidate = 86400
+export const revalidate = 60
 
 const CACHE_CONTROL_HEADER = 's-maxage=60, stale-while-revalidate=30'
 

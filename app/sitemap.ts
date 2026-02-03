@@ -21,7 +21,7 @@ const mapChangeFrequency = (
 }
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 86400
+export const revalidate = 60
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = siteMetadata.siteUrl

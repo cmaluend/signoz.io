@@ -19,7 +19,7 @@ import { compileMDX } from 'next-mdx-remote/rsc'
 import readingTime from 'reading-time'
 import { generateTOC, mdxOptions } from '@/utils/mdxUtils'
 
-export const revalidate = 86400
+export const revalidate = 0
 export const dynamicParams = true
 
 export async function generateMetadata({
