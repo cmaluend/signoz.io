@@ -341,7 +341,7 @@ export const fetchMDXContentByPath = async (
           },
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
+            'Cache-Control': 'no-store', // Avoid caching
             Pragma: 'no-cache',
             Expires: '0',
           },

@@ -67,7 +67,7 @@ const buildRenderedAuthors = (
         return {
           name,
           url: detail.url || fallbackProfile?.url,
-          image: fallbackProfile?.image_url,
+          image: detail.image_url || fallbackProfile?.image_url,
         }
       })
       .filter(Boolean) as RenderedAuthor[]
