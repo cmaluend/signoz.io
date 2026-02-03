@@ -212,8 +212,11 @@ export const fetchChangelogById = async (
 
     const response = await fetch(`${API_URL}${API_PATH}/${changelogId}${queryParams}`, {
       headers: {
-        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store', // Avoid caching
+        Pragma: 'no-cache',
+        Expires: '0',
       },
+      cache: 'no-store', // For fetch requests
     })
 
     if (!response.ok) {
@@ -341,7 +344,11 @@ export const fetchMDXContentByPath = async (
             Pragma: 'no-cache',
             Expires: '0',
             'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            Pragma: 'no-cache',
+            Expires: '0',
           },
+          cache: 'no-store',
         })
 
         if (!response.ok) {
@@ -390,10 +397,11 @@ export const fetchMDXContentByPath = async (
       },
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store', // Avoid caching
+        'Cache-Control': 'no-store',
         Pragma: 'no-cache',
         Expires: '0',
       },
+      cache: 'no-store',
     })
 
     if (!response.ok) {
@@ -451,6 +459,7 @@ export const fetchAuthorByKey = async (key: string): Promise<MDXContentByIdApiRe
         Pragma: 'no-cache',
         Expires: '0',
       },
+      cache: 'no-store', // For fetch requests
     })
 
     if (!response.ok) {
@@ -513,6 +522,7 @@ export const fetchAllMDXPaths = async (
         Pragma: 'no-cache',
         Expires: '0',
       },
+      cache: 'no-store', // For fetch requests
     })
 
     if (!response.ok) {
