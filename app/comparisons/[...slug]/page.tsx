@@ -138,14 +138,22 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   // Construct mainContent object
   const mainContent = {
     ...post,
-    date: post.publishedAt,
-    lastmod: post.updatedAt,
+    date: post.date || post.publishedAt,
+    lastmod: post.date || post.updatedAt,
     slug: slug,
     path: `comparisons${post.path}` || currentRoute,
     tags: post.tags?.map((tag: any) => tag.value) || [],
     readingTime: readingTimeData,
     toc: toc,
-    authors: post.authors?.map((author: any) => author?.name) || [],
+    authors:
+      post.authors?.map((author: any) => {
+        return {
+          ...author,
+          name: author?.name,
+          key: author?.key,
+          image: author?.image_url || '/static/images/signoz-logo.png',
+        }
+      }) || [],
     structuredData: structuredData,
     relatedArticles:
       post.related_comparisons?.map((comp: any) => ({
@@ -158,20 +166,21 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   }
 
   const authorDetails = post.authors?.map((author: any) => ({
+    ...author,
+    image: author.image_url || '/static/images/signoz-logo.png',
     name: author.name || 'Unknown Author',
-    avatar: author.image_url || '/static/images/signoz-logo.png',
     occupation: author.title || 'Developer Tools',
     company: 'SigNoz',
-    email: 'team@signoz.io',
-    twitter: 'https://twitter.com/SigNozHQ',
-    linkedin: 'https://www.linkedin.com/company/signoz',
-    github: 'https://github.com/SigNoz/signoz',
+    email: author.email || 'team@signoz.io',
+    twitter: author.twitter || 'https://twitter.com/SigNozHQ',
+    linkedin: author.linkedin || 'https://www.linkedin.com/company/signoz',
+    github: author.github || 'https://github.com/SigNoz/signoz',
     path: `/authors/${author.key || 'default'}`,
     slug: author.key || 'default',
   })) || [
     {
       name: 'SigNoz Team',
-      avatar: '/static/images/signoz-logo.png',
+      image: '/static/images/signoz-logo.png',
       occupation: 'Developer Tools',
       company: 'SigNoz',
       email: 'team@signoz.io',
@@ -182,7 +191,12 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       slug: 'default',
     },
   ]
-  const authorNames = authorDetails.map((author: any) => author.name)
+  const authorNames = authorDetails.map((author: any) => {
+    return {
+      ...author,
+      image: author.image_url,
+    }
+  })
 
   const hubContext = getHubContextForRoute(currentRoute)
 
