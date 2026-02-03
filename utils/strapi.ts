@@ -337,6 +337,9 @@ export const fetchMDXContentByPath = async (
             tags: [`${collectionName}-list`],
           },
           headers: {
+            'Cache-Control': 'no-store', // Avoid caching
+            Pragma: 'no-cache',
+            Expires: '0',
             'Content-Type': 'application/json',
           },
         })
@@ -387,6 +390,9 @@ export const fetchMDXContentByPath = async (
       },
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-store', // Avoid caching
+        Pragma: 'no-cache',
+        Expires: '0',
       },
     })
 
@@ -441,6 +447,9 @@ export const fetchAuthorByKey = async (key: string): Promise<MDXContentByIdApiRe
       },
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-store', // Avoid caching
+        Pragma: 'no-cache',
+        Expires: '0',
       },
     })
 
@@ -500,6 +509,9 @@ export const fetchAllMDXPaths = async (
       },
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-store', // Avoid caching
+        Pragma: 'no-cache',
+        Expires: '0',
       },
     })
 

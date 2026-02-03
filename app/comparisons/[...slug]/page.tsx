@@ -33,6 +33,8 @@ export async function generateMetadata({
 }): Promise<Metadata | undefined> {
   const slug = decodeURI(params.slug.join('/'))
 
+  console.log('slug', params, slug)
+
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
@@ -138,8 +140,8 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   // Construct mainContent object
   const mainContent = {
     ...post,
-    date: post.publishedAt,
-    lastmod: post.updatedAt,
+    date: post.date || post.publishedAt,
+    lastmod: post.date || post.updatedAt,
     slug: slug,
     path: `comparisons${post.path}` || currentRoute,
     tags: post.tags?.map((tag: any) => tag.value) || [],
