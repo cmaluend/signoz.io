@@ -340,11 +340,8 @@ export const fetchMDXContentByPath = async (
             tags: [`${collectionName}-list`],
           },
           headers: {
-            'Cache-Control': 'no-store', // Avoid caching
-            Pragma: 'no-cache',
-            Expires: '0',
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
+            'Cache-Control': 'no-store', // Avoid caching
             Pragma: 'no-cache',
             Expires: '0',
           },
