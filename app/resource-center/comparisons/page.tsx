@@ -28,7 +28,7 @@ export default async function ComparisonsHome() {
       slug: post.slug || `comparisons${post.path}`,
       authors:
         post.authors?.map((author: any) => ({
-          name: author.name,
+          ...author,
           image: author.image_url,
         })) || [],
       readingTime: readingTime(post.content || ''),
