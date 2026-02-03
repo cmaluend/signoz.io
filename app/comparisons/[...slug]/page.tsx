@@ -33,8 +33,6 @@ export async function generateMetadata({
 }): Promise<Metadata | undefined> {
   const slug = decodeURI(params.slug.join('/'))
 
-  console.log('slug', params, slug)
-
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
@@ -149,7 +147,12 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     toc: toc,
     authors:
       post.authors?.map((author: any) => {
-        return { ...author, name: author?.name, key: author?.key }
+        return {
+          ...author,
+          name: author?.name,
+          key: author?.key,
+          image: author?.image_url || '/static/images/signoz-logo.png',
+        }
       }) || [],
     structuredData: structuredData,
     relatedArticles:
@@ -164,20 +167,20 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
   const authorDetails = post.authors?.map((author: any) => ({
     ...author,
+    image: author.image_url || '/static/images/signoz-logo.png',
     name: author.name || 'Unknown Author',
-    avatar: author.image_url || '/static/images/signoz-logo.png',
     occupation: author.title || 'Developer Tools',
     company: 'SigNoz',
-    email: 'team@signoz.io',
-    twitter: 'https://twitter.com/SigNozHQ',
-    linkedin: 'https://www.linkedin.com/company/signoz',
-    github: 'https://github.com/SigNoz/signoz',
+    email: author.email || 'team@signoz.io',
+    twitter: author.twitter || 'https://twitter.com/SigNozHQ',
+    linkedin: author.linkedin || 'https://www.linkedin.com/company/signoz',
+    github: author.github || 'https://github.com/SigNoz/signoz',
     path: `/authors/${author.key || 'default'}`,
     slug: author.key || 'default',
   })) || [
     {
       name: 'SigNoz Team',
-      avatar: '/static/images/signoz-logo.png',
+      image: '/static/images/signoz-logo.png',
       occupation: 'Developer Tools',
       company: 'SigNoz',
       email: 'team@signoz.io',
@@ -188,7 +191,12 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       slug: 'default',
     },
   ]
-  const authorNames = authorDetails.map((author: any) => author.name)
+  const authorNames = authorDetails.map((author: any) => {
+    return {
+      ...author,
+      image: author.image_url,
+    }
+  })
 
   const hubContext = getHubContextForRoute(currentRoute)
 
