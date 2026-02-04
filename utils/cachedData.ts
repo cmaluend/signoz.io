@@ -10,7 +10,7 @@ export const getCachedComparisons = unstable_cache(
         undefined,
         deploymentStatus,
         true,
-        ['title', 'path', 'date', 'description', 'authors', 'tags', 'keywords']
+        ['title', 'path', 'date', 'description', 'updatedAt', 'publishedAt']
       )
 
       if ('data' in comparisons && Array.isArray(comparisons.data)) {
