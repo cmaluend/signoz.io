@@ -128,18 +128,6 @@ export const transformComparison = (comparison: MDXContent) => {
         keywords: relatedComparison.keywords?.map((keyword: any) =>
           typeof keyword === 'string' ? keyword : keyword.value
         ),
-        readingTime: readingTime(relatedComparison.content || ''),
-        filePath: relatedComparison.path.endsWith('.mdx')
-          ? relatedComparison.path
-          : `${relatedComparison.path}.mdx`,
-        structuredData: generateStructuredData('comparisons', {
-          ...relatedComparison,
-          slug: relatedComparison.path.split('/').pop() || '',
-          path: relatedComparison.path,
-          publishedAt:
-            relatedComparison.date || relatedComparison.updatedAt || relatedComparison.publishedAt,
-        }),
-        toc: generateTOC(relatedComparison.content || ''),
       }
     }
   )
