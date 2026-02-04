@@ -1,5 +1,8 @@
 import React from 'react'
 import Blogs from './Blogs'
+import { genPageMetadata } from 'app/seo'
+
+export const metadata = genPageMetadata({ title: 'Blog' })
 
 export default async function BlogHome() {
   return (
