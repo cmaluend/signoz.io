@@ -14,7 +14,7 @@ import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
 import PageFeedback from '../../../components/PageFeedback/PageFeedback'
 import React from 'react'
-import { fetchMDXContentByPath } from '@/utils/strapi'
+import { getCachedComparisons } from '@/utils/cachedData'
 import { mdxOptions, transformComparison } from '@/utils/mdxUtils'
 import { compileMDX } from 'next-mdx-remote/rsc'
 
@@ -35,18 +35,9 @@ export async function generateMetadata({
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
   const slug = decodeURI(params.slug.join('/'))
-  const path = `comparisons/${slug}`
 
-  let post: any | undefined
-
-  try {
-    const response = await fetchMDXContentByPath('comparisons', path, deploymentStatus, false)
-    if ('data' in response && !Array.isArray(response.data)) {
-      post = transformComparison(response.data)
-    }
-  } catch (error) {
-    console.error('Error fetching comparison for metadata:', error)
-  }
+  const comparisons = await getCachedComparisons(deploymentStatus)
+  const post: any | undefined = comparisons.find((p) => p.slug === slug)
 
   if (!post) {
     return notFound()
@@ -104,18 +95,9 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
   const slug = decodeURI(params.slug.join('/'))
-  const path = `comparisons/${slug}`
 
-  let post: any | undefined
-
-  try {
-    const response = await fetchMDXContentByPath('comparisons', path, deploymentStatus, false)
-    if ('data' in response && !Array.isArray(response.data)) {
-      post = transformComparison(response.data)
-    }
-  } catch (error) {
-    console.error('Error fetching comparison:', error)
-  }
+  const comparisons = await getCachedComparisons(deploymentStatus)
+  const post: any | undefined = comparisons.find((p) => p.slug === slug)
 
   if (!post) {
     return notFound()

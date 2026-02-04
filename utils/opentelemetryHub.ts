@@ -63,26 +63,18 @@ type HubIndex = {
 
 let memoizedHubIndex: HubIndex | null = null
 
+import { getCachedComparisons } from './cachedData'
+
 const getComparisons = async () => {
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
-  let allComparisons: MDXContent[] = []
-
   try {
-    const comparisons = await fetchMDXContentByPath(
-      'comparisons',
-      undefined,
-      deploymentStatus,
-      true
-    )
-    const updatedComparisons = comparisons.data.map((comparison) => transformComparison(comparison))
-    allComparisons = updatedComparisons
+    return await getCachedComparisons(deploymentStatus)
   } catch (error) {
     console.error('Error fetching comparisons:', error)
+    return []
   }
-
-  return allComparisons
 }
 
 function normalizeRoute(route: string) {

@@ -31,6 +31,7 @@ export async function POST(request: NextRequest) {
     if (revalidateAll) {
       revalidatePath('/', 'layout')
       revalidateTag('mdx-content-list')
+      revalidateTag('comparisons-list')
       revalidateTag('mdx-paths')
       clearHubIndexCache()
 
@@ -82,6 +83,9 @@ export async function POST(request: NextRequest) {
     if (tags && Array.isArray(tags)) {
       for (const t of tags) {
         revalidateTag(t)
+        if (t === 'mdx-content-list' || t === 'comparisons-list') {
+          clearHubIndexCache()
+        }
 
         results.push({
           tag: t,
@@ -135,6 +139,7 @@ export async function GET(request: NextRequest) {
     if (revalidateAll) {
       revalidatePath('/', 'layout')
       revalidateTag('mdx-content-list')
+      revalidateTag('comparisons-list')
       revalidateTag('mdx-paths')
       clearHubIndexCache()
 
