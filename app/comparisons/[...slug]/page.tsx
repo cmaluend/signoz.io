@@ -14,6 +14,7 @@ import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
 import PageFeedback from '../../../components/PageFeedback/PageFeedback'
 import React from 'react'
+import { fetchMDXContentByPath } from '@/utils/strapi'
 import { getCachedComparisons } from '@/utils/cachedData'
 import { mdxOptions, transformComparison } from '@/utils/mdxUtils'
 import { compileMDX } from 'next-mdx-remote/rsc'
@@ -96,8 +97,21 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
 
   const slug = decodeURI(params.slug.join('/'))
 
-  const comparisons = await getCachedComparisons(deploymentStatus)
-  const post: any | undefined = comparisons.find((p) => p.slug === slug)
+  // Fetch lightweight list and specific content in parallel
+  const [comparisonsList, post]: [any[], any] = await Promise.all([
+    getCachedComparisons(deploymentStatus),
+    fetchMDXContentByPath('comparisons', slug, deploymentStatus)
+      .then((response) => {
+        if ('data' in response && !Array.isArray(response.data)) {
+          return transformComparison(response.data)
+        }
+        return undefined
+      })
+      .catch((error) => {
+        console.error('Error fetching single comparison:', error)
+        return undefined
+      }),
+  ])
 
   if (!post) {
     return notFound()
@@ -113,7 +127,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const mainContent = coreContent(post)
   const jsonLd = post.structuredData
 
-  const hubContext = await getHubContextForRoute(currentRoute)
+  const hubContext = await getHubContextForRoute(currentRoute, comparisonsList)
 
   let compiledContent
   try {

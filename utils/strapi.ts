@@ -273,7 +273,8 @@ export const fetchMDXContentByPath = async (
   collectionName: string,
   path?: string,
   deployment_status?: string,
-  fetchAll: boolean = false
+  fetchAll: boolean = false,
+  fields?: string[]
 ): Promise<MDXContentByIdApiResponse | MDXContentApiResponse> => {
   try {
     const queryObject: any = {
@@ -283,6 +284,10 @@ export const fetchMDXContentByPath = async (
         pageSize: 100,
       },
       sort: ['publishedAt:desc'],
+    }
+
+    if (fields && fields.length > 0) {
+      queryObject.fields = fields
     }
 
     // Add filters only if not fetching all
