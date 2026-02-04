@@ -311,11 +311,14 @@ export default function ArticleLayout({
                               {article.title}
                             </h3>
                             <p className="mt-2 text-sm text-gray-400">
-                              {new Date(article.publishedOn).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })}
+                              {new Date(article.publishedOn || article.date).toLocaleDateString(
+                                'en-US',
+                                {
+                                  month: 'long',
+                                  day: 'numeric',
+                                  year: 'numeric',
+                                }
+                              )}
                             </p>
                           </div>
                           <ExternalLink

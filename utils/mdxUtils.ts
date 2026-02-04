@@ -14,6 +14,7 @@ import remarkMath from 'remark-math'
 import readingTime from 'reading-time'
 import { generateStructuredData } from './structuredData'
 import { MDXContent } from './strapi'
+import siteMetadata from '@/data/siteMetadata'
 
 // Heroicon mini link for auto-linking headers
 const linkIcon = fromHtmlIsomorphic(
@@ -109,13 +110,20 @@ export const transformComparison = (comparison: MDXContent) => {
     (relatedComparison: any) => {
       return {
         ...relatedComparison,
+        _id: relatedComparison.documentId || String(relatedComparison.id),
+        _raw: {},
+        path: `comparisons${relatedComparison.path || ''}`,
+        url: `${siteMetadata.siteUrl}/comparisons${relatedComparison.path || ''}`,
         slug: relatedComparison.path.split('/').pop() || '',
-        path: relatedComparison.path,
-        authors: relatedComparison.authors?.map((author: any) =>
-          typeof author === 'string' ? author : author.key
-        ),
+        title: relatedComparison.title,
+        date:
+          relatedComparison.date || relatedComparison.updatedAt || relatedComparison.publishedAt,
         tags: relatedComparison.tags?.map((tag: any) =>
           typeof tag === 'string' ? tag : tag.value
+        ),
+        description: relatedComparison.description,
+        authors: relatedComparison.authors?.map((author: any) =>
+          typeof author === 'string' ? author : author.key
         ),
         keywords: relatedComparison.keywords?.map((keyword: any) =>
           typeof keyword === 'string' ? keyword : keyword.value
