@@ -1,12 +1,8 @@
 import hubConfig from '@/constants/opentelemetry_hub.json'
-import {
-  allBlogs,
-  allComparisons,
-  allGuides,
-  type Blog,
-  type Comparison,
-  type Guide,
-} from 'contentlayer/generated'
+import { LEARN_CHAPTER_ORDER } from '@/constants/opentelemetryHub'
+import { allBlogs, allGuides, type Blog, type Guide } from 'contentlayer/generated'
+import { transformComparison } from './mdxUtils'
+import { fetchMDXContentByPath, MDXContent } from './strapi'
 
 type RawHubPath = {
   key: string
@@ -17,18 +13,6 @@ type RawHubPath = {
 }
 
 const PATH_ORDER = ['learn', 'quick-start']
-
-export const LEARN_CHAPTER_ORDER = [
-  'introduction',
-  'opentelemetry-fundamentals',
-  'language-and-frameworks',
-  'databases-caches-and-messaging',
-  'infrastructure-cloud-and-ci-cd',
-  'llms-ai-and-ml',
-  'best-practices',
-  'misc',
-  'comparisons',
-]
 
 type RawHubGroup = {
   key: string
@@ -79,20 +63,27 @@ type HubIndex = {
 
 let memoizedHubIndex: HubIndex | null = null
 
-const contentIndex = [
-  {
-    prefix: '/blog/',
-    collection: allBlogs as Array<Blog | Comparison | Guide>,
-  },
-  {
-    prefix: '/comparisons/',
-    collection: allComparisons as Array<Blog | Comparison | Guide>,
-  },
-  {
-    prefix: '/guides/',
-    collection: allGuides as Array<Blog | Comparison | Guide>,
-  },
-]
+const getComparisons = async () => {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  let allComparisons: MDXContent[] = []
+
+  try {
+    const comparisons = await fetchMDXContentByPath(
+      'comparisons',
+      undefined,
+      deploymentStatus,
+      true
+    )
+    const updatedComparisons = comparisons.data.map((comparison) => transformComparison(comparison))
+    allComparisons = updatedComparisons
+  } catch (error) {
+    console.error('Error fetching comparisons:', error)
+  }
+
+  return allComparisons
+}
 
 function normalizeRoute(route: string) {
   // Strip domain if present
@@ -105,7 +96,7 @@ function normalizeRoute(route: string) {
   return normalized
 }
 
-function findContentTitle(route: string) {
+function findContentTitle(route: string, contentIndex: any[]) {
   const normalized = normalizeRoute(route)
   const matchingCollection = contentIndex.find(({ prefix }) => normalized.startsWith(prefix))
   if (!matchingCollection) {
@@ -117,32 +108,39 @@ function findContentTitle(route: string) {
   return entry?.title || null
 }
 
-function fallbackLabelFromRoute(route: string) {
+function fallbackLabelFromRoute(route: string, contentIndex: any[]) {
   const slug = route.split('/').filter(Boolean).pop() || ''
-  return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  return (
+    findContentTitle(route, contentIndex) ||
+    slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+  )
 }
 
-function articleToDoc(article: RawHubArticle): HubNavDoc {
+function articleToDoc(article: RawHubArticle, contentIndex: any[]): HubNavDoc {
   const route = normalizeRoute(article.url)
-  const title = findContentTitle(route) || fallbackLabelFromRoute(route)
+  const title = findContentTitle(route, contentIndex) || fallbackLabelFromRoute(route, contentIndex)
 
   return {
     type: 'doc',
     route,
-    label: title,
+    label: title as string,
     language: article.language,
   }
 }
 
-function mapGroupToCategory(group: RawHubGroup): HubNavCategory {
+function mapGroupToCategory(group: RawHubGroup, contentIndex: any[]): HubNavCategory {
   const items: HubNavItem[] = []
 
   if (group.sections) {
-    group.sections.forEach((section) => items.push(mapGroupToCategory(section)))
+    for (const section of group.sections) {
+      items.push(mapGroupToCategory(section, contentIndex))
+    }
   }
 
   if (group.articles) {
-    group.articles.forEach((article) => items.push(articleToDoc(article)))
+    for (const article of group.articles) {
+      items.push(articleToDoc(article, contentIndex))
+    }
   }
 
   const firstDocRoute = findFirstDocRoute(items)
@@ -180,20 +178,37 @@ function collectLanguages(items: HubNavItem[], accumulator: Set<string>) {
   }
 }
 
-function buildHubIndex(): HubIndex {
+async function buildHubIndex(comparisons: MDXContent[]): Promise<HubIndex> {
   const lookup = new Map<string, HubLookupEntry>()
   const paths: HubPathNav[] = []
 
-  const sortedPaths = [...hubConfig.paths].sort((a: RawHubPath, b: RawHubPath) => {
-    const aIdx = PATH_ORDER.indexOf(a.key)
-    const bIdx = PATH_ORDER.indexOf(b.key)
-    return (
-      (aIdx === -1 ? Number.MAX_SAFE_INTEGER : aIdx) -
-      (bIdx === -1 ? Number.MAX_SAFE_INTEGER : bIdx)
-    )
-  })
+  const contentIndex = [
+    {
+      prefix: '/blog/',
+      collection: allBlogs as Array<Blog | Guide>,
+    },
+    {
+      prefix: '/comparisons/',
+      collection: comparisons,
+    },
+    {
+      prefix: '/guides/',
+      collection: allGuides as Array<Blog | Guide>,
+    },
+  ]
 
-  sortedPaths.forEach((rawPath: RawHubPath) => {
+  const sortedPaths = ([...hubConfig.paths] as RawHubPath[]).sort(
+    (a: RawHubPath, b: RawHubPath) => {
+      const aIdx = PATH_ORDER.indexOf(a.key)
+      const bIdx = PATH_ORDER.indexOf(b.key)
+      return (
+        (aIdx === -1 ? Number.MAX_SAFE_INTEGER : aIdx) -
+        (bIdx === -1 ? Number.MAX_SAFE_INTEGER : bIdx)
+      )
+    }
+  )
+
+  for (const rawPath of sortedPaths) {
     const items: HubNavItem[] = []
     const chapters =
       rawPath.key === 'learn' && rawPath.chapters
@@ -208,15 +223,21 @@ function buildHubIndex(): HubIndex {
         : rawPath.chapters
 
     if (chapters) {
-      chapters.forEach((chapter) => items.push(mapGroupToCategory(chapter)))
+      for (const chapter of chapters) {
+        items.push(mapGroupToCategory(chapter, contentIndex))
+      }
     }
 
     if (rawPath.sections) {
-      rawPath.sections.forEach((section) => items.push(mapGroupToCategory(section)))
+      for (const section of rawPath.sections) {
+        items.push(mapGroupToCategory(section, contentIndex))
+      }
     }
 
     if (rawPath.articles) {
-      rawPath.articles.forEach((article) => items.push(articleToDoc(article)))
+      for (const article of rawPath.articles) {
+        items.push(articleToDoc(article, contentIndex))
+      }
     }
 
     const firstRoute = findFirstDocRoute(items)
@@ -243,22 +264,32 @@ function buildHubIndex(): HubIndex {
       firstRoute,
       languages,
     })
-  })
+  }
 
   return { lookup, paths }
 }
 
-function getHubIndex(): HubIndex {
+async function getHubIndex(comparisons?: MDXContent[]): Promise<HubIndex> {
   if (memoizedHubIndex) {
     return memoizedHubIndex
   }
-  memoizedHubIndex = buildHubIndex()
+
+  let usedComparisons = comparisons
+  if (!usedComparisons) {
+    try {
+      usedComparisons = await getComparisons()
+    } catch (e) {
+      usedComparisons = []
+    }
+  }
+
+  memoizedHubIndex = await buildHubIndex(usedComparisons || [])
   return memoizedHubIndex
 }
 
-export function getHubContextForRoute(route: string) {
+export async function getHubContextForRoute(route: string, comparisons?: MDXContent[]) {
   const normalized = normalizeRoute(route)
-  const { lookup, paths } = getHubIndex()
+  const { lookup, paths } = await getHubIndex(comparisons)
 
   const match = lookup.get(normalized)
   if (!match) {
@@ -280,12 +311,12 @@ export function getHubContextForRoute(route: string) {
   }
 }
 
-export function listHubRoutes(): string[] {
-  const { lookup } = getHubIndex()
+export async function listHubRoutes(): Promise<string[]> {
+  const { lookup } = await getHubIndex()
   return Array.from(lookup.keys())
 }
 
-export function getHubPaths(): HubPathNav[] {
-  const { paths } = getHubIndex()
+export async function getHubPaths(): Promise<HubPathNav[]> {
+  const { paths } = await getHubIndex()
   return paths
 }

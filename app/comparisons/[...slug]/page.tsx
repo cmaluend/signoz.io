@@ -2,10 +2,9 @@ import 'css/prism.css'
 import 'katex/dist/katex.css'
 
 import { components } from '@/components/MDXComponents'
-import { MDXLayoutRenderer } from 'pliny/mdx-components'
 import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer'
-import { allAuthors, allComparisons } from 'contentlayer/generated'
-import type { Authors, Comparison } from 'contentlayer/generated'
+import { allAuthors } from 'contentlayer/generated'
+import type { Authors } from 'contentlayer/generated'
 import OpenTelemetryLayout from '@/layouts/OpenTelemetryLayout'
 import OpenTelemetryHubLayout from '@/layouts/OpenTelemetryHubLayout'
 import ComparisonsLayout from '@/layouts/ComparisonsLayout'
@@ -15,6 +14,9 @@ import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
 import PageFeedback from '../../../components/PageFeedback/PageFeedback'
 import React from 'react'
+import { fetchMDXContentByPath } from '@/utils/strapi'
+import { mdxOptions, transformComparison } from '@/utils/mdxUtils'
+import { compileMDX } from 'next-mdx-remote/rsc'
 
 const defaultLayout = 'ComparisonsLayout'
 const layouts = {
@@ -22,16 +24,20 @@ const layouts = {
   ComparisonsLayout,
 }
 
-export const dynamicParams = false
-export const dynamic = 'force-static'
+export const revalidate = 0
+export const dynamicParams = true
 
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string[] }
 }): Promise<Metadata | undefined> {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+  const comparisons = await fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true)
+  const updatedComparisons = comparisons.data.map((comparison) => transformComparison(comparison))
   const slug = decodeURI(params.slug.join('/'))
-  const post = allComparisons.find((p) => p.slug === slug)
+  const post = updatedComparisons.find((p) => p.slug === slug)
 
   if (!post) {
     return notFound()
@@ -81,22 +87,26 @@ export async function generateMetadata({
 }
 
 export const generateStaticParams = async () => {
-  const paths = allComparisons.map((p) => ({ slug: p.slug?.split('/') }))
-
-  return paths
+  return []
 }
 
 export default async function Page({ params }: { params: { slug: string[] } }) {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
   const slug = decodeURI(params.slug.join('/'))
+
+  const comparisons = await fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true)
+  const updatedComparisons = comparisons.data.map((comparison) => transformComparison(comparison))
   const currentRoute = `/comparisons/${slug}`
   // Filter out drafts in production
-  const sortedCoreContents = allCoreContent(sortPosts(allComparisons))
+  const sortedCoreContents = allCoreContent(sortPosts(updatedComparisons))
   const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
   if (postIndex === -1) {
     return notFound()
   }
 
-  const post = allComparisons.find((p) => p.slug === slug) as Comparison
+  const post = updatedComparisons.find((p) => p.slug === slug)
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
@@ -105,7 +115,20 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const mainContent = coreContent(post)
   const jsonLd = post.structuredData
 
-  const hubContext = getHubContextForRoute(currentRoute)
+  const hubContext = await getHubContextForRoute(currentRoute, updatedComparisons)
+
+  let compiledContent
+  try {
+    const { content: mdxContent } = await compileMDX({
+      source: post?.content,
+      components,
+      options: mdxOptions as any,
+    })
+    compiledContent = mdxContent
+  } catch (error) {
+    console.error('Error compiling MDX:', error)
+    notFound()
+  }
 
   if (hubContext) {
     return (
@@ -126,7 +149,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
           availableLanguages={hubContext.languages}
           currentRoute={currentRoute}
         >
-          <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+          {compiledContent}
           <PageFeedback />
         </OpenTelemetryHubLayout>
       </>
@@ -156,7 +179,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
         authors={authorList}
         toc={post.toc}
       >
-        <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+        {compiledContent}
       </Layout>
     </>
   )

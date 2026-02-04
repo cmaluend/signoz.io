@@ -105,6 +105,11 @@ const COLLECTION_SCHEMAS = {
         matchField: 'path', // Match against comparison.path
         frontmatterField: 'related_comparisons', // Array of comparison paths in frontmatter
       },
+      related_blogs: {
+        endpoint: 'blogs',
+        matchField: 'path', // Match against blog.path
+        frontmatterField: 'related_blogs', // Array of blog paths in frontmatter
+      },
       keywords: {
         endpoint: 'keywords',
         matchField: 'key', // Match against keyword.key
@@ -142,6 +147,16 @@ const COLLECTION_SCHEMAS = {
         endpoint: 'guides',
         matchField: 'path', // Match against guide.path
         frontmatterField: 'related_guides', // Array of guide paths in frontmatter
+      },
+      related_blogs: {
+        endpoint: 'blogs',
+        matchField: 'path', // Match against blog.path
+        frontmatterField: 'related_blogs', // Array of blog paths in frontmatter
+      },
+      related_comparisons: {
+        endpoint: 'comparisons',
+        matchField: 'path', // Match against comparison.path
+        frontmatterField: 'related_comparisons', // Array of comparison paths in frontmatter
       },
     },
   },

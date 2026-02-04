@@ -1,12 +1,12 @@
 'use client'
 
-import { allComparisons } from 'contentlayer/generated'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
 import BlogPostCard from '../Shared/BlogPostCard'
 import SearchInput from '../Shared/Search'
 import React from 'react'
 import { filterData } from 'app/utils/common'
 import { Frown } from 'lucide-react'
+import { MDXContent } from '@/utils/strapi'
 
 interface ComparisonsPageHeaderProps {
   onSearch: (e) => void
@@ -31,8 +31,8 @@ const ComparisonsPageHeader: React.FC<ComparisonsPageHeaderProps> = ({ onSearch 
   )
 }
 
-export default function ComparisonsListing() {
-  const posts = allCoreContent(sortPosts(allComparisons))
+export default function ComparisonsListing({ comparisons }: { comparisons?: MDXContent[] }) {
+  const posts = allCoreContent(sortPosts(comparisons as any))
   const primaryFeaturedBlogs = posts.slice(0, 2)
   const secondaryFeaturedBlogs = posts.slice(0)
 
@@ -53,7 +53,7 @@ export default function ComparisonsListing() {
         <div className="mt-5 w-full max-md:max-w-full">
           <div className="mt-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2">
             {primaryFeaturedBlogs.map((featuredBlog, index) => {
-              return <BlogPostCard blog={featuredBlog} key={index} />
+              return <BlogPostCard blog={featuredBlog as any} key={index} />
             })}
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function ComparisonsListing() {
 
       <div className="mt-4 grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {blogs.map((post, index) => {
-          return <BlogPostCard blog={post} key={index} />
+          return <BlogPostCard blog={post as any} key={index} />
         })}
       </div>
     </div>

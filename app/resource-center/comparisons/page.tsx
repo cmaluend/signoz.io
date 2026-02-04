@@ -1,25 +1,30 @@
-'use client'
-
-import React, { useState } from 'react'
-import Blogs from '../blog/Blogs'
+import React from 'react'
 import Comparisons from './Comparisons'
-import Guides from '../guides/Guides'
-import OpenTelemetry from '../opentelemetry/OpenTelemetry'
+import { transformComparison } from '@/utils/mdxUtils'
+import { fetchMDXContentByPath, MDXContent } from '@/utils/strapi'
 
-export default function ComparisonsHome() {
-  const [activeTab, setActiveTab] = useState('comparisons-tab')
+export default async function ComparisonsHome() {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+  let comparisons: MDXContent[] = []
+
+  try {
+    const comparisonsResponse = await fetchMDXContentByPath(
+      'comparisons',
+      undefined,
+      deploymentStatus,
+      true
+    )
+    comparisons = comparisonsResponse.data.map((comparison) => transformComparison(comparison))
+  } catch (error) {
+    console.error('Error fetching comparisons:', error)
+    comparisons = []
+  }
 
   return (
-    <div className="container mx-auto py-16 sm:py-8 !mt-[48px]">
-
+    <div className="container mx-auto !mt-[48px] py-16 sm:py-8">
       <div className="tab-content pt-6">
-        {activeTab === 'blog-tab' && <Blogs />}
-
-        {activeTab === 'comparisons-tab' && <Comparisons />}
-
-        {activeTab === 'guides-tab' && <Guides />}
-
-        {activeTab === 'openTelemetry-tab' && <OpenTelemetry />}
+        <Comparisons comparisons={comparisons} />
       </div>
     </div>
   )

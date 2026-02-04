@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allDocs, allGuides, allComparisons } from 'contentlayer/generated'
+import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -44,15 +44,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }))
 
-  const comparisonRoutes = allComparisons
-    .filter((post) => !post.draft)
-    .map((post) => ({
-      url: `${siteUrl}/${post.path}/`,
-      lastModified: post.lastmod || post.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.5,
-    }))
-
   // New section for guides
   const guideRoutes = allGuides
     .filter((guide) => !guide.draft)
@@ -66,63 +57,62 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
-  // Fetch FAQs from Strapi CMS at runtime
-  let faqRoutes: MetadataRoute.Sitemap = []
-  try {
-    const faqsResponse = (await fetchMDXContentByPath(
-      'faqs',
-      undefined,
-      deploymentStatus,
-      true
-    )) as MDXContentApiResponse
+  const [faqsResult, caseStudiesResult, opentelemetryResult, comparisonsResult] =
+    await Promise.allSettled([
+      fetchMDXContentByPath('faqs', undefined, deploymentStatus, true),
+      fetchMDXContentByPath('case-studies', undefined, deploymentStatus, true),
+      fetchMDXContentByPath('opentelemetries', undefined, deploymentStatus, true),
+      fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true),
+    ])
 
-    faqRoutes = faqsResponse.data.map((faq) => ({
+  let faqRoutes: MetadataRoute.Sitemap = []
+  if (faqsResult.status === 'fulfilled') {
+    const data = faqsResult.value as MDXContentApiResponse
+    faqRoutes = data.data.map((faq) => ({
       url: `${siteUrl}/faqs${faq.path}/`,
       lastModified: faq.date || faq.updatedAt || faq.publishedAt,
     }))
-  } catch (error) {
-    console.error('Error fetching FAQs for sitemap:', error)
-    // Return empty array if fetching fails
+  } else {
+    console.error('Error fetching FAQs for sitemap:', faqsResult.reason)
   }
 
   let caseStudyRoutes: MetadataRoute.Sitemap = []
-  try {
-    const caseStudiesResponse = (await fetchMDXContentByPath(
-      'case-studies',
-      undefined,
-      deploymentStatus,
-      true
-    )) as MDXContentApiResponse
-
-    caseStudyRoutes = caseStudiesResponse.data.map((caseStudy) => ({
+  if (caseStudiesResult.status === 'fulfilled') {
+    const data = caseStudiesResult.value as MDXContentApiResponse
+    caseStudyRoutes = data.data.map((caseStudy) => ({
       url: `${siteUrl}/case-study${caseStudy.path}/`,
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
       lastModified: caseStudy.updatedAt || caseStudy.publishedAt,
     }))
-  } catch (error) {
-    console.error('Error fetching case studies for sitemap:', error)
-    // Return empty array if fetching fails
+  } else {
+    console.error('Error fetching case studies for sitemap:', caseStudiesResult.reason)
   }
 
   let opentelemetryRoutes: MetadataRoute.Sitemap = []
-  try {
-    const opentelemetryRoutesResponse = (await fetchMDXContentByPath(
-      'opentelemetry',
-      undefined,
-      deploymentStatus,
-      true
-    )) as MDXContentApiResponse
-
-    opentelemetryRoutes = opentelemetryRoutesResponse.data.map((opentelemetry) => ({
+  if (opentelemetryResult.status === 'fulfilled') {
+    const data = opentelemetryResult.value as MDXContentApiResponse
+    opentelemetryRoutes = data.data.map((opentelemetry) => ({
       url: `${siteUrl}/opentelemetry${opentelemetry.path}/`,
-      lastModified: opentelemetry.updatedAt || opentelemetry.publishedAt,
+      lastModified: opentelemetry.date || opentelemetry.updatedAt || opentelemetry.publishedAt,
       changeFrequency: mapChangeFrequency('weekly'),
       priority: 0.5,
     }))
-  } catch (error) {
-    console.error('Error fetching opentelemetry routes for sitemap:', error)
-    // Return empty array if fetching fails
+  } else {
+    console.error('Error fetching opentelemetry routes for sitemap:', opentelemetryResult.reason)
+  }
+
+  let comparisonRoutes: MetadataRoute.Sitemap = []
+  if (comparisonsResult.status === 'fulfilled') {
+    const data = comparisonsResult.value as MDXContentApiResponse
+    comparisonRoutes = data.data.map((comparison) => ({
+      url: `${siteUrl}/comparisons${comparison.path}/`,
+      lastModified: comparison.date || comparison.updatedAt || comparison.publishedAt,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.5,
+    }))
+  } else {
+    console.error('Error fetching comparisons for sitemap:', comparisonsResult.reason)
   }
 
   const routes = [
@@ -140,6 +130,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     'guides', // Add the main guides page
     'faqs', // Add the main FAQs page
     'opentelemetry',
+    'comparisons',
   ].map((route) => ({
     url: `${siteUrl}/${route}${route ? '/' : ''}`,
     lastModified: new Date().toISOString().split('T')[0],
@@ -154,5 +145,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...guideRoutes,
     ...faqRoutes,
     ...caseStudyRoutes,
+    ...comparisonRoutes,
   ]
 }

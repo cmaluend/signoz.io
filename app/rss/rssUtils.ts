@@ -1,7 +1,8 @@
 import { sortPosts } from 'pliny/utils/contentlayer.js'
-import { allBlogs, allDocs, allComparisons, allGuides } from 'contentlayer/generated'
+import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '../../utils/strapi'
 import { normaliseSlug } from '../../scripts/rssFeed.mjs'
+import { transformComparison } from '@/utils/mdxUtils'
 
 const buildFaqSlug = (path = '') => {
   const cleanedPath = path.startsWith('/') ? path : `/${path}`
@@ -56,6 +57,17 @@ export const loadPublishedPosts = async () => {
     true
   )) as MDXContentApiResponse | undefined
 
+  const allComparisons = (await fetchMDXContentByPath(
+    'comparisons',
+    undefined,
+    deploymentStatus,
+    true
+  )) as MDXContentApiResponse | undefined
+
+  const updatedComparisons = allComparisons?.data.map((comparison) =>
+    transformComparison(comparison)
+  )
+
   const opentelemetryPosts = mapOpentelemetryEntries(allOpentelemetries)
 
   const combinedPosts = [
@@ -63,7 +75,7 @@ export const loadPublishedPosts = async () => {
     ...allBlogs,
     ...(opentelemetryPosts || []),
     ...allDocs,
-    ...allComparisons,
+    ...(updatedComparisons || []),
     ...allGuides,
   ]
 

@@ -2,19 +2,20 @@
 
 import { ReactNode } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Comparison, Authors } from 'contentlayer/generated'
+import type { Authors } from 'contentlayer/generated'
 import ArticleLayout, { TocItemProps } from './ArticleLayout'
 import PageFeedback from '@/components/PageFeedback/PageFeedback'
 import { RegionProvider } from '@/components/Region/RegionContext'
+import { MDXContent } from '@/utils/strapi'
 
 // Extend the Comparison type to include CTA fields
-interface ComparisonContent extends Comparison {
+interface ComparisonContent extends MDXContent {
   cta_title?: string
   cta_text?: string
 }
 
 interface LayoutProps {
-  content: CoreContent<ComparisonContent>
+  content: CoreContent<MDXContent>
   authorDetails: CoreContent<Authors>[]
   authors: string[]
   children: ReactNode
