@@ -337,15 +337,11 @@ export const fetchMDXContentByPath = async (
 
         const response = await fetch(`${API_URL}/api/${collectionName}${queryParams}`, {
           next: {
-            tags: [`${collectionName}-list`],
+            tags: [`${collectionName}-list`, 'mdx-content-list'],
           },
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-            Pragma: 'no-cache',
-            Expires: '0',
           },
-          cache: 'no-store',
         })
 
         if (!response.ok) {
@@ -390,15 +386,11 @@ export const fetchMDXContentByPath = async (
 
     const response = await fetch(`${API_URL}/api/${collectionName}${queryParams}`, {
       next: {
-        tags: [`${collectionName}-${path}`],
+        tags: [`${collectionName}-${path}`, `mdx-content-${path}`],
       },
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
-        Pragma: 'no-cache',
-        Expires: '0',
       },
-      cache: 'no-store',
     })
 
     if (!response.ok) {

@@ -34,10 +34,19 @@ export async function generateMetadata({
 }): Promise<Metadata | undefined> {
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
-  const comparisons = await fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true)
-  const updatedComparisons = comparisons.data.map((comparison) => transformComparison(comparison))
   const slug = decodeURI(params.slug.join('/'))
-  const post = updatedComparisons.find((p) => p.slug === slug)
+  const path = `comparisons/${slug}`
+
+  let post: any | undefined
+
+  try {
+    const response = await fetchMDXContentByPath('comparisons', path, deploymentStatus, false)
+    if ('data' in response && !Array.isArray(response.data)) {
+      post = transformComparison(response.data)
+    }
+  } catch (error) {
+    console.error('Error fetching comparison for metadata:', error)
+  }
 
   if (!post) {
     return notFound()
@@ -95,18 +104,25 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
   const slug = decodeURI(params.slug.join('/'))
+  const path = `comparisons/${slug}`
 
-  const comparisons = await fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true)
-  const updatedComparisons = comparisons.data.map((comparison) => transformComparison(comparison))
-  const currentRoute = `/comparisons/${slug}`
-  // Filter out drafts in production
-  const sortedCoreContents = allCoreContent(sortPosts(updatedComparisons))
-  const postIndex = sortedCoreContents.findIndex((p) => p.slug === slug)
-  if (postIndex === -1) {
+  let post: any | undefined
+
+  try {
+    const response = await fetchMDXContentByPath('comparisons', path, deploymentStatus, false)
+    if ('data' in response && !Array.isArray(response.data)) {
+      post = transformComparison(response.data)
+    }
+  } catch (error) {
+    console.error('Error fetching comparison:', error)
+  }
+
+  if (!post) {
     return notFound()
   }
 
-  const post = updatedComparisons.find((p) => p.slug === slug)
+  const currentRoute = `/comparisons/${slug}`
+
   const authorList = post?.authors || ['default']
   const authorDetails = authorList.map((author) => {
     const authorResults = allAuthors.find((p) => p.slug === author)
@@ -115,7 +131,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const mainContent = coreContent(post)
   const jsonLd = post.structuredData
 
-  const hubContext = await getHubContextForRoute(currentRoute, updatedComparisons)
+  const hubContext = await getHubContextForRoute(currentRoute)
 
   let compiledContent
   try {

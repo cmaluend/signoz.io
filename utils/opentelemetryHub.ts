@@ -320,3 +320,7 @@ export async function getHubPaths(): Promise<HubPathNav[]> {
   const { paths } = await getHubIndex()
   return paths
 }
+
+export function clearHubIndexCache() {
+  memoizedHubIndex = null
+}

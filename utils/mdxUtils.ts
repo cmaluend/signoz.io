@@ -105,7 +105,41 @@ export const transformComparison = (comparison: MDXContent) => {
     publishedAt: comparison.date || comparison.updatedAt || comparison.publishedAt,
   }
 
+  const updatedRelatedComparisons = comparison.related_comparisons?.map(
+    (relatedComparison: any) => {
+      return {
+        ...relatedComparison,
+        slug: relatedComparison.path.split('/').pop() || '',
+        path: relatedComparison.path,
+        authors: relatedComparison.authors?.map((author: any) =>
+          typeof author === 'string' ? author : author.key
+        ),
+        tags: relatedComparison.tags?.map((tag: any) =>
+          typeof tag === 'string' ? tag : tag.value
+        ),
+        keywords: relatedComparison.keywords?.map((keyword: any) =>
+          typeof keyword === 'string' ? keyword : keyword.value
+        ),
+        readingTime: readingTime(relatedComparison.content || ''),
+        filePath: relatedComparison.path.endsWith('.mdx')
+          ? relatedComparison.path
+          : `${relatedComparison.path}.mdx`,
+        structuredData: generateStructuredData('comparisons', {
+          ...relatedComparison,
+          slug: relatedComparison.path.split('/').pop() || '',
+          path: relatedComparison.path,
+          publishedAt:
+            relatedComparison.date || relatedComparison.updatedAt || relatedComparison.publishedAt,
+        }),
+        toc: generateTOC(relatedComparison.content || ''),
+      }
+    }
+  )
+
   return {
+    ...comparison,
+    _id: comparison.documentId || String(comparison.id),
+    _raw: {},
     title: comparison.title,
     date: comparison.date,
     tags,
@@ -119,9 +153,6 @@ export const transformComparison = (comparison: MDXContent) => {
     path,
     filePath: path.endsWith('.mdx') ? path : `${path}.mdx`,
     structuredData: generateStructuredData('comparisons', contentForStructuredData),
-    relatedArticles: [
-      ...(comparison.related_comparisons || []),
-      ...(comparison.related_blogs || []),
-    ],
+    relatedArticles: [...(updatedRelatedComparisons || []), ...(comparison.related_blogs || [])],
   }
 }
