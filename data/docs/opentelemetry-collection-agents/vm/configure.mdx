@@ -1,0 +1,88 @@
+---
+date: 2026-02-03
+title: VM Collection Agent - Configure
+id: configure
+description: Configure the OpenTelemetry Collector binary to send telemetry data to SigNoz.
+---
+
+This guide explains how to configure the OpenTelemetry Collector binary running on your virtual machine to send telemetry data to SigNoz.
+
+## Prerequisites
+
+- OpenTelemetry Collector binary installed (see [Installation guide](/docs/collection-agents/vm/install))
+- SigNoz Cloud account or self-hosted SigNoz instance
+- Access to create and edit the `config.yaml` file
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## OpenTelemetry Collector Usage
+
+You copy the configuration file to the respective config paths as per your installation methods. Followed by respective instructions to start, restart, and view logs of the `otelcol` binary.
+
+### Systemd
+
+To copy the update the otel-collector configuration with your own `config.yaml` file:
+
+```bash
+sudo cp your-config.yaml /etc/otelcol-contrib/config.yaml
+```
+
+To restart `otelcol-contrib` with updated config:
+
+```bash
+sudo systemctl restart otelcol-contrib.service
+```
+
+To check the status of `otelcol-contrib`:
+
+```bash
+sudo systemctl status otelcol-contrib.service
+```
+
+To view logs of `otelcol-contrib`:
+
+```bash
+sudo journalctl -u otelcol-contrib.service
+```
+
+To stop `otelcol-contrib`:
+
+```bash
+sudo systemctl stop otelcol-contrib.service
+```
+
+### Plain Binary
+
+It is recommended to use the `otelcol-contrib` binary inside the terminal multiplexer tools like `tmux` or `screen`, since plain binary usage is ephemeral.
+
+To copy the updated `config.yaml` file:
+
+```bash
+cp your-config.yaml ./otelcol-contrib/config.yaml
+```
+
+To change the directory inside the `otelcol-contrib` folder:
+
+```bash
+cd otelcol-contrib
+```
+
+To view the last 50 lines of `otelcol-contrib` logs:
+
+```bash
+tail -f -n 50 otelcol-output.log
+```
+
+To stop `otelcol-contrib`:
+
+```bash
+kill "$(< otel-pid)"
+```
+
+## Next Steps
+
+- [VM Collection Agent Overview](/docs/opentelemetry-collection-agents/vm/overview)
+- [Telemetry Data Requirements for Infrastructure Monitoring](/docs/infrastructure-monitoring/user-guides/telemetry-data-requirements/)
+- [Collector Configuration Best Practices](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#best-practices)
