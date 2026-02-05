@@ -462,7 +462,7 @@
     ]
   },
   {
-    "blogURL": "comparisons/opentelemetry-vs-new-relic",
+    "blogURL": "comparisons/opentelemetry-vs-newrelic",
     "relatedArticles": [
       {
         "title": "OpenTelemetry vs. New Relic - Which Monitoring Tool Fits You?",
@@ -493,6 +493,11 @@
         "title": "OpenTelemetry vs Loki - Choosing the Right Observability Tool",
         "publishedOn": "2024-11-07",
         "url": "/comparisons/opentelemetry-vs-loki/"
+      },
+      {
+        "title": "Comparing Datadog and New Relic's support for OpenTelemetry data",
+        "publishedOn": "2023-09-21",
+        "url": "/blog/is-opentelemetry-a-first-class-citizen-in-your-dashboard-a-datadog-and-newrelic-comparison/"
       }
     ]
   },
@@ -593,16 +598,6 @@
         "title": "OpenTelemetry vs Prometheus - Key Differences Explained",
         "publishedOn": "2024-09-03",
         "url": "/blog/opentelemetry-vs-prometheus/"
-      }
-    ]
-  },
-  {
-    "blogURL": "comparisons/opentelemetry-vs-newrelic",
-    "relatedArticles": [
-      {
-        "title": "Comparing Datadog and New Relic's support for OpenTelemetry data",
-        "publishedOn": "2023-09-21",
-        "url": "/blog/is-opentelemetry-a-first-class-citizen-in-your-dashboard-a-datadog-and-newrelic-comparison/"
       }
     ]
   },
