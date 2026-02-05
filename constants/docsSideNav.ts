@@ -1716,6 +1716,18 @@ const docsSideNav = [
         route: '/docs/cost-meter/alerts',
         label: 'Alerts',
       },
+      {
+        label: 'Troubleshooting',
+        type: 'category',
+        isExpanded: false,
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/cost-meter/troubleshooting/faqs',
+            label: 'General FAQs',
+          },
+        ],
+      },
     ],
   },
   {

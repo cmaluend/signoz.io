@@ -1,0 +1,54 @@
+---
+date: 2026-02-05
+id: cost_meter_faqs
+title: General FAQs
+description: General FAQs about Cost Meter
+doc_type: howto
+---
+
+### Q. How do I separate environments in the Volume breakdown dashboard?
+
+A. Add the `deployment.environment` attribute to your resource metadata in the OpenTelemetry Collector configuration.
+
+<details>
+<summary>Show detailed configuration steps</summary>
+
+If your environments are not appearing separately in the "Volume breakdown by environment" dashboard, you need to add the `deployment.environment` attribute to your resource metadata.
+
+**1. Add the resource processor to your OpenTelemetry Collector configuration:**
+
+```yaml
+processors:
+  resource:
+    attributes:
+      - key: deployment.environment
+        value: "your-environment-name"
+        action: upsert
+```
+
+**2. Replace `"your-environment-name"`** with the actual name of your environment (e.g., "dev", "qa", "prod")
+
+**3. Apply this processor to your metrics and logs pipelines** in the collector configuration:
+
+```yaml
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlp]
+```
+
+**4. Restart your OpenTelemetry Collector** to apply the changes
+
+After implementing this configuration, your environments will appear as separate entries in the Volume breakdown dashboard instead of being grouped together.
+
+**Additional Resources:**
+- [Setting Resource Attributes for Logs](https://signoz.io/docs/logs-management/guides/set-resource-attributes-for-logs/)
+- [OpenTelemetry Collector Configuration](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/)
+
+</details>
