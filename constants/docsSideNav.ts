@@ -1009,9 +1009,17 @@ const docsSideNav = [
             route: '/docs/instrumentation/opentelemetry-elixir',
           },
           {
-            type: 'doc',
+            type: 'category',
+            isExpanded: false,
             label: 'Rust',
             route: '/docs/instrumentation/opentelemetry-rust',
+            items: [
+              {
+                type: 'doc',
+                label: 'Manual Instrumentation',
+                route: '/docs/instrumentation/rust/manual-instrumentation',
+              },
+            ],
           },
           {
             type: 'doc',
