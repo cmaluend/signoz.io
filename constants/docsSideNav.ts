@@ -1025,11 +1025,6 @@ const docsSideNav = [
             ],
           },
           {
-            type: 'doc',
-            label: 'Elixir',
-            route: '/docs/instrumentation/opentelemetry-elixir',
-          },
-          {
             type: 'category',
             isExpanded: false,
             label: 'Rust',
@@ -1041,6 +1036,11 @@ const docsSideNav = [
                 route: '/docs/instrumentation/rust/manual-instrumentation',
               },
             ],
+          },
+          {
+            type: 'doc',
+            label: 'Elixir',
+            route: '/docs/instrumentation/opentelemetry-elixir',
           },
           {
             type: 'doc',
