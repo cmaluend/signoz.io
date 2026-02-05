@@ -4,6 +4,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
+const defaultFrameAncestors =
+  "'self' https://signoz.io https://*.us.signoz.cloud https://*.in.signoz.cloud https://*.eu.signoz.cloud"
+
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
   default-src 'self';
@@ -15,7 +18,7 @@ const ContentSecurityPolicy = `
   font-src * 'self';
   frame-src * giscus.app youtube.com;
   worker-src 'self' blob:;
-  frame-ancestors 'self' https://signoz.io https://*.us.signoz.cloud https://*.in.signoz.cloud https://*.eu.signoz.cloud;
+  frame-ancestors ${process.env.CSP_FRAME_ANCESTORS || defaultFrameAncestors};
 `
 
 const securityHeaders = [
@@ -103,6 +106,44 @@ module.exports = () => {
         {
           source: '/docs/',
           destination: '/docs/introduction',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/php/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/laravel/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-laravel/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-wordpress/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/jvm-metrics/',
+          destination:
+            '/docs/metrics-management/send-metrics/applications/opentelemetry-java/#jvm-runtime-metrics',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/jmx-metrics/',
+          destination:
+            '/docs/metrics-management/send-metrics/applications/opentelemetry-java/jmx-metrics/',
+          permanent: true,
+        },
+        {
+          source: '/docs/metrics-management/send-metrics/runtimes/java-metrics/jmx-metrics/',
+          destination:
+            '/docs/metrics-management/send-metrics/applications/opentelemetry-java/jmx-metrics/',
           permanent: true,
         },
         {
@@ -496,16 +537,6 @@ module.exports = () => {
           permanent: true,
         },
         {
-          source: '/docs/instrumentation/php/',
-          destination: '/docs/instrumentation/opentelemetry-php/',
-          permanent: true,
-        },
-        {
-          source: '/docs/instrumentation/laravel/',
-          destination: '/docs/instrumentation/opentelemetry-laravel/',
-          permanent: true,
-        },
-        {
           source: '/docs/instrumentation/python/',
           destination: '/docs/instrumentation/opentelemetry-python/',
           permanent: true,
@@ -573,12 +604,17 @@ module.exports = () => {
         },
         {
           source: '/docs/instrumentation/ruby/',
-          destination: '/docs/instrumentation/ruby-on-rails/',
+          destination: '/docs/instrumentation/opentelemetry-ruby/',
           permanent: true,
         },
         {
           source: '/docs/instrumentation/ruby-on-rails/',
-          destination: '/docs/instrumentation/opentelemetry-ruby-on-rails/',
+          destination: '/docs/instrumentation/opentelemetry-ruby/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-ruby-on-rails/',
+          destination: '/docs/instrumentation/opentelemetry-ruby/',
           permanent: true,
         },
         {
@@ -635,8 +671,18 @@ module.exports = () => {
         },
         {
           source: '/docs/instrumentation/manual-instrumentation/javascript/nodejs/',
-          destination:
-            '/docs/instrumentation/manual-instrumentation/javascript/opentelemetry-nodejs/',
+          destination: '/docs/instrumentation/javascript/nodejs-manual-instrumentation/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/manual-instrumentation/javascript/opentelemetry-nodejs/',
+          destination: '/docs/instrumentation/javascript/nodejs-manual-instrumentation/',
+          permanent: true,
+        },
+        {
+          source:
+            '/docs/instrumentation/manual-instrumentation/javascript/nodejs-selective-instrumentation/',
+          destination: '/docs/instrumentation/javascript/nodejs-selective-instrumentation/',
           permanent: true,
         },
         {
@@ -1221,6 +1267,21 @@ module.exports = () => {
         {
           source: '/docs/userguide/python-logs-auto-instrumentation/',
           destination: '/docs/logs-management/send-logs/python-logs/',
+          permanent: true,
+        },
+        {
+          source: '/docs/llm-community-integrations/',
+          destination: '/docs/llm-observability/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/hostmetrics/',
+          destination: '/docs/infrastructure-monitoring/hostmetrics/',
+          permanent: true,
+        },
+        {
+          source: '/docs/userguide/k8s-metrics/',
+          destination: '/docs/infrastructure-monitoring/k8s-metrics/',
           permanent: true,
         },
       ]
