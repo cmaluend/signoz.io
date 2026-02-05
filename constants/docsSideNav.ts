@@ -2119,6 +2119,11 @@ const docsSideNav = [
       },
       {
         type: 'doc',
+        route: '/docs/userguide/query-troubleshooting-faqs',
+        label: 'Query Troubleshooting - FAQs',
+      },
+      {
+        type: 'doc',
         route: '/docs/userguide/search-advanced-examples',
         label: 'Advanced Examples',
       },
