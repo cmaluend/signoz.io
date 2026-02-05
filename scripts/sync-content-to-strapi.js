@@ -412,17 +412,37 @@ function replaceAssetPaths(content, frontmatter, assets) {
 // Helper: Fetch all entities from Strapi endpoint
 async function fetchAllEntities(endpoint) {
   try {
-    const response = await axios.get(`${CMS_API_URL}/api/${endpoint}`, {
-      params: {
-        pagination: { pageSize: 100 }, // Adjust if you have more
-      },
-      headers: {
-        Authorization: `Bearer ${CMS_API_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    })
+    let allEntities = []
+    let page = 1
+    const pageSize = 100
+    let pageCount = 1
 
-    return response.data.data || []
+    do {
+      const response = await axios.get(`${CMS_API_URL}/api/${endpoint}`, {
+        params: {
+          pagination: {
+            page,
+            pageSize,
+          },
+        },
+        headers: {
+          Authorization: `Bearer ${CMS_API_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const data = response.data.data || []
+      allEntities = allEntities.concat(data)
+
+      // Update pagination info
+      const meta = response.data.meta || {}
+      const pagination = meta.pagination || {}
+      pageCount = pagination.pageCount || 1
+
+      page++
+    } while (page <= pageCount)
+
+    return allEntities
   } catch (error) {
     console.error(`Failed to fetch ${endpoint}: ${error.message}`)
     return []
