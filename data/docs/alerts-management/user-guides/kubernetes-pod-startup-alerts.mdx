@@ -1,5 +1,5 @@
 ---
-date: 2026-01-06
+date: 2026-02-05
 id: kubernetes-pod-startup-alerts
 title: How to Create Alerts for Slow-Starting Kubernetes Pods
 description: Learn how to create alerts for Kubernetes pods that take more than 60 seconds to start using SigNoz.
@@ -57,7 +57,7 @@ Set up the condition to trigger when pods remain in Pending phase too long:
 - **Query**: Select the query you defined (e.g., `A`)
 - **Condition**: `Equal to`
 - **Threshold**: `1` (Pending phase)
-- **Match Type**: `at least once`
+- **Match Type**: `at all times`
 - **Evaluation Window (For)**: `1 minute`
 
 This configuration checks if any pod has been in the Pending phase (value = 1) for at least 60 seconds.
