@@ -3,6 +3,7 @@ date: 2026-02-04
 title: VM Collection Agent - Install
 id: install
 description: Install the OpenTelemetry Collector binary on your virtual machine to collect telemetry data.
+doc_type: howto
 ---
 
 This guide walks you through installing the OpenTelemetry Collector **contrib** binary on your virtual machine. We use the [contrib distribution](https://github.com/open-telemetry/opentelemetry-collector-releases) and tailor the steps for sending data to SigNoz. For the OpenTelemetry-provided install options (Linux, macOS, Windows), see [Install from a Collector binary](https://opentelemetry.io/docs/collector/install/binary/).
@@ -372,7 +373,7 @@ Get-Process otelcol-contrib -ErrorAction SilentlyContinue | Stop-Process
 
 The following config is tailored for SigNoz usage (traces, metrics, logs). Copy it to the config path for your install method (see your tab above).
 
-```yaml
+```yaml:config.yaml
 receivers:
   otlp:
     protocols:
@@ -465,7 +466,7 @@ In the configuration above, three receivers are enabled: `otlp`, `hostmetrics`, 
 
 ## Next Steps
 
-- [Configure the Collector](/docs/opentelemetry-collection-agents/vm/configure)
-- [VM Collection Agent Overview](/docs/opentelemetry-collection-agents/vm/overview)
+- [Configure the Collector](https://signoz.io/docs/opentelemetry-collection-agents/vm/configure)
+- [VM Collection Agent Overview](https://signoz.io/docs/opentelemetry-collection-agents/vm/overview)
 - [Collector Configuration Best Practices](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#best-practices)
-- [Telemetry Data Requirements for Infrastructure Monitoring](/docs/infrastructure-monitoring/user-guides/telemetry-data-requirements/)
+- [Telemetry Data Requirements for Infrastructure Monitoring](https://signoz.io/docs/infrastructure-monitoring/user-guides/telemetry-data-requirements/)

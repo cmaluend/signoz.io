@@ -2,87 +2,227 @@
 date: 2026-02-04
 title: VM Collection Agent - Configure
 id: configure
-description: Configure the OpenTelemetry Collector binary to send telemetry data to SigNoz.
+description: Configure the OpenTelemetry Collector binary on your virtual machine to send telemetry data to SigNoz.
+doc_type: howto
 ---
 
-This guide explains how to configure the OpenTelemetry Collector binary running on your virtual machine to send telemetry data to SigNoz.
+This guide walks you through configuring the OpenTelemetry Collector binary on your virtual machine to send telemetry data to SigNoz. Add or merge each snippet below into your existing collector config and enable the new receivers or processors in the relevant pipelines.
 
 ## Prerequisites
 
-- OpenTelemetry Collector binary installed (see [Installation guide](/docs/opentelemetry-collection-agents/vm/install))
+- OpenTelemetry Collector binary installed (see [Installation guide](https://signoz.io/docs/opentelemetry-collection-agents/vm/install))
 - SigNoz Cloud account or self-hosted SigNoz instance
-- Access to create and edit the `config.yaml` file
+- Access to create and edit the OpenTelemetry Collector configuration file (see your [installation method](https://signoz.io/docs/opentelemetry-collection-agents/vm/install) for where it lives and how to apply changes)
 
 <KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
 Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
 </KeyPointCallout>
 
-## OpenTelemetry Collector Usage
+## Resource Detection
 
-You copy the configuration file to the respective config paths as per your installation methods. Followed by respective instructions to start, restart, and view logs of the `otelcol` binary.
+The `resourcedetection` processor adds host and cloud metadata to your telemetry so you can filter and group by environment, hostname, or cloud provider in SigNoz.
 
-### Systemd
+Use the following configuration on a VM. On **AWS**, **GCP**, or **Azure**, add the corresponding cloud detector **before** the `system` detector.
 
-To copy the update the otel-collector configuration with your own `config.yaml` file:
-
-```bash
-sudo cp your-config.yaml /etc/otelcol-contrib/config.yaml
+```yaml:config.yaml {11}
+processors:
+  resourcedetection:
+    # Allow using OTEL_RESOURCE_ATTRIBUTES env var, env detector adds custom labels.
+    detectors: [env, system]
+    timeout: 2s
+    system:
+      hostname_sources: [os]  # Use [dns,os] for FQDN as host.name with os as fallback
+service:
+  pipelines:
+    traces:
+      processors: [resourcedetection]
+    metrics:
+      processors: [resourcedetection]
+    logs:
+      processors: [resourcedetection]
 ```
 
-To restart `otelcol-contrib` with updated config:
+### Cloud-specific detectors
+
+- **AWS EC2:** Use `detectors: [env, ec2, system]` so the collector detects `cloud.provider`, `cloud.region`, `host.id`, and related attributes.
+- **GCP:** Use `detectors: [env, gcp, system]` for GCP VM metadata.
+- **Azure:** Use `detectors: [env, azure, system]` for Azure VM metadata.
+
+### Custom resource attributes
+
+Set the `OTEL_RESOURCE_ATTRIBUTES` environment variable where you run the collector; the `env` detector will attach those key-value pairs to all telemetry. Example:
 
 ```bash
-sudo systemctl restart otelcol-contrib.service
+export OTEL_RESOURCE_ATTRIBUTES="service.namespace=production,environment=staging"
 ```
 
-To check the status of `otelcol-contrib`:
+## Send data from applications to collector on VM
 
-```bash
-sudo systemctl status otelcol-contrib.service
+Configure the OTLP receiver so instrumented applications on the VM can send traces, metrics, and logs to the collector.
+
+```yaml:config.yaml {12}
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp]
 ```
 
-To view logs of `otelcol-contrib`:
+### Where and how to send data from your application
+
+Set your app’s OTLP endpoint to the collector (gRPC `4317`, HTTP `4318`). 
 
 ```bash
-sudo journalctl -u otelcol-contrib.service
+# Same VM
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
+# Different host
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://<VM_HOST_OR_IP>:4317"
+# Set the service name
+export OTEL_RESOURCE_ATTRIBUTES="service.name=my-app"
 ```
 
-To stop `otelcol-contrib`:
+See [Instrumentation](https://signoz.io/docs/instrumentation/) for language-specific setup.
 
-```bash
-sudo systemctl stop otelcol-contrib.service
+## Collect host metrics from the VM
+
+Use the `hostmetrics` receiver to scrape CPU, memory, disk, filesystem, load, and network metrics from the VM.
+
+```yaml:config.yaml {20}
+receivers:
+  hostmetrics:
+    collection_interval: 60s
+    scrapers:
+      cpu: {}
+      disk: {}
+      load: {}
+      filesystem: {}
+      memory: {}
+      network: {}
+      paging: {}
+      process:
+        mute_process_name_error: true
+        mute_process_exe_error: true
+        mute_process_io_error: true
+      processes: {}
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, hostmetrics]
 ```
 
-### Plain Binary
+You can enable only the scrapers you need or tune `collection_interval`.
 
-It is recommended to use the `otelcol-contrib` binary inside the terminal multiplexer tools like `tmux` or `screen`, since plain binary usage is ephemeral.
+## Collect logs from files on the VM
 
-To copy the updated `config.yaml` file:
+Use the `filelog` receiver to tail log files on the VM and send them as log records to SigNoz (application or system log files).
 
-```bash
-cp your-config.yaml ./otelcol-contrib/config.yaml
+**Example: single log file**
+
+```yaml:config.yaml {11}
+receivers:
+  filelog:
+    include: [/path/to/your/application.log] # <-- Replace with your log file path
+    start_at: end
+    include_file_name: false
+    include_file_path: true
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
 ```
 
-To change the directory inside the `otelcol-contrib` folder:
+**Example: multiple files with glob**
 
-```bash
-cd otelcol-contrib
+```yaml:config.yaml {12}
+receivers:
+  filelog:
+    include:
+      -/path/to/your/application-logs/*.log
+    start_at: end
+    include_file_name: true
+    include_file_path: true
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
 ```
 
-To view the last 50 lines of `otelcol-contrib` logs:
+**Example: JSON log files**
 
-```bash
-tail -f -n 50 otelcol-output.log
+```yaml:config.yaml {12}
+receivers:
+  filelog:
+    include: [/path/to/your/application-logs/*.json]
+    start_at: end
+    operators:
+      - type: json_parser
+        parse_from: body
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
 ```
 
-To stop `otelcol-contrib`:
+<Admonition type="info">
+Ensure the user running the collector has read access to the log paths. On Linux, you may need to add the user to a group that can read `/var/log` or adjust file permissions.
+</Admonition>
+
+## Collect syslogs
+
+To collect system logs (e.g. via rsyslog) on the VM using the OpenTelemetry Collector’s **syslog** receiver, see [Collecting Syslogs via OpenTelemetry Collector](https://signoz.io/docs/userguide/collecting_syslogs/).
+
+## Collect systemd (journald) logs
+
+To collect logs from systemd’s journal on Linux using the **journald** receiver, see [Collecting systemd logs (journald)](https://signoz.io/docs/logs-management/send-logs/collect-systemd-logs).
+
+## Collect Windows Event logs
+
+To stream Windows Event logs (Application, Security, System channels) to SigNoz using the **Windows Event Log** receiver, see [Windows Events log to SigNoz](https://signoz.io/docs/logs-management/send-logs/windows-events-log).
+
+## Forward from Fluent Bit, Fluentd, or Logstash
+
+- If you already use any of the following log forwarders on your VM, you can forward logs to the OpenTelemetry Collector and then to SigNoz:
+  - [Fluent Bit to SigNoz](https://signoz.io/docs/userguide/fluentbit_to_signoz)
+  - [Fluentd to SigNoz](https://signoz.io/docs/userguide/fluentd_to_signoz)
+  - [Logstash to SigNoz](https://signoz.io/docs/userguide/logstash_to_signoz)
+
+## Apply and Run
+
+After editing the config:
+
+1. Copy the configuration to the path used by your [installation method](https://signoz.io/docs/opentelemetry-collection-agents/vm/install) (e.g. systemd unit `Environment` or the path passed to `--config`).
+2. Restart or start the collector as described in the install guide.
+3. View collector logs to confirm there are no configuration errors.
+
+To validate the config without starting the collector:
 
 ```bash
-kill "$(< otel-pid)"
+otelcol-contrib --config ./config.yaml --dry-run
 ```
 
 ## Next Steps
 
-- [VM Collection Agent Overview](/docs/opentelemetry-collection-agents/vm/overview)
-- [Telemetry Data Requirements for Infrastructure Monitoring](/docs/infrastructure-monitoring/user-guides/telemetry-data-requirements/)
+- [VM Collection Agent Overview](https://signoz.io/docs/opentelemetry-collection-agents/vm/overview)
+- [Telemetry Data Requirements for Infrastructure Monitoring](https://signoz.io/docs/infrastructure-monitoring/user-guides/telemetry-data-requirements/)
 - [Collector Configuration Best Practices](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#best-practices)
