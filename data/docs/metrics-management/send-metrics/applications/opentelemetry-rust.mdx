@@ -1,5 +1,5 @@
 ---
-date: 2026-01-28
+date: 2026-02-04
 id: opentelemetry-rust
 title: Send Metrics from Rust application
 description: Learn how to instrument your Rust application with OpenTelemetry to send metrics to SigNoz
@@ -42,8 +42,8 @@ export OTEL_SERVICE_NAME="<service-name>"
 export OTEL_METRIC_EXPORT_INTERVAL="60000"
 ```
 Verify these values:
-- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
-- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<region>`: Your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
 
 </TabItem>
@@ -64,8 +64,8 @@ env:
   value: '60000'
 ```
 Verify these values:
-- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
-- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<region>`: Your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
 </TabItem>
 
@@ -79,8 +79,8 @@ $env:OTEL_SERVICE_NAME = "<service-name>"
 $env:OTEL_METRIC_EXPORT_INTERVAL = "60000"
 ```
 Verify these values:
-- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`).
-- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<region>`: Your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
 - `<service-name>`: A descriptive name for your service.
 </TabItem>
 
@@ -110,8 +110,8 @@ docker run -e OTEL_EXPORTER_OTLP_METRICS_ENDPOINT="https://ingest.<region>.signo
 ```
 
 Verify these values:
-- `<region>`: Your SigNoz Cloud region (`us`, `eu`, or `in`). See [endpoints](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint).
-- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/).
+- `<region>`: Your SigNoz Cloud [region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+- `<your-ingestion-key>`: Your SigNoz [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
 - `<service-name>`: A descriptive name for your service (e.g., `payment-service`).
 </TabItem>
 </Tabs>
@@ -254,7 +254,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 ```
 
 <Admonition type="info">
-This example shows a Counter, which only increases. OpenTelemetry supports other metric types like UpDownCounter, Histogram, and Observable Gauge. See [Manual/Custom Instrumentation](#manualcustom-instrumentation) for complete examples of each type.
+This example shows a Counter, which only increases. OpenTelemetry supports other metric types like UpDownCounter, Histogram, and Observable Gauge. See [Custom Metrics Examples](#custom-metrics-examples) for complete examples of each type.
 </Admonition>
 
 Run your application using your usual method (e.g., `cargo run` for development or executing the compiled binary for production).
@@ -265,7 +265,7 @@ Once you have configured your application to start sending metrics to SigNoz, yo
 
 <details>
 <ToggleHeading>
-## Manual/Custom Instrumentation
+## Custom Metrics Examples
 </ToggleHeading>
 
 For fine-grained control over your telemetry, you can create custom metrics using all metric types: Counter, UpDownCounter, Histogram, Gauge, and Observable instruments.
@@ -476,55 +476,6 @@ Observable instruments are called by the SDK during metric collection. The callb
 
 <details>
 <ToggleHeading>
-## Troubleshooting
-</ToggleHeading>
-
-### Metrics not appearing?
-
-1. **Check Environment Variables**: Ensure `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` is set correctly:
-    - For HTTP (default in this guide): `https://ingest.<region>.signoz.cloud:443/v1/metrics`
-    - For gRPC (if using `grpc-tonic`): `https://ingest.<region>.signoz.cloud:443`
-
-2. **Check Feature Flags**: Ensure your `Cargo.toml` includes the `metrics` feature for all OpenTelemetry crates.
-
-3. **Check Console Errors**: The OpenTelemetry SDK prints errors to stderr. Run your application with `RUST_LOG=debug` to see detailed logs:
-   ```bash
-   RUST_LOG=debug cargo run
-   ```
-
-4. **Resource Attributes**: Ensure `service.name` is set. This helps you filter metrics by service in SigNoz.
-
-5. **Shutdown Properly**: Always call `meter_provider.shutdown()` before your application exits to flush any remaining metrics.
-
-### Authentication errors
-
-If you see errors like "Unauthorized" or "403 Forbidden":
-- Verify your ingestion key is correct in `OTEL_EXPORTER_OTLP_METRICS_HEADERS`
-- Ensure the header format is exactly: `signoz-ingestion-key=<your-key>` (no extra spaces)
-- Check that your ingestion key is active in the SigNoz Cloud dashboard
-
-### "Connection Refused" errors
-
-- If running locally and sending to SigNoz Cloud, check your internet connection and firewall.
-- If sending to a self-hosted collector, ensure the collector is running and listening on port 4317 (gRPC) or 4318 (HTTP).
-
-### TLS/SSL errors
-
-If you see TLS-related errors:
-- Ensure you have the `tls-roots` feature enabled in `opentelemetry-otlp`
-- For custom CA certificates, you may need to configure the HTTP client accordingly
-
-### Compilation errors
-
-Common compilation issues:
-- **Missing features**: Ensure all crates have matching versions (e.g., all `0.31`)
-- **Async runtime**: The `rt-tokio` feature requires `tokio` with the `full` feature
-- **HTTP client**: The `reqwest-client` feature requires `reqwest` to be available
-
-</details>
-
-<details>
-<ToggleHeading>
 ## HTTP Metric Example
 </ToggleHeading>
 
@@ -656,6 +607,55 @@ When naming your custom metrics, follow the [OpenTelemetry Metrics Semantic Conv
 </Admonition>
 
 </details>
+
+</details>
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Metrics not appearing?
+
+1. **Check Environment Variables**: Ensure `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` is set correctly:
+    - For HTTP (default in this guide): `https://ingest.<region>.signoz.cloud:443/v1/metrics`
+    - For gRPC (if using `grpc-tonic`): `https://ingest.<region>.signoz.cloud:443`
+
+2. **Check Feature Flags**: Ensure your `Cargo.toml` includes the `metrics` feature for all OpenTelemetry crates.
+
+3. **Check Console Errors**: The OpenTelemetry SDK prints errors to stderr. Run your application with `RUST_LOG=debug` to see detailed logs:
+   ```bash
+   RUST_LOG=debug cargo run
+   ```
+
+4. **Resource Attributes**: Ensure `service.name` is set. This helps you filter metrics by service in SigNoz.
+
+5. **Shutdown Properly**: Always call `meter_provider.shutdown()` before your application exits to flush any remaining metrics.
+
+### Authentication errors
+
+If you see errors like "Unauthorized" or "403 Forbidden":
+- Verify your ingestion key is correct in `OTEL_EXPORTER_OTLP_METRICS_HEADERS`
+- Ensure the header format is exactly: `signoz-ingestion-key=<your-key>` (no extra spaces)
+- Check that your ingestion key is active in the SigNoz Cloud dashboard
+
+### "Connection Refused" errors
+
+- If running locally and sending to SigNoz Cloud, check your internet connection and firewall.
+- If sending to a self-hosted collector, ensure the collector is running and listening on port 4317 (gRPC) or 4318 (HTTP).
+
+### TLS/SSL errors
+
+If you see TLS-related errors:
+- Ensure you have the `tls-roots` feature enabled in `opentelemetry-otlp`
+- For custom CA certificates, you may need to configure the HTTP client accordingly
+
+### Compilation errors
+
+Common compilation issues:
+- **Missing features**: Ensure all crates have matching versions (e.g., all `0.31`)
+- **Async runtime**: The `rt-tokio` feature requires `tokio` with the `full` feature
+- **HTTP client**: The `reqwest-client` feature requires `reqwest` to be available
 
 </details>
 
