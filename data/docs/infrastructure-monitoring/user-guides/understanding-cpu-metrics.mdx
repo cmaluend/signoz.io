@@ -1,41 +1,41 @@
 ---
 date: 2026-01-06
 id: understanding-cpu-metrics
-title: Understanding CPU Utilization Metrics and Aggregation Intervals
-description: Learn how to properly configure CPU metrics for instance-level monitoring and understand how aggregation intervals affect metric values.
+title: Understanding EC2 CPU Utilization Metrics and Aggregation Intervals
+description: Learn how to properly configure CPU metrics for EC2 instance monitoring and understand how aggregation intervals affect metric values.
 doc_type: explanation
 ---
 
 ## Overview
 
-When viewing CPU utilization metrics, you may notice discrepancies between what you see in SigNoz and other monitoring tools like AWS CloudWatch. This guide explains how to properly configure CPU metrics and understand aggregation intervals.
+When monitoring EC2 instances and viewing CPU utilization metrics in SigNoz, you may notice discrepancies between what you see in SigNoz and AWS CloudWatch. This guide explains how to properly configure CPU metrics for EC2 instances and understand aggregation intervals.
 
-## Configuring CPU metrics for instance-level monitoring
+## Configuring CPU metrics for EC2 instance-level monitoring
 
-By default, CPU metrics may be grouped by individual CPU cores, which shows utilization per core rather than overall instance utilization. To view the maximum CPU utilization for an entire instance:
+By default, CPU metrics may be grouped by individual CPU cores, which shows utilization per core rather than overall EC2 instance utilization. To view the maximum CPU utilization for an entire EC2 instance:
 
 1. Remove the "Group by CPU" option from your metric configuration
-2. Keep only the instance identifier (such as `ec2.tag.Name`) in your grouping
+2. Keep only the EC2 instance identifier (such as `ec2.tag.Name`) in your grouping
 
-This will aggregate CPU utilization across all cores and show the overall instance performance.
+This will aggregate CPU utilization across all cores and show the overall EC2 instance performance.
 
 ### Example
 
 When monitoring an EC2 instance with multiple CPU cores:
 
 - **Per-core view**: Shows individual utilization for each CPU core (e.g., CPU0: 30%, CPU1: 45%, CPU2: 20%)
-- **Instance-level view**: Shows maximum or average utilization across all cores (e.g., Instance: 45%)
+- **EC2 instance-level view**: Shows maximum or average utilization across all cores (e.g., EC2 Instance: 45%)
 
-To get the instance-level view, ensure your query groups only by the instance identifier and not by individual CPU attributes.
+To get the EC2 instance-level view, ensure your query groups only by the EC2 instance identifier and not by individual CPU attributes.
 
-## Understanding aggregation intervals
+## Understanding aggregation intervals for EC2 monitoring
 
-Differences in CPU utilization values between monitoring platforms often stem from different aggregation intervals:
+Differences in EC2 CPU utilization values between SigNoz and AWS CloudWatch often stem from different aggregation intervals:
 
-- **Short time periods**: When viewing recent data (hours to 1 day), metrics use shorter aggregation intervals that capture more granular spikes
-- **Longer time periods**: When viewing data over several days, the aggregation interval automatically increases to 15 minutes to manage data volume
+- **Short time periods**: When viewing recent EC2 data (hours to 1 day), metrics use shorter aggregation intervals that capture more granular spikes
+- **Longer time periods**: When viewing EC2 data over several days, the aggregation interval automatically increases to 15 minutes to manage data volume
 
-For comparison, AWS CloudWatch typically uses 5-minute aggregation intervals, while SigNoz may use 15-minute intervals for longer time ranges.
+For comparison, AWS CloudWatch typically uses 5-minute aggregation intervals for EC2 metrics, while SigNoz may use 15-minute intervals for longer time ranges.
 
 ### How aggregation intervals work
 
@@ -57,15 +57,15 @@ Longer aggregation intervals can smooth out short-lived spikes:
 - A 2-minute CPU spike to 90% may appear as only 60% when averaged over a 15-minute window
 - The same spike would be more visible with a 1-minute aggregation interval
 
-## Viewing detailed spikes
+## Viewing detailed EC2 CPU spikes
 
-To see more detailed CPU spikes that may be averaged out in longer time periods:
+To see more detailed EC2 CPU spikes that may be averaged out in longer time periods:
 
-1. Zoom into specific time ranges where you expect to see spikes
-2. Use shorter time periods (hours instead of days) for more granular data
-3. Consider the collection interval of your metrics (configured in the hostmetrics receiver)
+1. Zoom into specific time ranges where you expect to see EC2 CPU spikes
+2. Use shorter time periods (hours instead of days) for more granular EC2 data
+3. Consider the collection interval of your EC2 metrics (configured in the hostmetrics receiver)
 
-This will reveal spikes that may be smoothed out when viewing longer time periods with larger aggregation intervals.
+This will reveal EC2 CPU spikes that may be smoothed out when viewing longer time periods with larger aggregation intervals.
 
 ## Current limitations
 
