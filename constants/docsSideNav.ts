@@ -1291,6 +1291,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/logs-management/send-logs/log-export-methods',
+            label: 'Log export methods',
+          },
+          {
+            type: 'doc',
             route: '/docs/userguide/collect_kubernetes_pod_logs',
             label: 'Kubernetes pod logs',
           },
