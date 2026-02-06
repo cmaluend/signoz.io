@@ -9,7 +9,7 @@ import GetHelp from '@/components/shared/get-help.md'
 
 ## Overview
 
-The filter processor in OpenTelemetry allows you to drop logs based on body, log level (aka severity text), or other attributes. This is useful if you want to exclude certain logs from being sent to SigNoz.
+The filter processor in the [OpenTelemetry Collector](https://signoz.io/docs/opentelemetry-collection-agents/get-started/) allows you to drop logs based on body, log level (aka severity text), or other attributes. This is useful if you want to exclude certain logs from being sent to SigNoz.
 
 The filter processor is configured in the `processors::filter` section of the `otel-collector-config.yaml` file.
 
@@ -111,7 +111,7 @@ This is useful to:
 
 ### Configuration
 
-Add the transform processor to your OpenTelemetry Collector configuration to truncate log bodies to a maximum size:
+Add the [transform processor](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#transform-processor) to your OpenTelemetry Collector configuration to truncate log bodies to a maximum size:
 
 ```yaml
 processors:
@@ -137,9 +137,7 @@ logs:
 
 </Admonition>
 
-For more information about the transform processor and the `truncate_all` function, refer to:
-- [Transform processor documentation](https://pkg.go.dev/github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor)
-- [Related GitHub discussion on log size control](https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/23847)
+For more information about the [transform processor](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#transform-processor) and the `truncate_all` function, refer to the [official transform processor documentation](https://pkg.go.dev/github.com/open-telemetry/opentelemetry-collector-contrib/processor/transformprocessor).
 
 ## Related Guides
 
