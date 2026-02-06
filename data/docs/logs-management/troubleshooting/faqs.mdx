@@ -6,7 +6,7 @@ title: General FAQs
 description: General FAQs about logs
 ---
 
-### Q. I can't see related logs for traces.  
+### Q. I can't see related logs for traces.
 A. Make sure your logs include `trace_id` and `span_id`.
 
 <details>
@@ -17,17 +17,17 @@ A. Make sure your logs include `trace_id` and `span_id`.
 
 </details>
 
-### Q. I want to extract trace_id and span_id from my log line  
+### Q. I want to extract trace_id and span_id from my log line
 A. You can extract these using the logs pipelines trace parser. See documentation [here](https://signoz.io/docs/logs-pipelines/guides/trace/).
 
-### Q. I want to extract an attribute from my log line  
+### Q. I want to extract an attribute from my log line
 A. Use Logs Pipeline to parse and extract attributes.
 
 <details>
 <summary>Show detailed steps</summary>
 
-The best way to do this is using Logs Pipeline. Refer to:  
-- [Logs Pipeline Introduction](https://signoz.io/docs/logs-pipelines/introduction/)  
+The best way to do this is using Logs Pipeline. Refer to:
+- [Logs Pipeline Introduction](https://signoz.io/docs/logs-pipelines/introduction/)
 - [Parse JSON logs with Pipelines](https://signoz.io/docs/logs-pipelines/guides/json/)
 
 </details>
@@ -64,7 +64,7 @@ There are different ways to add a resource attribute.
     replace the value of `<host_name>` with the actual hostname
 </details>
 
-### Q. I am sending logs but my logs are not visible on SigNoz  
+### Q. I am sending logs but my logs are not visible on SigNoz
 A. Check your exporter and collector configuration.
 
 <details>
@@ -75,7 +75,7 @@ A. Check your exporter and collector configuration.
 
 </details>
 
-### Q. How to increase the retention period of logs from x days to y days?  
+### Q. How to increase the retention period of logs from x days to y days?
 A. If you are using SigNoz Cloud, contact SigNoz support via the chatbox. Or if you are self-hosting, you can change the retention period in the SigNoz UI under Settings > Logs Retention.
 
 ### Q. In java my mdc attributes are not visible in SigNoz
@@ -91,38 +91,5 @@ For example, for **logback** use:
 For **log4j** use:
 `otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes=*`
 See [this documentation][def] for more system properties.
-
-</details>
-
-### Q. How do I query log fields with dots in key names?
-A. Use log pipelines to transform the data by extracting values from dotted keys into new keys without dots.
-
-<details>
-<summary>Show detailed explanation and solution</summary>
-
-When working with structured logs that contain keys with dots (like `result.description`), you may encounter issues when trying to query these fields directly. This is a common scenario with Azure logs such as AppServiceConsoleLogs.
-
-**The Problem:**
-
-Keys containing dots cannot be queried directly using standard syntax because the system interprets the dot as a path separator rather than part of the key name. For example, these queries will not work:
-
-* `body.result.description EXISTS` (returns no results)
-* `body['result.description'] EXISTS` (syntax error)
-* `body["result.description"] EXISTS` (syntax error)
-* `body CONTAINS 'result.description'` (returns no results)
-
-**Current Solution: Use Log Pipelines**
-
-To work with fields that have dots in their key names, you can use log pipelines to transform the data:
-
-1. Create a pipeline that extracts the value from the dotted key
-2. Assign this value to a new key without dots
-3. Query the new key normally
-
-For example, if you have a field `result.description`, you can create a pipeline that copies its value to a new field like `result_description`, which can then be queried using standard syntax like `body.result_description EXISTS`.
-
-See [Logs Pipeline Introduction](https://signoz.io/docs/logs-pipelines/introduction/) for more details on creating pipelines.
-
-**Note:** Support for querying keys with dots directly is currently in development and will be available soon.
 
 </details>
