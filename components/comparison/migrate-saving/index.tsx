@@ -2,14 +2,14 @@
 
 import React from 'react'
 import styles from './styles.module.css'
-import { useHubspotForm } from '@aaronhayes/react-use-hubspot-form'
+import { useHubspotFormBypass } from '@/hooks/useHubspotFormBypass'
 
 const MigrateSaving = (props) => {
   const {
     data: { TITLE, DESC, PORTAL_ID, FORM_ID },
   } = props
 
-  const { loaded, error, formCreated } = useHubspotForm({
+  const { loaded, error, formCreated } = useHubspotFormBypass({
     portalId: PORTAL_ID,
     formId: FORM_ID,
     target: '#my-hubspot-form',

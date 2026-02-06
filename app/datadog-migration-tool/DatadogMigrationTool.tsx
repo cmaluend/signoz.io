@@ -17,7 +17,7 @@ import SigNozStats from '@/shared/components/molecules/FeaturePages/SignozStats'
 import TestimonialCards from '@/shared/components/molecules/FeaturePages/TestimonialCard'
 import SectionLayout from '@/shared/components/molecules/FeaturePages/SectionLayout'
 import HeroCards from '@/shared/components/molecules/FeaturePages/HeroCards'
-import { HubspotProvider } from '@aaronhayes/react-use-hubspot-form'
+// import { HubspotProvider } from '@aaronhayes/react-use-hubspot-form'
 import PricingForm from '../pricing-form'
 import GridLayout from '@/shared/components/molecules/FeaturePages/GridLayout'
 
@@ -43,9 +43,9 @@ const RequestEarlyAccessButton: React.FC<{ className?: string }> = ({ className 
         <ModalContent className="max-w-2xl rounded-3xl border border-signoz_slate-200 bg-white text-signoz_ink-500 shadow-[0_20px_60px_rgba(9,16,29,0.35)]">
           {(closeHandler) => (
             <ModalBody className="px-10 py-8 text-signoz_ink-500">
-              <HubspotProvider>
-                <PricingForm portalId={HUBSPOT_DATA.portalId} formId={HUBSPOT_DATA.formId} />
-              </HubspotProvider>
+              {/* <HubspotProvider> */}
+              <PricingForm portalId={HUBSPOT_DATA.portalId} formId={HUBSPOT_DATA.formId} />
+              {/* </HubspotProvider> */}
             </ModalBody>
           )}
         </ModalContent>

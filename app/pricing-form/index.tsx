@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react'
 import styles from './styles.module.css'
-import { useHubspotForm } from '@aaronhayes/react-use-hubspot-form'
+import { useHubspotFormBypass } from '@/hooks/useHubspotFormBypass'
 
 function PricingForm({ portalId, formId }) {
-  const { loaded, error, formCreated } = useHubspotForm({
+  const { loaded, error, formCreated } = useHubspotFormBypass({
     portalId,
     formId,
     target: '#my-hubspot-form',

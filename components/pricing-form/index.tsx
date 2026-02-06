@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import styles from "./styles.module.css";
-import { useHubspotForm } from "@aaronhayes/react-use-hubspot-form";
+import React, { useState } from 'react'
+import styles from './styles.module.css'
+import { useHubspotFormBypass } from '@/hooks/useHubspotFormBypass'
 
 function PricingForm({ portalId, formId }) {
-  const { loaded, error, formCreated } = useHubspotForm({
+  const { loaded, error, formCreated } = useHubspotFormBypass({
     portalId,
     formId,
-    target: "#my-hubspot-form",
-  });
+    target: '#my-hubspot-form',
+  })
   return (
     <>
       <div id="my-hubspot-form">
@@ -16,7 +16,7 @@ function PricingForm({ portalId, formId }) {
       </div>
       {loaded && error && <p>Some error occurred.</p>}
     </>
-  );
+  )
 }
 
-export default PricingForm;
+export default PricingForm

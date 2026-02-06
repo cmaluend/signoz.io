@@ -101,6 +101,18 @@ module.exports = () => {
         },
       ]
     },
+    async rewrites() {
+      return [
+        {
+          source: '/scripts/hubspot-forms-v2.js',
+          destination: 'https://js.hsforms.net/forms/embed/v2.js',
+        },
+        {
+          source: '/hubspot-api/:path*',
+          destination: 'https://forms.hsforms.com/:path*',
+        },
+      ]
+    },
     async redirects() {
       return [
         {

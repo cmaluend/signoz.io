@@ -2,7 +2,7 @@
 
 import React from 'react'
 import styles from './styles.module.css'
-import { HubspotProvider } from '@aaronhayes/react-use-hubspot-form'
+// import { HubspotProvider } from '@aaronhayes/react-use-hubspot-form'
 import PricingForm from '../pricing-form'
 import DiscussYourProject from '../discuss-your-project'
 
@@ -63,12 +63,12 @@ function Enterprise() {
               <div className={'col col--6 margin-vert--md'}>
                 <div className={`card ${styles.enterpriseCard}`}>
                   <div className="card__body">
-                    <HubspotProvider>
-                      <PricingForm
-                        portalId={ENTERPRISE_DATA.PORTAL_ID}
-                        formId={ENTERPRISE_DATA.FORM_ID}
-                      />
-                    </HubspotProvider>
+                    {/* <HubspotProvider> */}
+                    <PricingForm
+                      portalId={ENTERPRISE_DATA.PORTAL_ID}
+                      formId={ENTERPRISE_DATA.FORM_ID}
+                    />
+                    {/* </HubspotProvider> */}
                   </div>
                 </div>
               </div>
