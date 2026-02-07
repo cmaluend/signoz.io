@@ -1305,19 +1305,46 @@ const docsSideNav = [
             ],
           },
           {
+            type: 'category',
+            isExpanded: false,
+            label: 'Infrastructure Logs',
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/userguide/collect_kubernetes_pod_logs',
+                label: 'Kubernetes Pod',
+              },
+              {
+                type: 'doc',
+                route: '/docs/userguide/collect_docker_logs',
+                label: 'Docker',
+              },
+              {
+                type: 'doc',
+                route: '/docs/userguide/collecting_syslogs',
+                label: 'Syslogs',
+              },
+              {
+                type: 'doc',
+                route: '/docs/userguide/send-cloudwatch-logs-to-signoz',
+                label: 'Cloudwatch',
+              },
+              {
+                type: 'doc',
+                route: '/docs/logs-management/send-logs/windows-events-log',
+                label: 'Windows Event',
+              },
+              {
+                type: 'doc',
+                route: '/docs/logs-management/send-logs/collect-systemd-logs',
+                label: 'Systemd/journald',
+              },
+            ],
+          },
+          {
             type: 'doc',
             route: '/docs/logs-management/send-logs/log-export-methods',
-            label: 'Log export methods',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/collect_kubernetes_pod_logs',
-            label: 'Kubernetes Pod',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/collect_docker_logs',
-            label: 'Docker',
+            label: 'Log Export Methods',
           },
           {
             type: 'doc',
@@ -1336,16 +1363,6 @@ const docsSideNav = [
           },
           {
             type: 'doc',
-            route: '/docs/userguide/collecting_syslogs',
-            label: 'Syslogs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/send-cloudwatch-logs-to-signoz',
-            label: 'Cloudwatch',
-          },
-          {
-            type: 'doc',
             route: '/docs/logs-management/send-logs/cloudflare-logs',
             label: 'Cloudflare',
           },
@@ -1359,16 +1376,6 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/logs-management/send-logs/vector-logs-to-signoz',
             label: 'Vector',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/send-logs/windows-events-log',
-            label: 'Windows Event',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/send-logs/collect-systemd-logs',
-            label: 'Systemd/journald',
           },
         ],
       },
