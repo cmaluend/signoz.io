@@ -1265,6 +1265,21 @@ const docsSideNav = [
                 route: '/docs/logs-management/send-logs/opentelemetry-nodejs-bunyan-logs',
                 label: 'Bunyan Node.js',
               },
+              {
+                type: 'doc',
+                route: '/docs/logs-management/send-logs/logrus-to-signoz',
+                label: 'Logrus',
+              },
+              {
+                type: 'doc',
+                route: '/docs/logs-management/send-logs/zerolog-to-signoz',
+                label: 'Zerolog',
+              },
+              {
+                type: 'doc',
+                route: '/docs/logs-management/send-logs/zap-to-signoz',
+                label: 'Zap',
+              },
             ],
           },
           {
@@ -1297,7 +1312,7 @@ const docsSideNav = [
           {
             type: 'doc',
             route: '/docs/userguide/collect_kubernetes_pod_logs',
-            label: 'Kubernetes pod logs',
+            label: 'Kubernetes Pod',
           },
           {
             type: 'doc',
@@ -1326,11 +1341,6 @@ const docsSideNav = [
           },
           {
             type: 'doc',
-            route: '/docs/logs-management/send-logs/logrus-to-signoz',
-            label: 'Logrus',
-          },
-          {
-            type: 'doc',
             route: '/docs/userguide/send-cloudwatch-logs-to-signoz',
             label: 'Cloudwatch',
           },
@@ -1352,11 +1362,6 @@ const docsSideNav = [
           },
           {
             type: 'doc',
-            route: '/docs/logs-management/send-logs/zap-to-signoz',
-            label: 'Zap',
-          },
-          {
-            type: 'doc',
             route: '/docs/logs-management/send-logs/windows-events-log',
             label: 'Windows Event',
           },
@@ -1364,11 +1369,6 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/logs-management/send-logs/collect-systemd-logs',
             label: 'Systemd/journald',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/send-logs/zerolog-to-signoz',
-            label: 'Zerolog',
           },
         ],
       },
