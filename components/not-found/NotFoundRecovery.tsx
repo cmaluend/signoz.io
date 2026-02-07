@@ -1,193 +1,159 @@
 'use client'
 
-import { useMemo } from 'react'
+import { liteClient as algoliasearch } from 'algoliasearch/lite'
+import { useEffect, useMemo, useState } from 'react'
 import { usePathname } from 'next/navigation'
-
-export type DocsIndexEntry = {
-  title: string
-  slug: string
-}
 
 type SuggestedDoc = {
   title: string
   href: string
 }
 
-type NotFoundRecoveryProps = {
-  docsIndex: DocsIndexEntry[]
-}
-
-const FALLBACK_SLUGS = [
-  'introduction',
-  'logs-management/send-logs-to-signoz',
-  'traces-management/guides/overview',
-  'infrastructure-monitoring/overview',
-  'aws-monitoring/overview',
-  'llm-observability',
+const QUICK_LINK_FALLBACK: SuggestedDoc[] = [
+  {
+    title: 'Get Started with SigNoz',
+    href: '/docs/introduction',
+  },
+  {
+    title: 'Instrument Your Application with OpenTelemetry',
+    href: '/docs/instrumentation',
+  },
+  {
+    title: 'Send Logs to SigNoz',
+    href: '/docs/logs-management/send-logs-to-signoz',
+  },
 ]
 
-const STOP_WORDS = new Set([
-  'docs',
-  'doc',
-  'guide',
-  'guides',
-  'the',
-  'and',
-  'for',
-  'with',
-  'to',
-  'from',
-  'how',
-  'what',
-  'where',
-  'why',
-  'page',
-  'api',
-])
+const FALLBACK_SUGGESTIONS = QUICK_LINK_FALLBACK
 
-const splitToTokens = (value: string): string[] => {
-  return value
+const STOP_WORDS = new Set(['docs', 'doc', 'the', 'and', 'for', 'with', 'to', 'from', 'page'])
+
+const tokenizePath = (pathname: string): string[] => {
+  return pathname
     .toLowerCase()
     .split(/[^a-z0-9]+/)
+    .map((token) => token.replace(/\d+$/g, ''))
     .filter((token) => token.length > 1 && !STOP_WORDS.has(token))
 }
 
-const getNormalizedDocsPath = (pathname: string): string => {
-  const withoutQuery = pathname.split('?')[0] ?? pathname
-  const withoutHash = withoutQuery.split('#')[0] ?? withoutQuery
-  const trimmed = withoutHash.replace(/^\/+/, '')
-
-  if (trimmed.startsWith('docs/')) {
-    return trimmed.slice('docs/'.length)
+type AlgoliaHit = {
+  url?: string
+  title?: string
+  hierarchy?: {
+    lvl0?: string | null
+    lvl1?: string | null
+    lvl2?: string | null
+    lvl3?: string | null
   }
-
-  if (trimmed === 'docs') {
-    return ''
-  }
-
-  return trimmed
 }
 
-const scoreCandidate = (
-  doc: DocsIndexEntry,
-  pathTokens: string[],
-  pathSegments: string[]
-): number => {
-  if (pathTokens.length === 0) {
-    return 0
-  }
-
-  const slug = doc.slug.toLowerCase()
-  const title = doc.title.toLowerCase()
-  const slugSegments = slug.split('/').filter(Boolean)
-  const candidateTokens = splitToTokens(`${slug} ${title}`)
-  const candidateSet = new Set(candidateTokens)
-
-  let score = 0
-
-  for (const token of pathTokens) {
-    if (candidateSet.has(token)) {
-      score += 7
-      continue
-    }
-
-    if (slug.includes(token)) {
-      score += 4
-      continue
-    }
-
-    if (title.includes(token)) {
-      score += 3
-      continue
-    }
-
-    if (
-      candidateTokens.some(
-        (candidateToken) => candidateToken.startsWith(token) || token.startsWith(candidateToken)
-      )
-    ) {
-      score += 2
-    }
-  }
-
-  for (const segment of pathSegments) {
-    if (segment && slug.includes(segment)) {
-      score += 4
-    }
-  }
-
-  const [firstPathSegment] = pathSegments
-  if (firstPathSegment) {
-    const firstSegmentMatch = slugSegments.some((segment) => segment.startsWith(firstPathSegment))
-    if (firstSegmentMatch) {
-      score += 3
-    }
-  }
-
-  const intersectionCount = pathTokens.filter((token) => candidateSet.has(token)).length
-  const unionCount = new Set([...pathTokens, ...candidateTokens]).size
-  if (unionCount > 0) {
-    score += (intersectionCount / unionCount) * 8
-  }
-
-  const unrelatedTokens = candidateTokens.filter(
-    (candidateToken) =>
-      !pathTokens.some(
-        (pathToken) => candidateToken.includes(pathToken) || pathToken.includes(candidateToken)
-      )
+const getTitleFromHit = (hit: AlgoliaHit): string | null => {
+  return (
+    hit.title ||
+    hit.hierarchy?.lvl3 ||
+    hit.hierarchy?.lvl2 ||
+    hit.hierarchy?.lvl1 ||
+    hit.hierarchy?.lvl0 ||
+    null
   )
-  score -= Math.min(3, unrelatedTokens.length * 0.6)
-
-  return score
 }
 
-const toSuggestedDoc = (doc: DocsIndexEntry): SuggestedDoc => {
-  return {
-    title: doc.title,
-    href: `/docs/${doc.slug}`,
+const toDocsHref = (url: string): string | null => {
+  try {
+    const parsed = new URL(url, window.location.origin)
+    if (!parsed.pathname.startsWith('/docs/')) {
+      return null
+    }
+    return `${parsed.pathname}${parsed.hash}`
+  } catch {
+    return null
   }
 }
 
-const dedupeByHref = (docs: SuggestedDoc[]): SuggestedDoc[] => {
-  const seen = new Set<string>()
+export default function NotFoundRecovery() {
+  const pathname = usePathname() || '/'
+  const fallbackSuggestions = useMemo(() => FALLBACK_SUGGESTIONS, [])
 
-  return docs.filter((doc) => {
-    if (seen.has(doc.href)) {
-      return false
+  const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
+  const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
+  const hasAlgoliaConfig = Boolean(appId && apiKey && indexName)
+  const [suggestions, setSuggestions] = useState<SuggestedDoc[]>(
+    hasAlgoliaConfig ? [] : FALLBACK_SUGGESTIONS
+  )
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(hasAlgoliaConfig)
+  const suggestionIntro = hasAlgoliaConfig
+    ? 'You might be looking for:'
+    : 'Popular docs to get started:'
+
+  useEffect(() => {
+    if (!hasAlgoliaConfig || !appId || !apiKey || !indexName) {
+      setIsLoadingSuggestions(false)
+      setSuggestions(fallbackSuggestions)
+      return
     }
 
-    seen.add(doc.href)
-    return true
-  })
-}
-
-export default function NotFoundRecovery({ docsIndex }: NotFoundRecoveryProps) {
-  const pathname = usePathname() || '/docs'
-
-  const suggestions = useMemo(() => {
-    const normalizedPath = getNormalizedDocsPath(pathname)
-    const pathSegments = normalizedPath.split('/').filter(Boolean)
-    const pathTokens = splitToTokens(pathSegments.join(' '))
-
-    const scored = docsIndex
-      .map((doc) => ({ doc, score: scoreCandidate(doc, pathTokens, pathSegments) }))
-      .filter((entry) => entry.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 3)
-      .map((entry) => toSuggestedDoc(entry.doc))
-
-    const docsBySlug = new Map(docsIndex.map((doc) => [doc.slug, doc] as const))
-    const fallback = FALLBACK_SLUGS.map((slug) => docsBySlug.get(slug))
-      .filter(Boolean)
-      .map((doc) => toSuggestedDoc(doc as DocsIndexEntry))
-
-    const combined = dedupeByHref([...scored, ...fallback]).slice(0, 3)
-    if (combined.length > 0) {
-      return combined
+    const tokens = tokenizePath(pathname)
+    const query = tokens.join(' ').trim()
+    if (!query) {
+      setIsLoadingSuggestions(false)
+      setSuggestions(fallbackSuggestions)
+      return
     }
 
-    return fallback.slice(0, 3)
-  }, [docsIndex, pathname])
+    let cancelled = false
+    const client = algoliasearch(appId, apiKey)
+    setIsLoadingSuggestions(true)
+    setSuggestions([])
+
+    const loadSuggestions = async () => {
+      try {
+        const response = (await client.search([
+          {
+            indexName,
+            params: {
+              query,
+              hitsPerPage: 10,
+            },
+          },
+        ])) as {
+          results?: Array<{ hits?: AlgoliaHit[] }>
+        }
+
+        const hits = response.results?.[0]?.hits || []
+
+        const fromAlgolia = hits
+          .map((hit) => {
+            if (!hit.url) return null
+            const href = toDocsHref(hit.url)
+            const title = getTitleFromHit(hit)
+            if (!href || !title) return null
+            return { href, title } as SuggestedDoc
+          })
+          .filter(Boolean) as SuggestedDoc[]
+
+        const deduped = [...fromAlgolia, ...fallbackSuggestions].filter(
+          (doc, index, arr) => arr.findIndex((candidate) => candidate.href === doc.href) === index
+        )
+
+        if (!cancelled) {
+          setSuggestions(deduped.slice(0, 3))
+          setIsLoadingSuggestions(false)
+        }
+      } catch {
+        if (!cancelled) {
+          setSuggestions(fallbackSuggestions)
+          setIsLoadingSuggestions(false)
+        }
+      }
+    }
+
+    void loadSuggestions()
+
+    return () => {
+      cancelled = true
+    }
+  }, [apiKey, appId, fallbackSuggestions, hasAlgoliaConfig, indexName, pathname])
 
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-signoz_ink-500 px-4 sm:px-6">
@@ -206,21 +172,27 @@ export default function NotFoundRecovery({ docsIndex }: NotFoundRecoveryProps) {
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-signoz_vanilla-300">
           We could not find{' '}
-          <code className="rounded bg-signoz_ink-300 px-1.5 py-0.5">{pathname}</code>. You might be
-          looking for:
+          <code className="rounded bg-signoz_ink-300 px-1.5 py-0.5">{pathname}</code>.{' '}
+          {suggestionIntro}
         </p>
 
         <ul className="mt-8 space-y-3">
-          {suggestions.map((item) => (
-            <li key={item.href}>
-              <a
-                href={item.href}
-                className="text-base leading-6 text-signoz_robin-400 transition-colors hover:text-signoz_robin-300"
-              >
-                {item.title}
-              </a>
+          {isLoadingSuggestions && hasAlgoliaConfig ? (
+            <li className="text-base leading-6 text-signoz_vanilla-400">
+              Finding relevant docs...
             </li>
-          ))}
+          ) : (
+            suggestions.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  className="text-base leading-6 text-signoz_robin-400 transition-colors hover:text-signoz_robin-300"
+                >
+                  {item.title}
+                </a>
+              </li>
+            ))
+          )}
         </ul>
       </section>
     </main>

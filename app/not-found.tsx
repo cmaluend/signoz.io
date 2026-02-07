@@ -1,13 +1,5 @@
-import { allDocs } from 'contentlayer/generated'
-import NotFoundRecovery, { type DocsIndexEntry } from '@/components/not-found/NotFoundRecovery'
-
-const docsIndex: DocsIndexEntry[] = allDocs
-  .filter((doc) => Boolean(doc.slug))
-  .map((doc) => ({
-    title: doc.title,
-    slug: doc.slug,
-  }))
+import NotFoundRecovery from '@/components/not-found/NotFoundRecovery'
 
 export default function NotFound() {
-  return <NotFoundRecovery docsIndex={docsIndex} />
+  return <NotFoundRecovery />
 }
