@@ -1012,11 +1012,6 @@ const docsSideNav = [
             ],
           },
           {
-            type: 'doc',
-            label: 'Deno',
-            route: '/docs/instrumentation/opentelemetry-deno',
-          },
-          {
             type: 'category',
             isExpanded: false,
             label: 'PHP',
@@ -1028,6 +1023,11 @@ const docsSideNav = [
                 label: 'Manual Instrumentation',
               },
             ],
+          },
+          {
+            type: 'doc',
+            label: 'Deno',
+            route: '/docs/instrumentation/opentelemetry-deno',
           },
           {
             type: 'doc',
