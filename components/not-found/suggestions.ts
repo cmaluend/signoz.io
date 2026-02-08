@@ -1,3 +1,5 @@
+import { rerankSuggestions, tokenizePathForSuggestions } from './rerank'
+
 export type SuggestedDoc = {
   title: string
   href: string
@@ -29,22 +31,12 @@ export const QUICK_LINK_FALLBACK: SuggestedDoc[] = [
   },
 ]
 
-const STOP_WORDS = new Set(['docs', 'doc', 'the', 'and', 'for', 'with', 'to', 'from', 'page'])
-
 export const hasAlgoliaConfig = (): boolean => {
   return Boolean(
     process.env.NEXT_PUBLIC_ALGOLIA_APP_ID &&
       process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY &&
       process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
   )
-}
-
-const tokenizePath = (pathname: string): string[] => {
-  return pathname
-    .toLowerCase()
-    .split(/[^a-z0-9]+/)
-    .map((token) => token.replace(/\d+$/g, ''))
-    .filter((token) => token.length > 1 && !STOP_WORDS.has(token))
 }
 
 const getTitleFromHit = (hit: AlgoliaHit): string | null => {
@@ -95,7 +87,7 @@ export const getNotFoundSuggestions = async (
   const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME as string
 
-  const tokens = tokenizePath(pathname)
+  const tokens = tokenizePathForSuggestions(pathname)
   const query = tokens.join(' ').trim()
 
   if (!query) {
@@ -114,7 +106,7 @@ export const getNotFoundSuggestions = async (
         },
         body: JSON.stringify({
           query,
-          hitsPerPage: 10,
+          hitsPerPage: 8,
         }),
         // Suggestions should be fresh for typo/moved-path recovery
         cache: 'no-store',
@@ -138,7 +130,8 @@ export const getNotFoundSuggestions = async (
       })
       .filter(Boolean) as SuggestedDoc[]
 
-    return dedupeByHref([...fromAlgolia, ...QUICK_LINK_FALLBACK]).slice(0, count)
+    const reranked = rerankSuggestions(dedupeByHref(fromAlgolia), tokens)
+    return dedupeByHref([...reranked, ...QUICK_LINK_FALLBACK]).slice(0, count)
   } catch {
     return QUICK_LINK_FALLBACK.slice(0, count)
   }
