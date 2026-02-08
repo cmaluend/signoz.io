@@ -1017,7 +1017,6 @@ const docsSideNav = [
             route: '/docs/instrumentation/opentelemetry-deno',
           },
           {
-            type: 'doc',
             type: 'category',
             isExpanded: false,
             label: 'PHP',
