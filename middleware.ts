@@ -78,6 +78,9 @@ export function middleware(req: NextRequest) {
   // Prepare response
   const res = NextResponse.next()
 
+  // Preserve request path for server-rendered global not-found suggestions.
+  res.headers.set('x-pathname', pathname)
+
   // Add custom headers for downstream consumption
   if (isBot) {
     res.headers.set('x-bot-detected', 'true')
