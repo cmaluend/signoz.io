@@ -14,7 +14,7 @@ This guide shows you how to filter out these requests by configuring the `HttpIn
 
 ## Prerequisites
 
-- Node.js version 18.0 or higher (see official list of [supported versions](https://github.com/open-telemetry/opentelemetry-js?tab=readme-ov-file#supported-runtimes))
+- Node.js version 18.0 or higher (see official list of [supported versions](https://github.com/open-telemetry/opentelemetry-js/blob/main/README.md#supported-runtimes))
 - OpenTelemetry SDK installed and configured
 
 ## Configure HttpInstrumentation
@@ -22,7 +22,7 @@ This guide shows you how to filter out these requests by configuring the `HttpIn
 The `HttpInstrumentation` class allows you to define an `ignoreIncomingRequestHook`. This hook is a function that receives the request object (`req`). If it returns `true`, the request is ignored and no span is created.
 
 <Admonition type="important">
-If you're using zero-code instrumentation, method given below will require to make some code changes in your application.
+If you're using zero-code instrumentation, the `ignoreIncomingRequestHook` cannot be configured through environment variables. You'll need to switch to programmatic instrumentation by creating an `instrumentation.js` file as shown below and loading it with `node -r ./instrumentation.js app.js`. See [Node.js OpenTelemetry Instrumentation](https://signoz.io/docs/instrumentation/javascript/opentelemetry-nodejs/#code-based-setup-optional) for the complete setup guide.
 </Admonition>
 
 <Tabs>
