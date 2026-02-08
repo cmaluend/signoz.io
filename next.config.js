@@ -109,6 +109,44 @@ module.exports = () => {
           permanent: true,
         },
         {
+          source: '/docs/instrumentation/php/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/laravel/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-laravel/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/instrumentation/opentelemetry-wordpress/',
+          destination: '/docs/instrumentation/opentelemetry-php/',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/jvm-metrics/',
+          destination:
+            '/docs/metrics-management/send-metrics/applications/opentelemetry-java/#jvm-runtime-metrics',
+          permanent: true,
+        },
+        {
+          source: '/docs/tutorial/jmx-metrics/',
+          destination:
+            '/docs/metrics-management/send-metrics/applications/opentelemetry-java/jmx-metrics/',
+          permanent: true,
+        },
+        {
+          source: '/docs/metrics-management/send-metrics/runtimes/java-metrics/jmx-metrics/',
+          destination:
+            '/docs/metrics-management/send-metrics/applications/opentelemetry-java/jmx-metrics/',
+          permanent: true,
+        },
+        {
           source: '/docs/migration/opentelemetry-datadog-receiver/',
           destination: '/docs/migration/migrate-from-datadog/opentelemetry-datadog-receiver/',
           permanent: true,
@@ -221,7 +259,7 @@ module.exports = () => {
         {
           source: '/slack/',
           destination:
-            'https://join.slack.com/t/signoz-community/shared_invite/zt-3mkbiaxsz-QBhH_p84LIbzv2LkgkIGhQ',
+            'https://join.slack.com/t/signoz-community/shared_invite/zt-3pdv47cad-1O4lTFY1H2E8UwQcnQ4fZg',
           basePath: false,
           permanent: true,
         },
@@ -496,16 +534,6 @@ module.exports = () => {
         {
           source: '/docs/instrumentation/opentelemetry-react-native/',
           destination: '/docs/instrumentation/javascript/opentelemetry-react-native/',
-          permanent: true,
-        },
-        {
-          source: '/docs/instrumentation/php/',
-          destination: '/docs/instrumentation/opentelemetry-php/',
-          permanent: true,
-        },
-        {
-          source: '/docs/instrumentation/laravel/',
-          destination: '/docs/instrumentation/opentelemetry-laravel/',
           permanent: true,
         },
         {

@@ -1018,13 +1018,17 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            type: 'category',
+            isExpanded: false,
             label: 'PHP',
             route: '/docs/instrumentation/opentelemetry-php',
-          },
-          {
-            type: 'doc',
-            label: 'Laravel',
-            route: '/docs/instrumentation/opentelemetry-laravel',
+            items: [
+              {
+                type: 'doc',
+                route: '/docs/instrumentation/php/manual-instrumentation',
+                label: 'Manual Instrumentation',
+              },
+            ],
           },
           {
             type: 'doc',
@@ -1050,11 +1054,6 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/instrumentation/opentelemetry-nginx',
             label: 'NGINX',
-          },
-          {
-            type: 'doc',
-            route: '/docs/instrumentation/opentelemetry-wordpress',
-            label: 'WordPress',
           },
           {
             type: 'doc',
@@ -1129,8 +1128,8 @@ const docsSideNav = [
       {
         type: 'category',
         isExpanded: false,
-        label: 'Tutorials',
-        // route: '',
+        label: 'User Guides',
+        route: '/docs/traces-management/guides/overview',
         items: [
           {
             type: 'doc',
@@ -1227,41 +1226,6 @@ const docsSideNav = [
         route: '/docs/logs-management/send-logs-to-signoz',
         items: [
           {
-            type: 'doc',
-            route: '/docs/userguide/collect_kubernetes_pod_logs',
-            label: 'Kubernetes pod logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/collect_docker_logs',
-            label: 'Docker logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/heroku_logs_to_signoz',
-            label: 'Heroku logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/vercel_logs_to_signoz',
-            label: 'Vercel logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/send-logs-http',
-            label: 'HTTP logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/userguide/collecting_syslogs',
-            label: 'Syslogs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/send-logs/logrus-to-signoz',
-            label: 'Logrus',
-          },
-          {
             type: 'category',
             isExpanded: false,
             label: 'Application Logs',
@@ -1310,16 +1274,6 @@ const docsSideNav = [
             ],
           },
           {
-            type: 'doc',
-            route: '/docs/userguide/send-cloudwatch-logs-to-signoz',
-            label: 'Cloudwatch logs',
-          },
-          {
-            type: 'doc',
-            route: '/docs/logs-management/send-logs/cloudflare-logs',
-            label: 'Cloudflare logs',
-          },
-          {
             type: 'category',
             isExpanded: false,
             label: 'Existing Collectors to SigNoz',
@@ -1340,6 +1294,62 @@ const docsSideNav = [
                 label: 'Logstash to SigNoz',
               },
             ],
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/send-logs/log-export-methods',
+            label: 'Log export methods',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/collect_kubernetes_pod_logs',
+            label: 'Kubernetes pod logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/collect_docker_logs',
+            label: 'Docker logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/heroku_logs_to_signoz',
+            label: 'Heroku logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/vercel_logs_to_signoz',
+            label: 'Vercel logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/send-logs-http',
+            label: 'HTTP logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/userguide/collecting_syslogs',
+            label: 'Syslogs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/send-logs/logrus-to-signoz',
+            label: 'Logrus',
+          },
+
+          {
+            type: 'doc',
+            route: '/docs/userguide/send-cloudwatch-logs-to-signoz',
+            label: 'Cloudwatch logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/send-logs/cloudflare-logs',
+            label: 'Cloudflare logs',
+          },
+          {
+            type: 'doc',
+            route: '/docs/logs-management/send-logs/convex-log-streams-signoz',
+            label: 'Convex logs',
           },
           {
             type: 'doc',
@@ -1558,6 +1568,20 @@ const docsSideNav = [
             isExpanded: false,
             items: [
               {
+                type: 'category',
+                label: 'Java',
+                route: '/docs/metrics-management/send-metrics/applications/opentelemetry-java',
+                isExpanded: false,
+                items: [
+                  {
+                    type: 'doc',
+                    route:
+                      '/docs/metrics-management/send-metrics/applications/opentelemetry-java/jmx-metrics',
+                    label: 'JMX Metrics',
+                  },
+                ],
+              },
+              {
                 type: 'doc',
                 route: '/docs/metrics-management/send-metrics/applications/golang',
                 label: 'Golang',
@@ -1642,23 +1666,6 @@ const docsSideNav = [
                 type: 'doc',
                 route: '/docs/metrics-management/nginx-metrics',
                 label: 'NGINX',
-              },
-            ],
-          },
-          {
-            type: 'category',
-            label: 'Runtimes',
-            isExpanded: false,
-            items: [
-              {
-                type: 'doc',
-                route: '/docs/tutorial/jvm-metrics',
-                label: 'JVM',
-              },
-              {
-                type: 'doc',
-                route: '/docs/tutorial/jmx-metrics',
-                label: 'JMX Metrics',
               },
             ],
           },
@@ -1900,6 +1907,11 @@ const docsSideNav = [
             type: 'doc',
             route: '/docs/dashboards/dashboard-templates/claude-code-dashboard',
             label: 'Claude Code',
+          },
+          {
+            type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/codex-dashboard',
+            label: 'Codex (OpenAI)',
           },
           {
             type: 'doc',
@@ -2480,6 +2492,11 @@ const docsSideNav = [
       {
         route: '/docs/claude-code-monitoring',
         label: 'Claude Code',
+        type: 'doc',
+      },
+      {
+        route: '/docs/codex-monitoring',
+        label: 'Codex (OpenAI)',
         type: 'doc',
       },
       {
