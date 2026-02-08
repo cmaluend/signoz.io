@@ -1284,6 +1284,11 @@ module.exports = () => {
           destination: '/docs/infrastructure-monitoring/k8s-metrics/',
           permanent: true,
         },
+        {
+          source: '/docs/userguide/collecting_application_logs_otel_sdk_java/',
+          destination: '/docs/logs-management/send-logs/java-logs/',
+          permanent: true,
+        },
       ]
     },
     webpack: (config, options) => {
