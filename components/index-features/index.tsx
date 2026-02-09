@@ -22,8 +22,8 @@ export const SigNozFeatures = () => {
     { src: '/img/index_features/logs.svg', label: 'Logs' },
     { src: '/img/index_features/layout-grid.svg', label: 'Dashboards' },
     { src: '/img/index_features/bug.svg', label: 'Errors' },
-    { src: '/img/index_features/concierge-bell.svg', label: 'Alerts' },
     { src: '/img/index_features/llm-observability.svg', label: 'LLM/AI' },
+    { src: '/img/index_features/concierge-bell.svg', label: 'Alerts' },
   ]
 
   const sections = [
