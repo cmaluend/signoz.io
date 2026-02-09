@@ -72,7 +72,7 @@ export const SigNozFeatures = () => {
       buttonText: 'Explore More',
       buttonLink: '/llm-observability/',
       logo: '/img/index_features/llm-observability.svg',
-      img: '/img/graphics/homepage/feature-graphic-5.webp',
+      img: '/img/graphics/homepage/feature-graphic-8.webp',
     },
     {
       iconTag: 'ALERTS',
