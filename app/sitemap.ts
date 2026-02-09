@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
+import { allBlogs, allDocs } from 'contentlayer/generated'
 import siteMetadata from '@/data/siteMetadata'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '@/utils/strapi'
 
@@ -44,25 +44,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     }))
 
-  // New section for guides
-  const guideRoutes = allGuides
-    .filter((guide) => !guide.draft)
-    .map((guide) => ({
-      url: `${siteUrl}/${guide.path}/`,
-      lastModified: guide.lastmod || guide.date,
-      changeFrequency: mapChangeFrequency('weekly'),
-      priority: 0.7,
-    }))
-
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'
 
-  const [faqsResult, caseStudiesResult, opentelemetryResult, comparisonsResult] =
+  const [faqsResult, caseStudiesResult, opentelemetryResult, comparisonsResult, guidesResult] =
     await Promise.allSettled([
       fetchMDXContentByPath('faqs', undefined, deploymentStatus, true),
       fetchMDXContentByPath('case-studies', undefined, deploymentStatus, true),
       fetchMDXContentByPath('opentelemetries', undefined, deploymentStatus, true),
       fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true),
+      fetchMDXContentByPath('guides', undefined, deploymentStatus, true),
     ])
 
   let faqRoutes: MetadataRoute.Sitemap = []
@@ -113,6 +104,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   } else {
     console.error('Error fetching comparisons for sitemap:', comparisonsResult.reason)
+  }
+
+  let guideRoutes: MetadataRoute.Sitemap = []
+  if (guidesResult.status === 'fulfilled') {
+    const data = guidesResult.value as MDXContentApiResponse
+    guideRoutes = data.data.map((guide) => ({
+      url: `${siteUrl}/guides${guide.path}/`,
+      lastModified: guide.date || guide.updatedAt || guide.publishedAt,
+      changeFrequency: mapChangeFrequency('weekly'),
+      priority: 0.5,
+    }))
+  } else {
+    console.error('Error fetching guides for sitemap:', guidesResult.reason)
   }
 
   const routes = [

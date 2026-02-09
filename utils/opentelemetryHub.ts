@@ -1,8 +1,7 @@
 import hubConfig from '@/constants/opentelemetry_hub.json'
 import { LEARN_CHAPTER_ORDER } from '@/constants/opentelemetryHub'
-import { allBlogs, allGuides, type Blog, type Guide } from 'contentlayer/generated'
-import { transformComparison } from './mdxUtils'
-import { fetchMDXContentByPath, MDXContent } from './strapi'
+import { allBlogs, type Blog } from 'contentlayer/generated'
+import { MDXContent } from './strapi'
 
 type RawHubPath = {
   key: string
@@ -64,6 +63,7 @@ type HubIndex = {
 let memoizedHubIndex: HubIndex | null = null
 
 import { getCachedComparisons } from './cachedData'
+import { getCachedGuides } from './guidesData'
 
 const getComparisons = async () => {
   const isProduction = process.env.VERCEL_ENV === 'production'
@@ -170,14 +170,20 @@ function collectLanguages(items: HubNavItem[], accumulator: Set<string>) {
   }
 }
 
-async function buildHubIndex(comparisons: MDXContent[]): Promise<HubIndex> {
+async function buildHubIndex({
+  comparisons,
+  guides,
+}: {
+  comparisons: MDXContent[]
+  guides: MDXContent[]
+}): Promise<HubIndex> {
   const lookup = new Map<string, HubLookupEntry>()
   const paths: HubPathNav[] = []
 
   const contentIndex = [
     {
       prefix: '/blog/',
-      collection: allBlogs as Array<Blog | Guide>,
+      collection: allBlogs as Array<Blog>,
     },
     {
       prefix: '/comparisons/',
@@ -185,7 +191,7 @@ async function buildHubIndex(comparisons: MDXContent[]): Promise<HubIndex> {
     },
     {
       prefix: '/guides/',
-      collection: allGuides as Array<Blog | Guide>,
+      collection: guides,
     },
   ]
 
@@ -261,12 +267,19 @@ async function buildHubIndex(comparisons: MDXContent[]): Promise<HubIndex> {
   return { lookup, paths }
 }
 
-async function getHubIndex(comparisons?: MDXContent[]): Promise<HubIndex> {
+async function getHubIndex({
+  comparisons,
+  guides,
+}: {
+  comparisons?: MDXContent[]
+  guides?: MDXContent[]
+}): Promise<HubIndex> {
   if (memoizedHubIndex) {
     return memoizedHubIndex
   }
 
   let usedComparisons = comparisons
+  let usedGuides = guides
   if (!usedComparisons) {
     try {
       usedComparisons = await getComparisons()
@@ -275,13 +288,36 @@ async function getHubIndex(comparisons?: MDXContent[]): Promise<HubIndex> {
     }
   }
 
-  memoizedHubIndex = await buildHubIndex(usedComparisons || [])
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  if (!usedGuides) {
+    try {
+      usedGuides = await getCachedGuides(deploymentStatus)
+    } catch (e) {
+      console.error('[opentelemetryHub] Error fetching guides for hub:', e)
+      usedGuides = []
+    }
+  }
+
+  memoizedHubIndex = await buildHubIndex({
+    comparisons: usedComparisons || [],
+    guides: usedGuides || [],
+  })
   return memoizedHubIndex
 }
 
-export async function getHubContextForRoute(route: string, comparisons?: MDXContent[]) {
+export async function getHubContextForRoute({
+  route,
+  comparisons,
+  guides,
+}: {
+  route: string
+  comparisons?: MDXContent[]
+  guides?: MDXContent[]
+}) {
   const normalized = normalizeRoute(route)
-  const { lookup, paths } = await getHubIndex(comparisons)
+  const { lookup, paths } = await getHubIndex({ comparisons, guides })
 
   const match = lookup.get(normalized)
   if (!match) {
@@ -304,12 +340,12 @@ export async function getHubContextForRoute(route: string, comparisons?: MDXCont
 }
 
 export async function listHubRoutes(): Promise<string[]> {
-  const { lookup } = await getHubIndex()
+  const { lookup } = await getHubIndex({})
   return Array.from(lookup.keys())
 }
 
 export async function getHubPaths(): Promise<HubPathNav[]> {
-  const { paths } = await getHubIndex()
+  const { paths } = await getHubIndex({})
   return paths
 }
 

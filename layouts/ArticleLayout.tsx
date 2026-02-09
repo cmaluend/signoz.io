@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ReactNode, useEffect, useRef, useState } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog, Authors, Guide } from 'contentlayer/generated'
+import type { Blog, Authors } from 'contentlayer/generated'
 import { ExternalLink } from 'lucide-react'
 
 import SectionContainer from '@/components/SectionContainer'
@@ -30,7 +30,7 @@ export interface TocItemProps {
   value: string
 }
 
-type ContentType = Blog | MDXContent | Guide
+type ContentType = Blog | MDXContent
 
 type ArticleContent = ContentType & {
   cta_title?: string

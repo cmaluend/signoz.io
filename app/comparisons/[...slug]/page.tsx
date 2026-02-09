@@ -2,7 +2,7 @@ import 'css/prism.css'
 import 'katex/dist/katex.css'
 
 import { components } from '@/components/MDXComponents'
-import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer'
+import { coreContent } from 'pliny/utils/contentlayer'
 import { allAuthors } from 'contentlayer/generated'
 import type { Authors } from 'contentlayer/generated'
 import OpenTelemetryLayout from '@/layouts/OpenTelemetryLayout'
@@ -127,7 +127,10 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const mainContent = coreContent(post)
   const jsonLd = post.structuredData
 
-  const hubContext = await getHubContextForRoute(currentRoute, comparisonsList)
+  const hubContext = await getHubContextForRoute({
+    route: currentRoute,
+    comparisons: comparisonsList,
+  })
 
   let compiledContent
   try {

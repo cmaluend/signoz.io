@@ -79,6 +79,119 @@ export function generateTOC(content: string) {
   return headings
 }
 
+export const transformGuide = (guide: MDXContent) => {
+  const slug = guide.path?.split('/').pop() || ''
+  const path = `guides/${slug}`
+
+  const authors = Array.isArray(guide.authors)
+    ? guide.authors.map((author: any) => (typeof author === 'string' ? author : author.key))
+    : []
+
+  const tags = Array.isArray(guide.tags)
+    ? guide.tags.map((tag: any) => (typeof tag === 'string' ? tag : tag.value))
+    : []
+
+  const keywords = Array.isArray(guide.keywords)
+    ? guide.keywords.map((keyword: any) => (typeof keyword === 'string' ? keyword : keyword.value))
+    : []
+
+  const readingTimeStats = readingTime(guide.content || '')
+
+  const contentForStructuredData: any = {
+    ...guide,
+    slug,
+    path,
+  }
+
+  const updatedRelatedGuides = guide.related_guides?.map((relatedGuide: MDXContent) => {
+    return {
+      ...relatedGuide,
+      _id: relatedGuide.documentId || String(relatedGuide.id),
+      _raw: {},
+      path: `guides${relatedGuide.path || ''}`,
+      url: `${siteMetadata.siteUrl}/guides${relatedGuide.path || ''}`,
+      slug: relatedGuide.path.split('/').pop() || '',
+      title: relatedGuide.title,
+      date: relatedGuide.date || relatedGuide.updatedAt || relatedGuide.publishedAt,
+      tags: relatedGuide.tags?.map((tag: any) => (typeof tag === 'string' ? tag : tag.value)),
+      authors: relatedGuide.authors?.map((author: any) =>
+        typeof author === 'string' ? author : author.key
+      ),
+      keywords: relatedGuide.keywords?.map((keyword: any) =>
+        typeof keyword === 'string' ? keyword : keyword.value
+      ),
+    }
+  })
+
+  const updatedRelatedBlogs = guide.related_blogs?.map((relatedBlog: MDXContent) => {
+    return {
+      ...relatedBlog,
+      _id: relatedBlog.documentId || String(relatedBlog.id),
+      _raw: {},
+      path: `blogs${relatedBlog.path || ''}`,
+      url: `${siteMetadata.siteUrl}/blogs${relatedBlog.path || ''}`,
+      slug: relatedBlog.path.split('/').pop() || '',
+      title: relatedBlog.title,
+      date: relatedBlog.date || relatedBlog.updatedAt || relatedBlog.publishedAt,
+      tags: relatedBlog.tags?.map((tag: any) => (typeof tag === 'string' ? tag : tag.value)),
+      authors: relatedBlog.authors?.map((author: any) =>
+        typeof author === 'string' ? author : author.key
+      ),
+      keywords: relatedBlog.keywords?.map((keyword: any) =>
+        typeof keyword === 'string' ? keyword : keyword.value
+      ),
+    }
+  })
+
+  const updatedRelatedComparisons = guide.related_comparisons?.map(
+    (relatedComparison: MDXContent) => {
+      return {
+        ...relatedComparison,
+        _id: relatedComparison.documentId || String(relatedComparison.id),
+        _raw: {},
+        path: `comparisons${relatedComparison.path || ''}`,
+        url: `${siteMetadata.siteUrl}/comparisons${relatedComparison.path || ''}`,
+        slug: relatedComparison.path.split('/').pop() || '',
+        title: relatedComparison.title,
+        date:
+          relatedComparison.date || relatedComparison.updatedAt || relatedComparison.publishedAt,
+        tags: relatedComparison.tags?.map((tag: any) =>
+          typeof tag === 'string' ? tag : tag.value
+        ),
+        authors: relatedComparison.authors?.map((author: any) =>
+          typeof author === 'string' ? author : author.key
+        ),
+        keywords: relatedComparison.keywords?.map((keyword: any) =>
+          typeof keyword === 'string' ? keyword : keyword.value
+        ),
+      }
+    }
+  )
+
+  return {
+    ...guide,
+    _id: guide.documentId || String(guide.id),
+    _raw: {},
+    title: guide.title,
+    date: guide.date,
+    tags,
+    authors,
+    keywords,
+    slug,
+    content: guide.content,
+    toc: generateTOC(guide.content || ''),
+    readingTime: readingTimeStats,
+    path,
+    filePath: path.endsWith('.mdx') ? path : `${path}.mdx`,
+    structuredData: generateStructuredData('guides', contentForStructuredData),
+    relatedArticles: [
+      ...(updatedRelatedGuides || []),
+      ...(updatedRelatedBlogs || []),
+      ...(updatedRelatedComparisons || []),
+    ],
+  }
+}
+
 export const transformComparison = (comparison: MDXContent) => {
   const slug = comparison.path?.split('/').pop() || ''
   const path = `comparisons/${slug}`

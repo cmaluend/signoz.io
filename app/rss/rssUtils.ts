@@ -1,5 +1,5 @@
 import { sortPosts } from 'pliny/utils/contentlayer.js'
-import { allBlogs, allDocs, allGuides } from 'contentlayer/generated'
+import { allBlogs, allDocs } from 'contentlayer/generated'
 import { fetchMDXContentByPath, MDXContentApiResponse } from '../../utils/strapi'
 import { normaliseSlug } from '../../scripts/rssFeed.mjs'
 import { transformComparison } from '@/utils/mdxUtils'
@@ -44,30 +44,44 @@ const mapOpentelemetryEntries = (opentelemetries: MDXContentApiResponse | undefi
 
 export const loadPublishedPosts = async () => {
   const deploymentStatus = getDeploymentStatus()
-  const allFaqs = (await fetchMDXContentByPath('faqs', undefined, deploymentStatus, true)) as
-    | MDXContentApiResponse
-    | undefined
+  const [faqsResult, opentelemetriesResult, comparisonsResult] = await Promise.allSettled([
+    fetchMDXContentByPath('faqs', undefined, deploymentStatus, true),
+    fetchMDXContentByPath('opentelemetries', undefined, deploymentStatus, true),
+    fetchMDXContentByPath('comparisons', undefined, deploymentStatus, true),
+  ])
 
-  const faqPosts = mapFaqEntries(allFaqs)
+  const allFaqs =
+    faqsResult.status === 'fulfilled'
+      ? (faqsResult.value as MDXContentApiResponse | undefined)
+      : undefined
 
-  const allOpentelemetries = (await fetchMDXContentByPath(
-    'opentelemetries',
-    undefined,
-    deploymentStatus,
-    true
-  )) as MDXContentApiResponse | undefined
+  const allOpentelemetries =
+    opentelemetriesResult.status === 'fulfilled'
+      ? (opentelemetriesResult.value as MDXContentApiResponse | undefined)
+      : undefined
 
-  const allComparisons = (await fetchMDXContentByPath(
-    'comparisons',
-    undefined,
-    deploymentStatus,
-    true
-  )) as MDXContentApiResponse | undefined
+  const allComparisons =
+    comparisonsResult.status === 'fulfilled'
+      ? (comparisonsResult.value as MDXContentApiResponse | undefined)
+      : undefined
+
+  if (faqsResult.status === 'rejected') {
+    console.error('Error fetching FAQs for RSS:', faqsResult.reason)
+  }
+
+  if (opentelemetriesResult.status === 'rejected') {
+    console.error('Error fetching opentelemetries for RSS:', opentelemetriesResult.reason)
+  }
+
+  if (comparisonsResult.status === 'rejected') {
+    console.error('Error fetching comparisons for RSS:', comparisonsResult.reason)
+  }
 
   const updatedComparisons = allComparisons?.data.map((comparison) =>
     transformComparison(comparison)
   )
 
+  const faqPosts = mapFaqEntries(allFaqs)
   const opentelemetryPosts = mapOpentelemetryEntries(allOpentelemetries)
 
   const combinedPosts = [
@@ -76,7 +90,6 @@ export const loadPublishedPosts = async () => {
     ...(opentelemetryPosts || []),
     ...allDocs,
     ...(updatedComparisons || []),
-    ...allGuides,
   ]
 
   return sortPosts(combinedPosts.filter((post: any) => post?.draft !== true) as any[])

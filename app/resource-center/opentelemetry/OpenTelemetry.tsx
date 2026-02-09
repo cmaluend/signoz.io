@@ -2,7 +2,7 @@
 
 import hubConfig from '@/constants/opentelemetry_hub.json'
 import { LEARN_CHAPTER_ORDER } from '@/constants/opentelemetryHub'
-import { allBlogs, allGuides, type Blog, type Guide } from 'contentlayer/generated'
+import { allBlogs, type Blog } from 'contentlayer/generated'
 import { coreContent, type CoreContent } from 'pliny/utils/contentlayer'
 import type { MDXContent } from '@/utils/strapi'
 import BlogPostCard from '../Shared/BlogPostCard'
@@ -11,7 +11,7 @@ import React from 'react'
 import { filterData } from 'app/utils/common'
 import { Frown } from 'lucide-react'
 
-type HubDoc = CoreContent<Blog | Guide | MDXContent>
+type HubDoc = CoreContent<Blog | MDXContent>
 
 type HubChapterGroup = {
   key: string
@@ -45,7 +45,7 @@ type HubConfigPath = {
   articles?: HubConfigArticle[]
 }
 
-const docCollections = [...allBlogs, ...allGuides] as Array<Blog | Guide>
+const docCollections = [...allBlogs] as Array<Blog>
 
 function normalizeRoute(route: string) {
   if (!route) return '/'
@@ -131,7 +131,7 @@ export default function OpenTelemetry({ articles = [] }: OpenTelemetryProps) {
       const normalizedDocMap = new Map<string, HubDoc>()
 
       // Merge collections
-      const allDocs: (Blog | Guide | HubDoc)[] = [...docCollections]
+      const allDocs: (Blog | HubDoc)[] = [...docCollections]
 
       // Add Strapi opentelemetry articles
       articles.forEach((article) => {
