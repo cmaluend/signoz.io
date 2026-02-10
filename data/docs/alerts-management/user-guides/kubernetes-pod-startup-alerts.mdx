@@ -2,11 +2,11 @@
 date: 2026-02-05
 id: kubernetes-pod-startup-alerts
 title: How to Create Alerts for Slow-Starting Kubernetes Pods
-description: Learn how to create alerts for Kubernetes pods that take more than 60 seconds to start using SigNoz.
+description: Learn how to create alerts for Kubernetes pods that take more than 5 minutes to start using SigNoz.
 tags: ["SigNoz Cloud", "Self-Host"]
 ---
 
-This guide shows you how to create an alert for Kubernetes pods that take more than 60 seconds to start. This helps you identify pods experiencing startup issues, which can indicate problems with container images, resource constraints, or configuration issues.
+This guide shows you how to create an alert for Kubernetes pods that take more than 5 minutes to start. This helps you identify pods experiencing startup issues, which can indicate problems with container images, resource constraints, or configuration issues.
 
 ## Prerequisites
 
@@ -58,18 +58,20 @@ Set up the condition to trigger when pods remain in Pending phase too long:
 - **Condition**: `Equal to`
 - **Threshold**: `1` (Pending phase)
 - **Match Type**: `at all times`
-- **Evaluation Window (For)**: `1 minute`
+- **Evaluation Window (For)**: `5 minutes`
 
-This configuration checks if any pod has been in the Pending phase (value = 1) for at least 60 seconds.
+This configuration checks if any pod has been in the Pending phase (value = 1) for at least 5 minutes (300 seconds).
+
+**Important**: Adjust your alert evaluation window to match how frequently the metric is updating in SigNoz. For example, if the metric reports every 40 seconds and your evaluation window is only 60 seconds, you may not have enough data points for reliable alerting. Ensure your metric collection interval is significantly lower than the evaluation window to avoid false alerts.
 
 ### Step 4: Configure Alert Details
 
 1. **Severity**: Choose appropriate severity (e.g., `Warning` or `Critical`)
-2. **Alert Name**: Provide a descriptive name (e.g., "Kubernetes Pod Slow Startup - More than 60s")
+2. **Alert Name**: Provide a descriptive name (e.g., "Kubernetes Pod Slow Startup - More than 5 minutes")
 3. **Alert Description**: Add context, for example:
 
 ```
-Pod {{k8s.pod.name}} in namespace {{k8s.namespace.name}} has been in Pending phase for more than 60 seconds.
+Pod {{k8s.pod.name}} in namespace {{k8s.namespace.name}} has been in Pending phase for more than 5 minutes.
 
 This may indicate:
 - Resource constraints (CPU/memory limits)
