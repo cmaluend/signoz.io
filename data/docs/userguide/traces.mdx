@@ -53,8 +53,28 @@ To further troubleshoot your application, you can select a span from the list to
 
 ## Missing Spans
 
-A "missing span" in a trace means that the parent span ID of a span is missing. Every span has a **Span ID** and a **Parent Span ID**, except the root span which does not have a parent span ID. When a service makes a call to another service, the calling service's span ID becomes the parent span ID for the downstream service's span. If the parent span ID is missing, the span appears as a missing span in the trace.
+### How Parent ID Propagation Works
 
+Every span has two key identifiers: a **Span ID** and a **Parent Span ID**. When a service makes a call to a downstream service, it propagates context via the `traceparent` header. This header carries the current span's Span ID, which the downstream service uses as the Parent Span ID of the new span it creates.
+
+The **root span** is the first span in a trace — it does not have a Parent Span ID because no upstream service initiated it.
+
+For example, consider three services — `Frontend`, `Auth`, and `Database`:
+
+1. `Frontend` creates the root span (Span ID: `abc1`, Parent ID: none).
+2. `Frontend` calls `Auth`, passing its Span ID `abc1` in the `traceparent` header. `Auth` creates a new span (Span ID: `def2`, Parent ID: `abc1`).
+3. `Auth` calls `Database`, passing its Span ID `def2`. `Database` creates a new span (Span ID: `ghi3`, Parent ID: `def2`).
+
+### What is a Missing Span?
+
+A "missing span" occurs when a span's Parent Span ID is missing. For example, if `Auth` (Span ID: `def2`) fails to export its span, the `Database` span (Parent ID: `def2`) will not have Parent Span ID.
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/missing-spans-diagram.webp" alt="Diagram showing normal trace with all spans present vs a trace with a missing span where Parent ID cannot be found"/>
+    <figcaption><i>Normal trace vs a trace with a missing span</i></figcaption>
+</figure>
+
+### Common Causes
 If you are seeing missing spans in your traces, it could be due to the following reasons:
 
 - **Tail Sampling**: If you have configured tail sampling in your OpenTelemetry Collector pipeline, the sampler randomly selects a subset of spans to keep and drops the rest. This means some spans from a trace may be retained while others are discarded, resulting in incomplete traces with missing spans.
