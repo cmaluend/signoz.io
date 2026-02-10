@@ -11,7 +11,7 @@ import GetHelp from '@/components/shared/get-help.md'
 
 The filter processor in the [OpenTelemetry Collector](https://signoz.io/docs/opentelemetry-collection-agents/get-started/) allows you to drop logs based on body, log level (aka severity text), or other attributes. This is useful if you want to exclude certain logs from being sent to SigNoz.
 
-The filter processor is configured in the `processors::filter` section of the `otel-collector-config.yaml` file.
+The filter processor is configured in the `processors::filter` section of the `config.yaml` file.
 
 <Admonition>
 
@@ -137,7 +137,7 @@ logs:
 
 </Admonition>
 
-For more information about the [transform processor](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#transform-processor) and the `truncate_all` function, refer to the SigNoz documentation.
+For more information about the transform processor and the `truncate_all` function, refer to the [SigNoz documentation](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/#transform-processor).
 
 ## Related Guides
 
