@@ -1,5 +1,5 @@
 ---
-date: 2024-06-06
+date: 2026-02-10
 id: traces
 
 title: View Traces in SigNoz
@@ -53,11 +53,15 @@ To further troubleshoot your application, you can select a span from the list to
 
 ## Missing Spans
 
+A "missing span" in a trace means that the parent span ID of a span is missing. Every span has a **Span ID** and a **Parent Span ID**, except the root span which does not have a parent span ID. When a service makes a call to another service, the calling service's span ID becomes the parent span ID for the downstream service's span. If the parent span ID is missing, the span appears as a missing span in the trace.
+
 If you are seeing missing spans in your traces, it could be due to the following reasons:
 
-- One of the service is instrumented but not sending spans to SigNoz. For example, the service might not be exporting spans to SigNoz.
+- **Tail Sampling**: If you have configured tail sampling in your OpenTelemetry Collector pipeline, the sampler randomly selects a subset of spans to keep and drops the rest. This means some spans from a trace may be retained while others are discarded, resulting in incomplete traces with missing spans.
 
-- The spans are not being sent to SigNoz. For example, the spans might be dropped due to network issues or the spans might be dropped due to sampling.
+- **Network Issues**: Spans may be dropped in transit due to network issues between your application and the OpenTelemetry Collector, or between the Collector and SigNoz. This can happen due to transient connectivity failures, timeouts, or packet loss.
+
+- **Uninstrumented or Misconfigured Services**: If a service in your request chain is not instrumented or is not exporting its spans to SigNoz, the spans it generates will be missing from the trace. Since its span ID is used as the parent span ID by downstream services, those downstream spans will appear as missing spans.
 
 ## Span Gaps
 
