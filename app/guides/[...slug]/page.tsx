@@ -88,6 +88,10 @@ export async function generateMetadata({
   }
 }
 
+export const generateStaticParams = async () => {
+  return []
+}
+
 export default async function Page({ params }: { params: { slug: string[] } }) {
   const isProduction = process.env.VERCEL_ENV === 'production'
   const deploymentStatus = isProduction ? 'live' : 'staging'

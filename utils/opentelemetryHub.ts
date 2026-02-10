@@ -77,6 +77,18 @@ const getComparisons = async () => {
   }
 }
 
+const getGuides = async () => {
+  const isProduction = process.env.VERCEL_ENV === 'production'
+  const deploymentStatus = isProduction ? 'live' : 'staging'
+
+  try {
+    return await getCachedGuides(deploymentStatus)
+  } catch (error) {
+    console.error('Error fetching guides:', error)
+    return []
+  }
+}
+
 function normalizeRoute(route: string) {
   // Strip domain if present
   const withoutDomain = route.replace(/^https?:\/\/[^/]+/i, '')
@@ -288,12 +300,9 @@ async function getHubIndex({
     }
   }
 
-  const isProduction = process.env.VERCEL_ENV === 'production'
-  const deploymentStatus = isProduction ? 'live' : 'staging'
-
   if (!usedGuides) {
     try {
-      usedGuides = await getCachedGuides(deploymentStatus)
+      usedGuides = await getGuides()
     } catch (e) {
       console.error('[opentelemetryHub] Error fetching guides for hub:', e)
       usedGuides = []
@@ -301,8 +310,8 @@ async function getHubIndex({
   }
 
   memoizedHubIndex = await buildHubIndex({
-    comparisons: usedComparisons || [],
-    guides: usedGuides || [],
+    comparisons: usedComparisons,
+    guides: usedGuides,
   })
   return memoizedHubIndex
 }
@@ -337,16 +346,6 @@ export async function getHubContextForRoute({
     defaultLanguage: match.language || null,
     firstRouteByPath: paths.map((p) => ({ key: p.key, label: p.label, firstRoute: p.firstRoute })),
   }
-}
-
-export async function listHubRoutes(): Promise<string[]> {
-  const { lookup } = await getHubIndex({})
-  return Array.from(lookup.keys())
-}
-
-export async function getHubPaths(): Promise<HubPathNav[]> {
-  const { paths } = await getHubIndex({})
-  return paths
 }
 
 export function clearHubIndexCache() {
