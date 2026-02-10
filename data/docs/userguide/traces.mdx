@@ -53,7 +53,7 @@ To further troubleshoot your application, you can select a span from the list to
 
 ## Missing Spans
 
-A "missing span" in a trace means that the parent span ID of a span is missing. Every span has a **Span ID** and a **Parent Span ID**, except the root span which does not have a parent span ID. When a service makes a call to another service, the calling service's span ID becomes the parent span ID for the downstream service's span. If the parent span ID is absent, SigNoz flags the span as a missing span.
+A "missing span" in a trace means that the parent span ID of a span is missing. Every span has a **Span ID** and a **Parent Span ID**, except the root span which does not have a parent span ID. When a service makes a call to another service, the calling service's span ID becomes the parent span ID for the downstream service's span.
 
 Learn more about [how traces work in OpenTelemetry](https://opentelemetry.io/docs/concepts/signals/traces/).
 
