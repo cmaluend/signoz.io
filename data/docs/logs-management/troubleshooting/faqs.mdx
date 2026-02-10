@@ -1,5 +1,5 @@
 ---
-date: 2025-08-05
+date: 2026-02-10
 id: logs_faqs
 
 title: General FAQs
@@ -108,7 +108,7 @@ Moving commonly used attributes from regular attributes to resource attributes c
 
 For nested attributes like `body.step.<any attribute>`, you'll need to:
 
-* Enable data flattening first
+* Enable [data flattening](https://signoz.io/docs/logs-pipelines/guides/json/) first
 * Request indexing of commonly used attributes
 * This allows nested fields to exist as their own attributes outside of the body, making queries more performant
 
@@ -121,7 +121,7 @@ Limiting the time range of your query can significantly improve performance by r
 To optimize your log queries:
 
 1. Identify commonly used filter attributes in your queries
-2. Use log pipelines to move these attributes to resource attributes using the move operator
+2. Use log pipelines to move these attributes to resource attributes using the move operator (only when the attribute should be a resource attribute)
 3. If you need to query nested attributes, enable flattening and request indexing for those specific fields
 4. Adjust your query time ranges to be as narrow as possible while still capturing the data you need
 
