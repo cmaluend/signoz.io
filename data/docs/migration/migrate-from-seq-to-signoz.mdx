@@ -1,0 +1,60 @@
+---
+date: 2026-02-11
+id: migrate-from-seq-to-signoz
+
+title: Migrate from Seq to SigNoz
+description: Learn how to migrate your JSON logs from Seq to SigNoz using OpenTelemetry Collector.
+doc_type: explanation
+---
+
+SigNoz provides a unified OpenTelemetry-native solution for monitoring logs, traces, and metrics. If you're currently using Seq for centralized logging, you can migrate your logs to SigNoz to gain access to integrated observability signals and correlation capabilities.
+
+## Why Migrate to SigNoz?
+
+While Seq is a powerful centralized logging platform, migrating to SigNoz offers several advantages:
+
+- **Unified Observability Platform**: SigNoz provides logs, traces, and metrics in a single platform, enabling you to correlate signals and understand your system holistically.
+- **OpenTelemetry Native**: Built from the ground up with OpenTelemetry, ensuring seamless integration with modern instrumentation standards and future-proof observability.
+- **Correlation Across Signals**: SigNoz automatically correlates logs with traces using trace IDs, providing seamless debugging experience across your entire application stack.
+- **Cost Efficiency**: SigNoz often provides significant cost savings with transparent usage-based pricing for both Cloud and Self-Hosted options.
+- **Flexible Deployment**: Choose between [SigNoz Cloud](https://signoz.io/docs/cloud/) for managed service or [Self-Hosted](https://signoz.io/docs/install/self-host/) for complete control.
+
+## Prerequisites
+
+Before starting your migration, ensure you have:
+
+- A SigNoz account ([Cloud](https://signoz.io/teams/)) or a running SigNoz instance (Self-Hosted)
+- Access to your Seq instance with the ability to export logs
+- OpenTelemetry Collector ready to be installed or already running
+
+## Migration Approach
+
+Seq is primarily a centralized logging platform, so the migration focuses on log data. You can migrate your logs from Seq to SigNoz without modifying your application code by using the OpenTelemetry Collector as an intermediary processing layer.
+
+### Available Migration Guide
+
+- **[Migrate JSON Logs](https://signoz.io/docs/migration/migrate-from-seq/logs)**: Export your Seq logs to JSON format and use OpenTelemetry Collector with filelog receiver to parse and send them to SigNoz.
+
+This guide covers:
+- Exporting logs from Seq in JSON format
+- Configuring OpenTelemetry Collector with filelog receiver
+- Parsing Seq's JSON structure (`@t`, `@m`, `@mt`, etc.)
+- Mapping Seq fields (Application, EnvironmentName) to SigNoz attributes
+- Processing both historical and real-time log data
+
+## Beyond Logs: Adding Traces and Metrics
+
+Once you've migrated your logs from Seq, consider enhancing your observability by instrumenting your applications with OpenTelemetry to collect traces and metrics:
+
+- **[Instrument your applications](https://signoz.io/docs/instrumentation/)**: Add OpenTelemetry instrumentation to collect traces and metrics alongside your logs.
+- **[Correlate logs with traces](https://signoz.io/docs/logs-pipelines/guides/trace/)**: Use trace IDs to seamlessly navigate between logs and traces for comprehensive debugging.
+- **[Set up dashboards](https://signoz.io/docs/dashboards/)**: Create unified dashboards that combine logs, traces, and metrics for complete visibility.
+
+## Next Steps
+
+After completing the log migration:
+
+1. [Create log-based alerts](https://signoz.io/docs/alerts-management/log-based-alerts/) to monitor for error patterns and anomalies
+2. [Configure log pipelines](https://signoz.io/docs/logs-pipelines/introduction/) for advanced log processing and enrichment
+3. [Explore the Logs UI](https://signoz.io/docs/userguide/logs/) to familiarize yourself with querying and filtering capabilities
+4. Consider [instrumenting your applications](https://signoz.io/docs/instrumentation/) to add distributed tracing and metrics for complete observability

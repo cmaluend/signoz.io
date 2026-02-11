@@ -3395,6 +3395,19 @@ const docsSideNav = [
         ],
       },
       {
+        label: 'From Seq',
+        type: 'category',
+        isExpanded: false,
+        route: '/docs/migration/migrate-from-seq-to-signoz',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/migration/migrate-from-seq/logs',
+            label: 'Migrating Logs',
+          },
+        ],
+      },
+      {
         type: 'doc',
         route: '/docs/migration/migrate-from-opentelemetry-to-signoz',
         label: 'From OpenTelemetry',

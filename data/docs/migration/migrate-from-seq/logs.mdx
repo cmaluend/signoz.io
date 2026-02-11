@@ -1,0 +1,299 @@
+---
+date: 2026-02-11
+id: logs
+
+title: Migrate JSON Logs from Seq to SigNoz
+description: Learn how to migrate your JSON logs from Seq to SigNoz using OpenTelemetry Collector with filelog receiver.
+doc_type: howto
+---
+
+## Overview
+
+If you're looking to migrate your existing JSON logs from Seq to SigNoz without modifying your application code, you can use the OpenTelemetry Collector with a filelog receiver to parse and send your exported Seq logs to SigNoz.
+
+This guide walks you through:
+
+1. Exporting logs from Seq to JSON format
+2. Configuring OpenTelemetry Collector with filelog receiver
+3. Parsing Seq's JSON log format with proper operators
+4. Mapping Seq fields to SigNoz attributes
+
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud → Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
+
+## Prerequisites
+
+Before starting, ensure you have:
+
+- A SigNoz account ([Cloud](https://signoz.io/teams/)) or a running SigNoz instance (Self-Hosted)
+- Access to your Seq instance and ability to export logs
+- OpenTelemetry Collector installed or ready to be installed
+
+## Step 1: Export Logs from Seq
+
+First, export your Seq logs to JSON files. Seq provides built-in functionality to export log data in JSON format.
+
+Follow the [Seq documentation for exporting log data](https://datalust.co/docs/exporting-log-data) to create archive files in JSON format. This will create JSON files containing your log events with all their associated properties.
+
+## Step 2: Set Up the OpenTelemetry Collector
+
+Install the OpenTelemetry Collector if you haven't already:
+
+1. [Install the OpenTelemetry Collector](https://signoz.io/docs/opentelemetry-collection-agents/get-started/) in your environment.
+2. Ensure the OTLP exporter is configured to send data to SigNoz.
+
+For detailed instructions on setting up the collector with filelog receiver, refer to the [SigNoz documentation for collecting logs from files](https://signoz.io/docs/userguide/collect_logs_from_file/).
+
+## Step 3: Configure Log Parsing Operators
+
+To properly parse Seq's JSON log format, you'll need to add specific operators to your OpenTelemetry Collector configuration.
+
+### Basic Filelog Receiver Configuration
+
+First, configure the filelog receiver to read your exported Seq JSON files:
+
+```yaml:otel-collector-config.yaml
+receivers:
+  filelog:
+    include:
+      - /path/to/seq/exports/*.json
+    start_at: beginning  # Use 'beginning' to process all existing logs, or 'end' for new logs only
+    include_file_path: true
+    include_file_name: true
+    operators:
+      - type: json_parser
+        timestamp:
+          parse_from: attributes["@t"]
+          layout_type: gotime
+          layout: "2006-01-02T15:04:05.999999999Z07:00"
+```
+
+Replace `/path/to/seq/exports/*.json` with the actual path to your exported Seq log files.
+
+### Transform Processor Configuration
+
+Add a transform processor to extract the log body, service name, and deployment environment from your Seq logs:
+
+```yaml:otel-collector-config.yaml
+processors:
+  transform/seq:
+    error_mode: ignore
+    log_statements:
+      # Extract log message body from Seq's @m or @mt fields
+      - set(log.body, log.attributes["@m"]) where log.attributes["@m"] != nil
+      - set(log.body, log.attributes["@mt"]) where log.attributes["@m"] == nil and log.attributes["@mt"] != nil
+      # Map Seq's Application field to service.name
+      - set(resource.attributes["service.name"], log.attributes["Application"]) where log.attributes["Application"] != nil
+      # Map Seq's EnvironmentName to deployment.environment
+      - set(resource.attributes["deployment.environment"], log.attributes["EnvironmentName"]) where log.attributes["EnvironmentName"] != nil
+
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+```
+
+### Complete Pipeline Configuration
+
+Enable the receivers and processors in your pipeline:
+
+```yaml:otel-collector-config.yaml {4,5,6}
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [transform/seq, batch]
+      exporters: [otlp]
+```
+
+## Step 4: Configure Data Processing Mode
+
+The `start_at` parameter in your filelog receiver configuration determines how logs are processed:
+
+- **`beginning`**: Process all existing log data from your exported files. Use this when migrating historical logs.
+- **`end`**: Only tail new logs as they're added. Use this if you only want to collect new logs going forward.
+
+```yaml:otel-collector-config.yaml {5}
+receivers:
+  filelog:
+    include:
+      - /path/to/seq/exports/*.json
+    start_at: beginning  # Change to 'end' for tailing only
+```
+
+## Understanding Seq's JSON Structure
+
+Seq exports logs with specific field names:
+
+| Seq Field | Description | Mapped To |
+|-----------|-------------|-----------|
+| `@t` | Timestamp | Parsed as log timestamp |
+| `@m` | Rendered message | Log body |
+| `@mt` | Message template | Log body (fallback if `@m` is not present) |
+| `@l` | Log level | Severity |
+| `Application` | Application name | `service.name` resource attribute |
+| `EnvironmentName` | Environment | `deployment.environment` resource attribute |
+
+The configuration above automatically maps these fields to their SigNoz equivalents.
+
+## Additional Field Mapping
+
+You can map additional fields from your Seq logs to SigNoz attributes by adding more transform statements following the same pattern.
+
+For example, to map additional custom fields:
+
+```yaml:otel-collector-config.yaml
+processors:
+  transform/seq:
+    error_mode: ignore
+    log_statements:
+      # ... existing mappings ...
+      # Map custom fields
+      - set(resource.attributes["host.name"], log.attributes["MachineName"]) where log.attributes["MachineName"] != nil
+      - set(log.attributes["user.id"], log.attributes["UserId"]) where log.attributes["UserId"] != nil
+```
+
+Simply identify the field names in your Seq JSON structure and create corresponding mapping rules using the `set()` function.
+
+## Complete Configuration Example
+
+Here's a complete OpenTelemetry Collector configuration for migrating Seq logs:
+
+```yaml:otel-collector-config.yaml
+receivers:
+  filelog:
+    include:
+      - /var/log/seq-exports/*.json
+    start_at: beginning
+    include_file_path: true
+    include_file_name: true
+    operators:
+      - type: json_parser
+        timestamp:
+          parse_from: attributes["@t"]
+          layout_type: gotime
+          layout: "2006-01-02T15:04:05.999999999Z07:00"
+
+processors:
+  transform/seq:
+    error_mode: ignore
+    log_statements:
+      - set(log.body, log.attributes["@m"]) where log.attributes["@m"] != nil
+      - set(log.body, log.attributes["@mt"]) where log.attributes["@m"] == nil and log.attributes["@mt"] != nil
+      - set(resource.attributes["service.name"], log.attributes["Application"]) where log.attributes["Application"] != nil
+      - set(resource.attributes["deployment.environment"], log.attributes["EnvironmentName"]) where log.attributes["EnvironmentName"] != nil
+
+  batch:
+    timeout: 1s
+    send_batch_size: 1024
+
+exporters:
+  otlp:
+    endpoint: "ingest.<region>.signoz.cloud:443"
+    headers:
+      "signoz-access-token": "<your-ingestion-key>"
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      processors: [transform/seq, batch]
+      exporters: [otlp]
+```
+
+Replace:
+- `/var/log/seq-exports/*.json` with your actual export path
+- `<region>` with your SigNoz Cloud region
+- `<your-ingestion-key>` with your actual ingestion key
+
+## Validate
+
+Verify logs are flowing correctly from Seq to SigNoz.
+
+### Check Logs Are Arriving
+
+1. In SigNoz, navigate to **Logs** in the left sidebar.
+2. Use the **Logs Explorer** to browse recent logs.
+3. Verify logs from your Seq exports appear with the correct timestamps.
+
+### Verify Log Attributes
+
+1. Click on a log entry to expand it.
+2. Check that parsed fields are correct:
+   - **Body**: Should contain the log message from `@m` or `@mt`
+   - **Timestamp**: Should match the original Seq timestamp
+   - **service.name**: Should reflect the `Application` field from Seq
+   - **deployment.environment**: Should reflect the `EnvironmentName` field
+
+### Verify Service Name
+
+Filter logs by service name to ensure logs are properly grouped:
+
+```
+service.name = '<your-application-name>'
+```
+
+<details>
+<ToggleHeading>
+## Troubleshooting
+</ToggleHeading>
+
+### Logs not appearing in SigNoz
+
+1. **Check Collector status**: Verify the OpenTelemetry Collector is running and check its logs for errors.
+   ```bash
+   # Check collector logs
+   journalctl -u otel-collector -f
+   ```
+2. **Verify file permissions**: Ensure the Collector has read access to the Seq export files.
+3. **Check file paths**: Confirm the `include` patterns in filelog receiver match your export file paths.
+4. **Test connectivity**: Verify the Collector can reach SigNoz.
+
+### Logs appear but are unparsed
+
+If logs show as raw text without parsed fields:
+
+1. **Verify JSON format**: Ensure exported files are valid JSON. Test with:
+   ```bash
+   jq . /path/to/seq/export.json
+   ```
+2. **Check operator configuration**: Verify the `json_parser` operator is correctly configured.
+3. **Inspect field names**: Seq exports might use different field names in some versions. Check your actual export structure.
+
+### Timestamp parsing errors
+
+If timestamps are incorrect:
+
+1. **Check timestamp format**: Ensure the `layout` matches your Seq timestamp format.
+2. **Verify timezone**: The layout includes timezone offset (`Z07:00`). Adjust if needed.
+3. **Check field name**: Confirm Seq uses `@t` for timestamps in your exports.
+
+### Missing service names or environments
+
+If `service.name` or `deployment.environment` are not set:
+
+1. **Verify field names**: Check that your Seq logs include `Application` and `EnvironmentName` fields.
+2. **Review transform statements**: Ensure the transform processor is enabled in the pipeline.
+3. **Check conditions**: The `where` clauses check for non-nil values. Verify these fields exist in your logs.
+
+</details>
+
+## Next Steps
+
+Once your Seq logs are flowing to SigNoz:
+
+- [Create dashboards](https://signoz.io/docs/dashboards/) with log-based panels to visualize your log data
+- [Set up log-based alerts](https://signoz.io/docs/alerts-management/log-based-alerts/) for error patterns and anomalies
+- [Configure log pipelines](https://signoz.io/docs/logs-pipelines/introduction/) for advanced log processing and parsing
+- [Explore log fields](https://signoz.io/docs/userguide/logs_fields/) to understand how to query and filter your logs effectively
+
+## Summary
+
+This approach allows you to migrate your historical Seq logs to SigNoz without requiring any changes to your application code. The OpenTelemetry Collector acts as an intermediary processing layer that:
+
+1. Reads exported Seq JSON logs from disk
+2. Parses the Seq-specific JSON structure
+3. Maps Seq fields to OpenTelemetry semantic conventions
+4. Sends processed logs to SigNoz for storage and analysis
+
+You can continue to export logs from Seq periodically and process them with this same configuration, or transition to sending logs directly from your applications to SigNoz using [OpenTelemetry instrumentation](https://signoz.io/docs/instrumentation/).
