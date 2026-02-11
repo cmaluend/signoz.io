@@ -105,6 +105,23 @@ A field to choose the [notification channels](https://signoz.io/docs/setup-alert
 ### Test Notification
 A button to test the alert to ensure that it works as expected.
 
+### Repeat Notification
+Configure repeat notifications to retrigger alerts at specified intervals if they remain unresolved. This feature allows you to receive follow-up notifications for ongoing issues.
+
+To enable repeat notifications:
+1. Scroll to the bottom of the alert configuration
+2. Look for the "Repeat Notification" option
+3. Enable the toggle switch
+4. Set your desired interval (e.g., Every 30 Minutes)
+5. Configure the condition:
+   - **Firing**: Send repeat notifications when the alert is actively firing
+   - **No Data**: Send repeat notifications when no data is received
+
+<figure data-zoomable align='center'>
+    <img src="/img/docs/alerts/repeat-notification.png" alt="Repeat notification configuration"/>
+    <figcaption><i>Configuring repeat notifications for alerts</i></figcaption>
+</figure>
+
 <figure data-zoomable align='center'>
     <img src="/img/docs/alerts/alerts-metrics-based-3.webp" alt="Configure the alert"/>
     <figcaption><i>Setting the alert metadata </i></figcaption>
