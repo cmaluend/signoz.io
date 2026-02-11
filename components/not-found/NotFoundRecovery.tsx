@@ -33,7 +33,7 @@ export default function NotFoundRecovery({
           {suggestionIntro}
         </p>
 
-        <ul className="mt-8 space-y-3">
+        <ul className="mt-8 list-none space-y-3 p-0">
           {suggestions.map((item) => (
             <li key={item.href}>
               <Link
