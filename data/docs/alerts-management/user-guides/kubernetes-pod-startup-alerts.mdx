@@ -1,5 +1,5 @@
 ---
-date: 2026-02-05
+date: 2026-02-11
 id: kubernetes-pod-startup-alerts
 title: How to Create Alerts for Slow-Starting Kubernetes Pods
 description: Learn how to create alerts for Kubernetes pods that take more than 5 minutes to start using SigNoz.
@@ -12,7 +12,7 @@ This guide shows you how to create an alert for Kubernetes pods that take more t
 
 Before setting up this alert, ensure you have:
 
-1. Enabled Kubernetes monitoring in SigNoz using the [k8s-infra Helm chart](/docs/tutorial/kubernetes-infra-metrics/) or configured the [k8scluster receiver](/docs/userguide/k8s-metrics/) manually
+1. Enabled Kubernetes monitoring in SigNoz using the [k8s-infra Helm chart](https://signoz.io/docs/opentelemetry-collection-agents/k8s/k8s-infra/install-k8s-infra/) or configured the [k8scluster receiver](https://signoz.io/docs/infrastructure-monitoring/k8s-metrics/) manually
 2. Verified that the `k8s.pod.phase` metric is being collected (this metric is available from the k8scluster receiver)
 
 ## Understanding k8s.pod.phase Metric
@@ -91,7 +91,7 @@ Configure how you want to be notified when the alert triggers:
 1. **Notification channels**: Select one or more channels (Slack, PagerDuty, email, etc.)
 2. **Test notifications**: Use the test button to verify your notification setup works
 
-Learn more about [notification channels](/docs/alerts-management/notification-channel/).
+Learn more about [notification channels](https://signoz.io/docs/setup-alerts-notification/).
 
 ### Step 6: Save and Enable
 
