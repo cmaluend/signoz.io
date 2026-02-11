@@ -1,5 +1,5 @@
 ---
-date: 2026-02-05
+date: 2026-02-11
 id: logs_faqs
 
 title: General FAQs
@@ -109,11 +109,9 @@ To download a larger dataset beyond 50,000 logs, you can use the SigNoz API inst
 
 1. Open your browser's DevTools → Network tab
 2. Perform a log search in the SigNoz UI
-3. In the Network tab, look for the `query_range` request whose `request_type` is `raw` (if multiple `query_range` requests are available, choose the one with `request_type=raw`)
-4. Right-click the `query_range` request → Copy → Copy as cURL
-5. Paste the cURL command in your terminal
-6. Before running, increase the `limit` value in the request to retrieve more records (see [Pagination in Log Search](https://signoz.io/docs/logs-management/logs-api/search-logs/#pagination-in-log-search))
-7. Run the command to get the data in JSON format
+3. In the Network tab, copy the `query_range` request whose `request_type` is `raw` (if multiple `query_range` requests are available, choose the one with `request_type=raw`)
+4. Increase the `limit` value in the request to retrieve more records (see [Pagination in Log Search](https://signoz.io/docs/logs-management/logs-api/search-logs/#pagination-in-log-search))
+5. Run the command to get the data in JSON format
 
 For detailed instructions on using the API for log downloads, refer to the [Search Logs API documentation](https://signoz.io/docs/logs-management/logs-api/search-logs/).
 
