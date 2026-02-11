@@ -229,6 +229,30 @@ The **Top 10 Errors** tab provides:
 
 This tab will help you quickly identify the most problematic endpoints and understand common error patterns across your external API calls.
 
+# Measuring p99 and p90 Latency
+
+There are two main ways to measure p99 and p90 latency for external API calls in SigNoz:
+
+## Method 1: Using External API Monitoring
+
+1. Go to the External API Monitoring section
+2. Select the domain you want to monitor
+3. In the pop-up window, select "Endpoint Stats"
+4. Here you can view the p99 latency metrics in the Status Code Breakdown table
+
+The Status Code Breakdown table (described in the [Status Code Breakdown](#status-code-breakdown) section above) displays p99 latency for each status code, giving you quick insights into latency patterns.
+
+## Method 2: Using Traces Explorer
+
+For more advanced latency analysis:
+
+1. Navigate to the Traces Explorer
+2. Use the query builder with the following query: `kind_string = 'Client' AND http_url EXISTS`
+3. Choose the aggregation type (p90 or p99) for `duration_nano`
+4. Group by your preferred parameter (e.g., service name, endpoint)
+5. Save this view for easier future access
+
+For more information about `kind_string` values and usage, refer to the [ClickHouse traces query documentation](https://signoz.io/docs/userguide/writing-clickhouse-traces-query/) and the [OpenTelemetry span specifications](https://opentelemetry.io/docs/specs/otel/trace/api/#spankind).
 
 # Related Resources
 
