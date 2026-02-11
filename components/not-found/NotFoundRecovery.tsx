@@ -1,4 +1,5 @@
-import type { SuggestedDoc } from './suggestions'
+import Link from 'next/link'
+import type { SuggestedDoc } from './types'
 
 type NotFoundRecoveryProps = {
   pathname: string
@@ -14,12 +15,12 @@ export default function NotFoundRecovery({
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-signoz_ink-500 px-4 sm:px-6">
       <div className="bg-dot-pattern masked-dots pointer-events-none absolute inset-0" />
-      <div className="pointer-events-none absolute left-0 right-0 top-0 mx-auto h-[450px] w-full flex-shrink-0 rounded-[956px] bg-gradient-to-b from-[rgba(190,107,241,1)] to-[rgba(69,104,220,0)] bg-[length:110%] bg-no-repeat opacity-30 blur-[300px] sm:bg-[center_-500px] md:h-[956px]" />
+      <div className="pointer-events-none absolute left-0 right-0 top-0 mx-auto h-80 w-full flex-shrink-0 rounded-full bg-gradient-to-b from-signoz_robin-500/40 to-transparent opacity-30 blur-3xl sm:h-[28rem] md:h-[56rem]" />
       <section
-        className="relative z-[1] mx-auto -mt-8 w-full max-w-2xl text-center sm:-mt-10"
+        className="relative z-10 mx-auto -mt-8 w-full max-w-2xl text-center sm:-mt-10"
         aria-labelledby="not-found-title"
       >
-        <p className="text-5xl font-semibold leading-[48px] text-signoz_robin-500">404</p>
+        <p className="text-4xl font-semibold leading-none text-signoz_robin-500 sm:text-5xl">404</p>
         <h1
           id="not-found-title"
           className="mt-4 text-2xl font-medium leading-8 text-signoz_vanilla-100"
@@ -35,12 +36,12 @@ export default function NotFoundRecovery({
         <ul className="mt-8 space-y-3">
           {suggestions.map((item) => (
             <li key={item.href}>
-              <a
+              <Link
                 href={item.href}
                 className="text-base leading-6 text-signoz_robin-400 transition-colors hover:text-signoz_robin-300"
               >
                 {item.title}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

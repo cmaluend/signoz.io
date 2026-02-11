@@ -1,35 +1,6 @@
+import { ALGOLIA_CANDIDATE_LIMIT, QUICK_LINK_FALLBACK } from './constants'
 import { rerankSuggestions, tokenizePathForSuggestions } from './rerank'
-
-export type SuggestedDoc = {
-  title: string
-  href: string
-}
-
-type AlgoliaHit = {
-  url?: string
-  title?: string
-  hierarchy?: {
-    lvl0?: string | null
-    lvl1?: string | null
-    lvl2?: string | null
-    lvl3?: string | null
-  }
-}
-
-export const QUICK_LINK_FALLBACK: SuggestedDoc[] = [
-  {
-    title: 'Get Started with SigNoz',
-    href: '/docs/introduction',
-  },
-  {
-    title: 'Instrument Your Application with OpenTelemetry',
-    href: '/docs/instrumentation',
-  },
-  {
-    title: 'Send Logs to SigNoz',
-    href: '/docs/logs-management/send-logs-to-signoz',
-  },
-]
+import type { AlgoliaHit, SuggestedDoc } from './types'
 
 export const hasAlgoliaConfig = (): boolean => {
   return Boolean(
@@ -106,7 +77,7 @@ export const getNotFoundSuggestions = async (
         },
         body: JSON.stringify({
           query,
-          hitsPerPage: 8,
+          hitsPerPage: ALGOLIA_CANDIDATE_LIMIT,
         }),
         // Suggestions should be fresh for typo/moved-path recovery
         cache: 'no-store',

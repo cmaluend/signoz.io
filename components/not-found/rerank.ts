@@ -1,4 +1,4 @@
-import type { SuggestedDoc } from './suggestions'
+import type { SuggestedDoc } from './types'
 
 const STOP_WORDS = new Set(['docs', 'doc', 'the', 'and', 'for', 'with', 'to', 'from', 'page'])
 const MIGRATION_TERMS = new Set([
@@ -49,14 +49,6 @@ const scoreSuggestion = (doc: SuggestedDoc, queryTokens: string[]): number => {
   const isMigrationDoc = /migration|migrate|datadog|newrelic|elk|grafana|honeycomb/.test(haystack)
   if (!hasMigrationIntent && isMigrationDoc) {
     score -= 8
-  }
-
-  if (
-    queryTokens.includes('instrumentation') &&
-    queryTokens.includes('logs') &&
-    haystack.includes('nodejs')
-  ) {
-    score += 3
   }
 
   return score

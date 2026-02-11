@@ -25,6 +25,7 @@ interlinking.csv.bak
 scripts/data/interlinking.csv
 
 .agent/
+.codex/
 .gemini/
 gha-creds-*.json
 .clinerules/byterover-rules.md
