@@ -522,6 +522,36 @@ Once configured, verify that metrics are flowing to SigNoz.
 2. Verify the hostmetrics receiver is enabled in your config.
 3. Ensure the collector can reach the SigNoz endpoint (port 443 for Cloud, 4317 for Self-Hosted).
 
+### Host showing as unknown (missing hostname) {#host-showing-as-unknown}
+
+**Symptoms:** Host appears in Infrastructure Monitoring > Hosts tab with a dash (-) instead of a hostname, or hostname column shows as unknown.
+
+**Cause:** Metrics are missing the `host.name` resource attribute. This happens when the `resourcedetection` processor is not configured in your collector pipeline.
+
+**Resolution:**
+
+1. Add the `resourcedetection` processor to your `processors` section:
+
+   ```yaml
+   processors:
+     batch:
+     resourcedetection:
+       detectors: [env, system]
+   ```
+
+2. Ensure the processor is included in your metrics pipeline (between the receiver and exporter):
+
+   ```yaml
+   service:
+     pipelines:
+       metrics:
+         receivers: [hostmetrics]
+         processors: [resourcedetection, batch]
+         exporters: [otlp]
+   ```
+
+The `resourcedetection` processor automatically adds resource attributes like hostname and OS information to your metrics. Without it, SigNoz cannot identify individual hosts.
+
 ### Connection Refused
 
 **Symptoms:** Logs show connection refused errors.
