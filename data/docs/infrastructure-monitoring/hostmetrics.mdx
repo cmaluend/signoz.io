@@ -522,7 +522,7 @@ Once configured, verify that metrics are flowing to SigNoz.
 2. Verify the hostmetrics receiver is enabled in your config.
 3. Ensure the collector can reach the SigNoz endpoint (port 443 for Cloud, 4317 for Self-Hosted).
 
-### Host showing as blank/empty
+### Host Name is blank/empty
 
 **Symptoms:** Host name is blank/empty in Infrastructure Monitoring > Hosts tab
 
@@ -535,7 +535,7 @@ Once configured, verify that metrics are flowing to SigNoz.
 ```yaml
 processors:
   resourcedetection:
-    detectors: [env, host, system, docker, k8snode]
+    detectors: [env, system, docker, k8snode]
     system:
       hostname_sources: ['os']
     timeout: 5s
@@ -548,7 +548,7 @@ processors:
 service:
   pipelines:
     metrics:
-      receivers: [otlp, hostmetrics]
+      receivers: [hostmetrics]
       processors: [resourcedetection, batch]
       exporters: [otlp]
 ```
