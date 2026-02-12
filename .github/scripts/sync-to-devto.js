@@ -281,39 +281,55 @@ async function fetchExistingArticles(apiKey) {
   let organizationId = undefined
   const perPage = 1000
 
-  for (let page = 1; page <= 50; page++) {
+  for (let page = 1; ; page++) {
     const url = `https://dev.to/api/articles/me?page=${page}&per_page=${perPage}`
-    const response = await fetch(url, {
-      headers: { 'api-key': apiKey },
-    })
 
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error(`Failed to fetch existing articles: ${response.status} ${errorText}`)
+    try {
+      const response = await fetch(url, {
+        headers: { 'api-key': apiKey },
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error(`Failed to fetch page ${page}: ${response.status} ${errorText}`)
+
+        // If first page fails, throw error (likely auth issue)
+        if (page === 1) {
+          throw new Error(`Failed to fetch existing articles: ${response.status} ${errorText}`)
+        }
+        // For subsequent pages, break and continue with what we have
+        break
+      }
+
+      const articles = await response.json()
+      if (!Array.isArray(articles) || articles.length === 0) break
+
+      for (const article of articles) {
+        if (article.canonical_url) {
+          canonicalMap.set(article.canonical_url, {
+            id: article.id,
+            url: article.url,
+          })
+        }
+        if (
+          !organizationId &&
+          article.organization &&
+          article.organization.slug === 'signoz' &&
+          typeof article.organization.id === 'number'
+        ) {
+          organizationId = article.organization.id
+        }
+      }
+
+      if (articles.length < perPage) break
+
+      // Rate limit: sleep 500ms between page requests
+      await sleep(500)
+    } catch (err) {
+      console.error(`Error fetching page ${page}:`, err.message)
+      if (page === 1) throw err
       break
     }
-
-    const articles = await response.json()
-    if (!Array.isArray(articles) || articles.length === 0) break
-
-    for (const article of articles) {
-      if (article.canonical_url) {
-        canonicalMap.set(article.canonical_url, {
-          id: article.id,
-          url: article.url,
-        })
-      }
-      if (
-        !organizationId &&
-        article.organization &&
-        article.organization.slug === 'signoz' &&
-        typeof article.organization.id === 'number'
-      ) {
-        organizationId = article.organization.id
-      }
-    }
-
-    if (articles.length < perPage) break
   }
 
   return { articlesByCanonical: canonicalMap, organizationId }
@@ -335,16 +351,38 @@ function buildDevToPayload(article, organizationId) {
 
 async function apiCallWithRetry(fn, maxRetries = 3) {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    const result = await fn()
-    if (result.status === 429 && attempt < maxRetries) {
-      const backoff = Math.pow(2, attempt) * 1000
-      console.log(
-        `Rate limited (429). Retrying in ${backoff}ms... (attempt ${attempt + 1}/${maxRetries})`
-      )
-      await sleep(backoff)
-      continue
+    try {
+      const result = await fn()
+
+      // Retry on rate limit (429) or server errors (5xx)
+      const shouldRetry = (result.status === 429 || result.status >= 500) && attempt < maxRetries
+
+      if (shouldRetry) {
+        const backoff = Math.pow(2, attempt) * 1000
+        console.log(
+          `Request failed (${result.status}). Retrying in ${backoff}ms... (attempt ${
+            attempt + 1
+          }/${maxRetries})`
+        )
+        await sleep(backoff)
+        continue
+      }
+
+      return result
+    } catch (err) {
+      // Network errors
+      if (attempt < maxRetries) {
+        const backoff = Math.pow(2, attempt) * 1000
+        console.log(
+          `Network error: ${err.message}. Retrying in ${backoff}ms... (attempt ${
+            attempt + 1
+          }/${maxRetries})`
+        )
+        await sleep(backoff)
+        continue
+      }
+      throw err
     }
-    return result
   }
 }
 
@@ -439,9 +477,25 @@ async function main() {
   console.log(`Processing ${mdxFiles.length} MDX file(s)...`)
 
   // Fetch existing Dev.to articles for deduplication
-  console.log('Fetching existing Dev.to articles...')
-  const { articlesByCanonical, organizationId: autoOrgId } = await fetchExistingArticles(apiKey)
-  console.log(`Found ${articlesByCanonical.size} existing article(s) on Dev.to`)
+  // This also validates the API key early
+  console.log('Fetching existing Dev.to articles and validating API key...')
+  let articlesByCanonical, autoOrgId
+  try {
+    const result = await fetchExistingArticles(apiKey)
+    articlesByCanonical = result.articlesByCanonical
+    autoOrgId = result.organizationId
+    console.log(`✓ API key valid. Found ${articlesByCanonical.size} existing article(s) on Dev.to`)
+  } catch (err) {
+    console.error('Failed to validate API key or fetch existing articles:', err.message)
+    console.error('Please check that DEVTO_API_KEY is correct and has proper permissions.')
+    writeResults({
+      published: [],
+      updated: [],
+      skipped: [],
+      errors: [{ file: 'N/A', error: `API key validation failed: ${err.message}` }],
+    })
+    process.exit(1)
+  }
 
   // Resolve organization ID
   const envOrgId = process.env.DEVTO_ORGANIZATION_ID
@@ -480,11 +534,25 @@ async function main() {
       const convertedContent = convertMarkdown(markdownContent)
 
       // Sanitize tags
-      let tags = metadata.tags
-        .map(sanitizeTagForDevTo)
-        .filter((t) => t.length > 0)
-        .slice(0, 4)
-      if (tags.length === 0) tags = ['signoz']
+      const originalTags = metadata.tags
+      let tags = originalTags.map(sanitizeTagForDevTo).filter((t) => t.length > 0)
+
+      // Log tag transformations
+      if (originalTags.length > 0) {
+        const changed = originalTags.some((orig, i) => sanitizeTagForDevTo(orig) !== tags[i])
+        if (changed) {
+          console.log(`  Tags sanitized: [${originalTags.join(', ')}] → [${tags.join(', ')}]`)
+        }
+        if (tags.length > 4) {
+          console.log(`  Tags truncated from ${tags.length} to 4 (Dev.to limit)`)
+          tags = tags.slice(0, 4)
+        }
+      }
+
+      if (tags.length === 0) {
+        console.log(`  No valid tags, using default: ['signoz']`)
+        tags = ['signoz']
+      }
 
       const article = {
         title: metadata.title,

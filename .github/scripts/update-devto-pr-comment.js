@@ -69,8 +69,14 @@ module.exports = async ({ github, context, core }) => {
     }
   }
 
+  const prNumber = process.env.PR_NUMBER
+  if (!prNumber) {
+    console.log('No PR number found, skipping comment')
+    return
+  }
+
   await github.rest.issues.createComment({
-    issue_number: context.issue.number,
+    issue_number: parseInt(prNumber, 10),
     owner: context.repo.owner,
     repo: context.repo.repo,
     body,
