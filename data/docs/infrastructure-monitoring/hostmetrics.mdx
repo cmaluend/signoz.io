@@ -522,35 +522,39 @@ Once configured, verify that metrics are flowing to SigNoz.
 2. Verify the hostmetrics receiver is enabled in your config.
 3. Ensure the collector can reach the SigNoz endpoint (port 443 for Cloud, 4317 for Self-Hosted).
 
-### Host showing as unknown (missing hostname) {#host-showing-as-unknown}
+### Host showing as blank/empty
 
-**Symptoms:** Host appears in Infrastructure Monitoring > Hosts tab with a dash (-) instead of a hostname, or hostname column shows as unknown.
+**Symptoms:** Host name is blank/empty in Infrastructure Monitoring > Hosts tab
 
-**Cause:** Metrics are missing the `host.name` resource attribute. This happens when the `resourcedetection` processor is not configured in your collector pipeline.
+**Cause:** Metrics are missing the `host.name` resource attribute. This happens when the [resourcedetection processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/resourcedetectionprocessor/README.md) is not configured in your collector pipeline.
 
 **Resolution:**
 
 1. Add the `resourcedetection` processor to your `processors` section:
 
-   ```yaml
-   processors:
-     batch:
-     resourcedetection:
-       detectors: [env, system]
-   ```
+```yaml
+processors:
+  resourcedetection:
+    detectors: [env, host, system, docker, k8snode]
+    system:
+      hostname_sources: ['os']
+    timeout: 5s
+  batch:
+```
 
 2. Ensure the processor is included in your metrics pipeline (between the receiver and exporter):
 
-   ```yaml
-   service:
-     pipelines:
-       metrics:
-         receivers: [hostmetrics]
-         processors: [resourcedetection, batch]
-         exporters: [otlp]
-   ```
+```yaml
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp, hostmetrics]
+      processors: [resourcedetection, batch]
+      exporters: [otlp]
+```
 
-The `resourcedetection` processor automatically adds resource attributes like hostname and OS information to your metrics. Without it, SigNoz cannot identify individual hosts.
+This processor automatically detects resource information from the host environment. This processor can detect attributes like hostname, OS information, cloud provider details, and Kubernetes metadata.
+The `timeout` parameter controls how long the processor waits for detection to complete.
 
 ### Connection Refused
 
