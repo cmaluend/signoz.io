@@ -10,7 +10,7 @@ import GetHelp from '@/components/shared/get-help.md'
 
 A Bar chart is a plot chart that shows frequency of a single or a few different categories over time. This helps in directly comparing the values of different categories, which correspond to the length of the bar. This is particularly useful when you have discrete categorical data and you want to highlight differences.
 
-Bar charts in SigNoz support both regular and stacked modes. Stacked bar charts display multiple data series as colored sections within each bar, making it easy to see both the total values and the individual components. 
+SigNoz bar charts can be displayed in regular or stacked mode. In stacked mode, multiple series are combined into a single bar, with each series shown as a colored segment—making it easy to see the overall total and each series’ contribution. Stacking is enabled by default; to disable it, toggle Stack Series in the right panel.
 
 ## Data Formats
 
@@ -24,7 +24,7 @@ This panel type supports any time series data. The time series data can be from 
 
 ### Examples
 
-#### Regular Bar Chart
+#### Bar Chart
 
 The following graph shows the requests per second (req/s) for a service over a period of time in bar chart.
 
@@ -32,22 +32,6 @@ The following graph shows the requests per second (req/s) for a service over a p
     <img src="/img/docs/dashboards/panel-types/bar-chart.png" width="80%" alt="Bar chart for req/s over period of time"/>
     <figcaption><i>Bar chart for req/s over period of time.</i></figcaption>
 </figure>
-
-#### Stacked Bar Chart
-
-Stacked bar charts allow you to visualize multiple data series within the same bars, showing both individual components and total values. This is useful for displaying breakdowns such as success vs. error rates, resource utilization by category, or any data where you want to see part-to-whole relationships over time.
-
-<figure data-zoomable align='center'>
-    <img src="/img/docs/dashboards/panel-types/stacked-bar-chart.png" width="80%" alt="Stacked bar chart showing success and error rates"/>
-    <figcaption><i>Stacked bar chart displaying success (green) and error (red) rates over time.</i></figcaption>
-</figure>
-
-To create a stacked bar chart:
-
-1. When creating or editing a dashboard panel, select the **Bar Chart** visualization type from the panel configuration options on the right panel.
-2. Configure multiple data series in your query to display the different components you want to visualize.
-3. The chart will automatically stack the series, displaying each as a colored section within the bars.
-
 
 ## Configuration
 
