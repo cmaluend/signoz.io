@@ -1,5 +1,5 @@
 ---
-date: 2026-02-04
+date: 2026-02-13
 title: VM Collection Agent - Install
 id: install
 description: Install the OpenTelemetry Collector binary on your virtual machine to collect telemetry data.
@@ -405,6 +405,11 @@ receivers:
           static_configs:
             - targets:
               # - localhost:8888 # Uncomment to scrape Collector's own metrics
+  filelog:
+    include: ["{/path/to/your/application.log}"] # <-- Replace with your log file path
+    start_at: end
+    include_file_name: false
+    include_file_path: true
 processors:
   batch:
     send_batch_size: 1000
@@ -447,13 +452,14 @@ service:
       processors: [batch]
       exporters: [otlp]
     logs:
-      receivers: [otlp]
+      receivers: [otlp, filelog]
       processors: [batch]
       exporters: [otlp]
 ```
 Update the following placeholders in the YAML configuration:
    - Replace `{SIGNOZ_INGESTION_KEY}` with your SigNoz Cloud [ingestion key](https://signoz.io/docs/ingestion/signoz-cloud/keys/)
    - Replace `{region}` with your [SigNoz Cloud region](https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint)
+   - Replace `{/path/to/your/application.log}` with the path to the application/system log files you want to tail
 
 In the configuration above, three receivers are enabled: `otlp`, `hostmetrics`, and `prometheus`.
 
