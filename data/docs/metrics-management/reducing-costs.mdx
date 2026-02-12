@@ -9,6 +9,7 @@ doc_type: explanation
 ## Overview
 
 Metrics billing is based on **cardinality** - the number of unique time series created by your metrics. Understanding how attributes affect cardinality is key to managing costs effectively.
+Each unique combination of attribute values creates a time series. Each time series sends samples at a regular interval (e.g., every 30 seconds). More time series = more samples = higher cost.
 
 ## How Attributes Affect Billing
 
@@ -18,6 +19,18 @@ There are two types of attributes that affect your metrics differently:
 2. **Non-identifying/descriptive attributes** - These enrich existing metrics without creating new series. Examples include host family or EC2 tags.
 
 You can add as many non-identifying attributes as needed without additional cost, but each new identifying attribute with unique values increases your bill, often exponentially.
+
+Example: Adding `k8s.pod.name` (100 unique pods) to a metric with 50 existing time series creates 5,000 time series - a 100x increase in samples and cost.
+
+### Avoid high-cardinality attributes
+
+- **Resource:** `k8s.pod.uid`, `k8s.pod.name`, `container.id`, `host.name`
+- **Metric:** `http.target` (full URLs), `db.statement`, `user_id`, `session_id`
+
+### Safe low-cardinality attributes
+
+- **Resource:** `service.name`, `deployment.environment`, `k8s.namespace.name`
+- **Metric:** `http.method`, `http.status_code`, `db.operation`
 
 ## Common Cost Drivers
 
@@ -52,15 +65,11 @@ Replace unique IDs with templated values to reduce the number of unique time ser
 
 Reduce the number of buckets while maintaining meaningful data. See [Configure Custom Buckets](https://signoz.io/docs/metrics-management/configure-custom-buckets/) for more details.
 
-### 3. Implement Sampling
-
-Reduce the volume of metrics sent from your application. This directly reduces the number of data points ingested.
-
-### 4. Review Attribute Necessity
+### 3. Review Attribute Necessity
 
 Ensure all identifying attributes are essential for your monitoring needs. Remove any attributes that don't provide actionable insights.
 
-### 5. Aggregate or Drop Metrics
+### 4. Aggregate or Drop Metrics
 
 Consider using the following techniques:
 
@@ -70,6 +79,19 @@ Consider using the following techniques:
 <Admonition type="warning">
 Note that simply dropping metric labels/attributes does **not** reduce cardinality or costs. See [Dropping Metric Labels](https://signoz.io/docs/metrics-management/dropping-metric-labels/) for a detailed explanation of why this doesn't work and what to do instead.
 </Admonition>
+
+### 5. Temporality Optimization
+
+**Cumulative (default – recommended):**
+
+- **Reliable:** survives network drops, collector restarts
+- `rate()` / `irate()` handle gaps automatically
+
+**Delta temporality (bursty/idle workloads only):**
+
+- Sends changes only (0 when inactive) → fewer samples
+- **Risk:** Network drops = permanent gaps (no recovery on reconnect)
+- Set in SDK: `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE=Delta`
 
 ## Monitoring Your Costs
 
