@@ -208,7 +208,7 @@ const docsSideNav = [
           {
             type: 'doc',
             label: 'Deploying to Render',
-            route: '/docs/install/render',
+            route: '/docs/setup/render',
           },
           {
             type: 'doc',
