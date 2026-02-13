@@ -1,4 +1,8 @@
-import { ALGOLIA_CANDIDATE_LIMIT, QUICK_LINK_FALLBACK } from './constants'
+import {
+  ALGOLIA_CANDIDATE_LIMIT,
+  ALGOLIA_SUGGESTIONS_REVALIDATE_SECONDS,
+  QUICK_LINK_FALLBACK,
+} from './constants'
 import { rerankSuggestions, tokenizePathForSuggestions } from './rerank'
 import type { AlgoliaHit, SuggestedDoc } from './types'
 
@@ -8,6 +12,18 @@ export const hasAlgoliaConfig = (): boolean => {
       process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY &&
       process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
   )
+}
+
+const getAlgoliaConfig = (): { appId: string; apiKey: string; indexName: string } | null => {
+  const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
+  const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
+
+  if (!appId || !apiKey || !indexName) {
+    return null
+  }
+
+  return { appId, apiKey, indexName }
 }
 
 const getTitleFromHit = (hit: AlgoliaHit): string | null => {
@@ -50,13 +66,12 @@ export const getNotFoundSuggestions = async (
   pathname: string,
   count = 3
 ): Promise<SuggestedDoc[]> => {
-  if (!hasAlgoliaConfig()) {
+  const algoliaConfig = getAlgoliaConfig()
+  if (!algoliaConfig) {
     return QUICK_LINK_FALLBACK.slice(0, count)
   }
 
-  const appId = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID as string
-  const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY as string
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME as string
+  const { appId, apiKey, indexName } = algoliaConfig
 
   const tokens = tokenizePathForSuggestions(pathname)
   const query = tokens.join(' ').trim()
@@ -79,8 +94,7 @@ export const getNotFoundSuggestions = async (
           query,
           hitsPerPage: ALGOLIA_CANDIDATE_LIMIT,
         }),
-        // Suggestions should be fresh for typo/moved-path recovery
-        cache: 'no-store',
+        next: { revalidate: ALGOLIA_SUGGESTIONS_REVALIDATE_SECONDS },
       }
     )
 
@@ -92,14 +106,14 @@ export const getNotFoundSuggestions = async (
     const hits = data.hits || []
 
     const fromAlgolia = hits
-      .map((hit) => {
+      .map((hit): SuggestedDoc | null => {
         if (!hit.url) return null
         const href = toDocsHref(hit.url)
         const title = getTitleFromHit(hit)
         if (!href || !title) return null
-        return { href, title } as SuggestedDoc
+        return { href, title }
       })
-      .filter(Boolean) as SuggestedDoc[]
+      .filter((doc): doc is SuggestedDoc => doc !== null)
 
     const reranked = rerankSuggestions(dedupeByHref(fromAlgolia), tokens)
     return dedupeByHref([...reranked, ...QUICK_LINK_FALLBACK]).slice(0, count)

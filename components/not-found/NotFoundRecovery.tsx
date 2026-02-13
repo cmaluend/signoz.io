@@ -15,7 +15,7 @@ export default function NotFoundRecovery({
   return (
     <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-signoz_ink-500 px-4 sm:px-6">
       <div className="bg-dot-pattern masked-dots pointer-events-none absolute inset-0" />
-      <div className="pointer-events-none absolute left-0 right-0 top-0 mx-auto h-80 w-full flex-shrink-0 rounded-full bg-gradient-to-b from-signoz_robin-500/40 to-transparent opacity-30 blur-3xl sm:h-[28rem] md:h-[56rem]" />
+      <div className="pointer-events-none absolute left-0 right-0 top-0 mx-auto h-80 w-full flex-shrink-0 rounded-full bg-gradient-to-b from-signoz_ink-500/50 via-signoz_ink-500/25 to-signoz_ink-500/90 opacity-30 blur-3xl sm:h-[28rem] md:h-[56rem]" />
       <section
         className="relative z-10 mx-auto -mt-8 w-full max-w-2xl text-center sm:-mt-10"
         aria-labelledby="not-found-title"

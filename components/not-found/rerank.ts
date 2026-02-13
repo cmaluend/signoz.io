@@ -46,7 +46,7 @@ const scoreSuggestion = (doc: SuggestedDoc, queryTokens: string[]): number => {
   }
 
   const hasMigrationIntent = queryTokens.some((token) => MIGRATION_TERMS.has(token))
-  const isMigrationDoc = /migration|migrate|datadog|newrelic|elk|grafana|honeycomb/.test(haystack)
+  const isMigrationDoc = Array.from(MIGRATION_TERMS).some((term) => haystack.includes(term))
   if (!hasMigrationIntent && isMigrationDoc) {
     score -= 8
   }
