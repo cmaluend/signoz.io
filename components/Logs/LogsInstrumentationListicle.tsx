@@ -13,10 +13,33 @@ import {
   SiAmazonwebservices,
   SiGo,
   SiCloudflare,
+  SiAmazonec2,
+  SiAmazonecs,
+  SiAmazoneks,
+  SiAwslambda,
+  SiAmazonrds,
+  SiAmazondynamodb,
+  SiAmazons3,
+  SiAmazoncloudwatch,
+  SiGooglecloud,
+  SiRedis,
+  SiMysql,
 } from 'react-icons/si'
 import { TbHttpGet, TbBrandOpenSource } from 'react-icons/tb'
 import { FaFileAlt, FaJava, FaWindows } from 'react-icons/fa'
 import { LuLogIn } from 'react-icons/lu'
+import {
+  MdRouter,
+  MdSecurity,
+  MdMessage,
+  MdCloudQueue,
+  MdMemory,
+  MdHttp,
+  MdNotifications,
+  MdStorage,
+  MdWeb,
+  MdDns,
+} from 'react-icons/md'
 import IconCardGrid from '../Card/IconCardGrid'
 
 interface LogsInstrumentationListicleProps {
@@ -108,6 +131,12 @@ export default function LogsInstrumentationListicle({
             href: '/docs/logs-management/send-logs/cloudflare-logs',
             icon: <SiCloudflare className="h-7 w-7 text-orange-500" />,
             clickName: 'Cloudflare Logs Link',
+          },
+          {
+            name: 'Convex',
+            href: '/docs/logs-management/send-logs/convex-log-streams-signoz',
+            icon: <img src="/img/icons/convex-logo.svg" alt="Convex" className="h-9 w-9" />,
+            clickName: 'Convex Logs Link',
           },
         ]}
         sectionName="Platform Logs"
@@ -247,129 +276,103 @@ export default function LogsInstrumentationListicle({
     <div className="mb-10">
       <h2 className="mb-4 text-2xl font-semibold">Cloud Logs</h2>
 
-      <h3 className="mb-4 text-xl font-semibold">AWS Integrations</h3>
-      <IconCardGrid
-        cards={[
-          {
-            name: 'One-Click AWS Integration',
-            href: '/docs/integrations/aws/one-click-aws-integrations',
-            icon: <SiAmazonwebservices className="h-7 w-7 text-orange-400" />,
-            clickName: 'AWS One-Click Integration Link',
-          },
-          {
-            name: 'S3 Sync',
-            href: '/docs/integrations/aws/s3-sync',
-            icon: <img src="/img/icons/aws-s3.svg" width={32} height={32} alt="S3 Sync" />,
-            clickName: 'S3 Sync Link',
-          },
-        ]}
-        sectionName="AWS Integrations"
-        gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
-      />
-
       <h3 className="mb-4 text-xl font-semibold">AWS</h3>
       <IconCardGrid
         cards={[
           {
             name: 'EC2',
             href: '/docs/aws-monitoring/ec2/ec2-logs',
-            icon: <img src="/img/icons/aws-ec2.svg" width={32} height={32} alt="EC2" />,
+            icon: <SiAmazonec2 className="h-7 w-7 text-orange-500" />,
             clickName: 'EC2 Logs Link',
           },
           {
             name: 'ECS',
             href: '/docs/integrations/aws/ecs',
-            icon: <img src="/img/icons/aws-ecs.svg" width={32} height={32} alt="ECS" />,
+            icon: <SiAmazonecs className="h-7 w-7 text-orange-500" />,
             clickName: 'ECS Link',
           },
           {
             name: 'EKS',
             href: '/docs/collection-agents/k8s/k8s-infra/install-k8s-infra/',
-            icon: <img src="/img/icons/aws-eks.svg" width={32} height={32} alt="EKS" />,
+            icon: <SiAmazoneks className="h-7 w-7 text-orange-500" />,
             clickName: 'EKS Logs Link',
           },
           {
             name: 'Lambda',
             href: '/docs/integrations/aws/lambda',
-            icon: <img src="/img/icons/aws-lambda.svg" width={32} height={32} alt="Lambda" />,
+            icon: <SiAwslambda className="h-7 w-7 text-orange-500" />,
             clickName: 'AWS Lambda Link',
           },
           {
             name: 'S3',
             href: '/docs/aws-monitoring/s3',
-            icon: <img src="/img/icons/aws-s3.svg" width={32} height={32} alt="S3" />,
+            icon: <SiAmazons3 className="h-7 w-7 text-green-600" />,
             clickName: 'S3 Link',
           },
           {
             name: 'RDS',
             href: '/docs/integrations/aws/rds',
-            icon: <img src="/img/icons/aws-rds.svg" width={32} height={32} alt="RDS" />,
+            icon: <SiAmazonrds className="h-7 w-7 text-blue-500" />,
             clickName: 'RDS Link',
           },
           {
             name: 'DynamoDB',
             href: '/docs/integrations/aws/dynamodb',
-            icon: <img src="/img/icons/aws-dynamodb.svg" width={32} height={32} alt="DynamoDB" />,
+            icon: <SiAmazondynamodb className="h-7 w-7 text-blue-500" />,
             clickName: 'DynamoDB Link',
           },
           {
             name: 'ElastiCache',
             href: '/docs/integrations/aws/elasticache',
-            icon: (
-              <img src="/img/icons/aws-elasticache.svg" width={32} height={32} alt="ElastiCache" />
-            ),
+            icon: <MdMemory className="h-7 w-7 text-blue-500" />,
             clickName: 'ElastiCache Link',
           },
           {
             name: 'ELB',
             href: '/docs/aws-monitoring/elb',
-            icon: <img src="/img/icons/aws-elb.svg" width={32} height={32} alt="ELB" />,
+            icon: <MdRouter className="h-7 w-7 text-purple-500" />,
             clickName: 'ELB Link',
           },
           {
             name: 'ALB',
             href: '/docs/integrations/aws/alb',
-            icon: <img src="/img/icons/aws-alb.svg" width={32} height={32} alt="ALB" />,
+            icon: <MdRouter className="h-7 w-7 text-purple-500" />,
             clickName: 'ALB Link',
           },
           {
             name: 'API Gateway',
             href: '/docs/integrations/aws/api-gateway',
-            icon: (
-              <img src="/img/icons/aws-api-gateway.svg" width={32} height={32} alt="API Gateway" />
-            ),
+            icon: <MdHttp className="h-7 w-7 text-purple-500" />,
             clickName: 'API Gateway Link',
           },
           {
             name: 'MSK',
             href: '/docs/integrations/aws/msk',
-            icon: <img src="/img/icons/aws-msk.svg" width={32} height={32} alt="MSK" />,
+            icon: <MdCloudQueue className="h-7 w-7 text-black dark:text-white" />,
             clickName: 'MSK Link',
           },
           {
             name: 'SNS',
             href: '/docs/integrations/aws/sns',
-            icon: <img src="/img/icons/aws-sns.svg" width={32} height={32} alt="SNS" />,
+            icon: <MdNotifications className="h-7 w-7 text-pink-500" />,
             clickName: 'SNS Link',
           },
           {
             name: 'SQS',
             href: '/docs/integrations/aws/sqs',
-            icon: <img src="/img/icons/aws-sqs.svg" width={32} height={32} alt="SQS" />,
+            icon: <MdMessage className="h-7 w-7 text-pink-500" />,
             clickName: 'SQS Link',
           },
           {
             name: 'VPC',
             href: '/docs/aws-monitoring/vpc',
-            icon: <img src="/img/icons/aws-vpc.svg" width={32} height={32} alt="VPC" />,
+            icon: <MdSecurity className="h-7 w-7 text-green-500" />,
             clickName: 'VPC Link',
           },
           {
             name: 'Cloudwatch',
             href: '/docs/userguide/send-cloudwatch-logs-to-signoz',
-            icon: (
-              <img src="/img/icons/aws-cloudwatch.svg" width={32} height={32} alt="Cloudwatch" />
-            ),
+            icon: <SiAmazoncloudwatch className="h-7 w-7 text-pink-600" />,
             clickName: 'Cloudwatch Logs Link',
           },
         ]}
@@ -383,73 +386,43 @@ export default function LogsInstrumentationListicle({
           {
             name: 'App Service',
             href: '/docs/azure-monitoring/app-service/logging/',
-            icon: (
-              <img
-                src="/img/icons/azure-app-service.svg"
-                width={32}
-                height={32}
-                alt="App Service"
-              />
-            ),
+            icon: <MdCloudQueue className="h-7 w-7 text-blue-600" />,
             clickName: 'App Service Logs Link',
           },
           {
             name: 'AKS',
             href: '/docs/collection-agents/k8s/k8s-infra/install-k8s-infra/',
-            icon: <img src="/img/icons/azure-aks.svg" width={32} height={32} alt="AKS" />,
+            icon: <SiKubernetes className="h-7 w-7 text-blue-600" />,
             clickName: 'AKS Logs Link',
           },
           {
             name: 'Container Apps',
             href: '/docs/azure-monitoring/az-container-apps/logging/',
-            icon: (
-              <img
-                src="/img/icons/azure-container-apps.svg"
-                width={32}
-                height={32}
-                alt="Container Apps"
-              />
-            ),
+            icon: <SiDocker className="h-7 w-7 text-blue-500" />,
             clickName: 'Container Apps Logs Link',
           },
           {
             name: 'Azure Functions',
             href: '/docs/azure-monitoring/az-fns/logging/',
-            icon: (
-              <img
-                src="/img/icons/azure-functions.svg"
-                width={32}
-                height={32}
-                alt="Azure Functions"
-              />
-            ),
+            icon: <SiAwslambda className="h-7 w-7 text-orange-500" />,
             clickName: 'Azure Functions Logs Link',
           },
           {
             name: 'Blob Storage',
             href: '/docs/azure-monitoring/az-blob-storage/logging/',
-            icon: (
-              <img
-                src="/img/icons/azure-blob-storage.svg"
-                width={48}
-                height={48}
-                alt="Blob Storage"
-              />
-            ),
+            icon: <MdStorage className="h-7 w-7 text-blue-600" />,
             clickName: 'Blob Storage Logs Link',
           },
           {
             name: 'Virtual Machines',
             href: '/docs/azure-monitoring/virtual-machines/vm-metrics',
-            icon: (
-              <img src="/img/icons/azure-vms.svg" width={48} height={48} alt="Virtual Machines" />
-            ),
+            icon: <SiAmazonec2 className="h-7 w-7 text-blue-600" />,
             clickName: 'Azure VMs Link',
           },
           {
             name: 'MySQL Flexible Server',
             href: '/docs/azure-monitoring/mysql-flexible-server',
-            icon: <img src="/img/icons/azure-mysql.svg" width={48} height={48} alt="MySQL" />,
+            icon: <SiMysql className="h-7 w-7 text-blue-500" />,
             clickName: 'Azure MySQL Link',
           },
         ]}
@@ -463,125 +436,59 @@ export default function LogsInstrumentationListicle({
           {
             name: 'Cloud Functions',
             href: '/docs/gcp-monitoring/gcp-fns/logging/',
-            icon: (
-              <img
-                src="/img/icons/gcp-cloud-functions.svg"
-                width={32}
-                height={32}
-                alt="Cloud Functions"
-              />
-            ),
+            icon: <SiAwslambda className="h-7 w-7 text-blue-500" />,
             clickName: 'Cloud Functions Logs Link',
           },
           {
             name: 'App Engine',
             href: '/docs/gcp-monitoring/app-engine/logging/',
-            icon: (
-              <img src="/img/icons/gcp-app-engine.svg" width={32} height={32} alt="App Engine" />
-            ),
+            icon: <SiGooglecloud className="h-7 w-7 text-blue-500" />,
             clickName: 'App Engine Logs Link',
           },
           {
             name: 'Compute Engine',
             href: '/docs/gcp-monitoring/compute-engine/logging/',
-            icon: (
-              <img
-                src="/img/icons/gcp-compute-engine.svg"
-                width={32}
-                height={32}
-                alt="Compute Engine"
-              />
-            ),
+            icon: <SiGooglecloud className="h-7 w-7 text-blue-500" />,
             clickName: 'Compute Engine Logs Link',
           },
           {
             name: 'Cloud Storage',
             href: '/docs/gcp-monitoring/gcs/logging/',
-            icon: (
-              <img
-                src="/img/icons/gcp-cloud-storage.svg"
-                width={32}
-                height={32}
-                alt="Cloud Storage"
-              />
-            ),
+            icon: <SiGooglecloud className="h-7 w-7 text-blue-500" />,
             clickName: 'Cloud Storage Logs Link',
           },
           {
             name: 'Cloud SQL',
             href: '/docs/gcp-monitoring/cloud-sql/logging/',
-            icon: <img src="/img/icons/gcp-cloud-sql.svg" width={32} height={32} alt="Cloud SQL" />,
+            icon: <SiGooglecloud className="h-7 w-7 text-blue-500" />,
             clickName: 'Cloud SQL Logs Link',
           },
           {
             name: 'Cloud Load Balancer',
             href: '/docs/gcp-monitoring/gcp-clb/logging/',
-            icon: (
-              <img
-                src="/img/icons/gcp-cloud-load-balancer.svg"
-                width={32}
-                height={32}
-                alt="Cloud Load Balancer"
-              />
-            ),
+            icon: <MdRouter className="h-7 w-7 text-blue-500" />,
             clickName: 'Cloud Load Balancer Logs Link',
           },
           {
             name: 'VPC',
             href: '/docs/gcp-monitoring/vpc/logging/',
-            icon: <img src="/img/icons/gcp-vpc.svg" width={32} height={32} alt="VPC" />,
+            icon: <MdSecurity className="h-7 w-7 text-blue-500" />,
             clickName: 'VPC Logs Link',
           },
           {
             name: 'GKE',
             href: '/docs/gcp-monitoring/gke/gke-logging-and-metrics/',
-            icon: <img src="/img/icons/gcp-gke.svg" width={32} height={32} alt="GKE" />,
+            icon: <SiKubernetes className="h-7 w-7 text-blue-500" />,
             clickName: 'GKE Logs Link',
           },
           {
             name: 'Cloud Run',
             href: '/docs/gcp-monitoring/cloud-run/logging/',
-            icon: <img src="/img/icons/gcp-cloud-run.svg" width={32} height={32} alt="Cloud Run" />,
+            icon: <SiGooglecloud className="h-7 w-7 text-blue-500" />,
             clickName: 'Cloud Run Logs Link',
           },
         ]}
         sectionName="GCP"
-        gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
-      />
-
-      <h3 className="mb-4 text-xl font-semibold">Others</h3>
-      <IconCardGrid
-        cards={[
-          {
-            name: 'Heroku',
-            href: '/docs/userguide/heroku_logs_to_signoz',
-            icon: <SiHeroku className="h-7 w-7 text-purple-600" />,
-            clickName: 'Heroku Cloud Logs Link',
-          },
-          {
-            name: 'Vercel',
-            href: '/docs/userguide/vercel_logs_to_signoz',
-            icon: (
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-black p-1">
-                <SiVercel className="h-7 w-7 text-white" />
-              </span>
-            ),
-            clickName: 'Vercel Cloud Logs Link',
-          },
-          {
-            name: 'Cloudflare',
-            href: '/docs/logs-management/send-logs/cloudflare-logs',
-            icon: <SiCloudflare className="h-7 w-7 text-orange-500" />,
-            clickName: 'Cloudflare Cloud Logs Link',
-          },
-          {
-            name: 'Convex',
-            href: '/docs/logs-management/send-logs/convex-log-streams-signoz',
-            icon: <img src="/img/icons/convex-logo.svg" alt="Convex" className="h-9 w-9" />,
-            clickName: 'Convex Logs Link',
-          },
-        ]}
-        sectionName="Others"
         gridCols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4"
       />
     </div>

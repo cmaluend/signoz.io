@@ -1359,7 +1359,7 @@ const docsSideNav = [
           {
             type: 'doc',
             route: '/docs/userguide/send-logs-http',
-            label: 'HTTP',
+            label: 'Logs via HTTP (JSON)',
           },
           {
             type: 'doc',
