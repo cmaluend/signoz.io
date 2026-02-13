@@ -1,10 +1,11 @@
 ---
-date: 2024-06-06
+date: 2026-02-13
 title: Docker Standalone
-tags : [Self-Host]
-description:  Learn how to install SigNoz on Docker Standalone. Follow our detailed, step-by-step guide to set up SigNoz on macOS or Linux. Ensure smooth installation and start monitoring your applications effectively.
+tags: [Self-Host]
+description: Learn how to install SigNoz on Docker Standalone. Follow our detailed, step-by-step guide to set up SigNoz on macOS or Linux.
 id: docker-standalone
 slug: /install/docker
+doc_type: howto
 ---
 
 import CloneRepo from '@/components/shared/clone-repo.md'
@@ -12,52 +13,112 @@ import RetentionInfo from '@/components/shared/retention-info.mdx'
 
 <HostingDecision />
 
-SigNoz can be installed on macOS or Linux computers, and there are two ways in which you can install SigNoz:
-
- - You may execute a script that checks your environment, installs Docker Engine and Docker Compose on Linux, and runs the `docker compose up` command for you. 
- - You may execute the `docker compose up` command yourself.
-
-Both methods are provided below.
-
-<Admonition type="info">
-SigNoz recommends you to use the [install script](#install-signoz-using-the-install-script) on macOS and the following Linux distributions:
-  - Ubuntu
-  - Debian
-  - OpenSuse
-  - CentOS
-  - SUSE Linux Enterprise Server (SLES)
-
-If you're using a different Linux distribution, see the [Install SigNoz Using Docker Compose](#install-signoz-using-docker-compose) section.
-</Admonition>
+Learn how to install SigNoz on Docker.
 
 ## Prerequisites
 
 - A Linux or macOS machine. Microsoft Windows is not officially supported.
-- On macOS, you must manually install [Docker Engine](https://docs.docker.com/engine/install/)
-before you run the install script. The install script automatically installs Docker Engine on Linux.
-- A minimum of 4GB of memory must be allocated to Docker.
-{ /* <!-- Existing documentation is somehow unclear. Are there different memory requirements based on the operating system? --> */}
-- [Git client](https://desktop.github.com/)
-- Ensure that the ports `8080`, `4317` and `4318` are open on the machine where you install SigNoz.
+- **Docker** and **Docker Compose**: Install <a href="https://docs.docker.com/engine/install/" target="_blank" rel="noopener noreferrer nofollow">Docker Engine</a> and <a href="https://docs.docker.com/compose/install/" target="_blank" rel="noopener noreferrer nofollow">Docker Compose</a> on your machine.
+- A minimum of 4GB of memory allocated to Docker.
+- For manual install only: <a href="https://desktop.github.com/" target="_blank" rel="noopener noreferrer nofollow">Git client</a> (to clone the repo).
 
-## Install SigNoz Using the Install Script
+## Installation Methods
+
+- **<a href="https://github.com/SigNoz/foundry" target="_blank" rel="noopener noreferrer nofollow">Foundry</a> (recommended)**: A tool that handles deploying SigNoz for you, so you can get started quickly and easily. You specify what you want, Foundry sets it up.
+- **Manual install**: Clone the SigNoz repo and run `docker compose up` yourself.
+
+<Tabs>
+<TabItem value="foundry" label="Foundry" default>
+
+<a href="https://github.com/SigNoz/foundry" target="_blank" rel="noopener noreferrer nofollow">Foundry</a> provides <a href="https://github.com/SigNoz/foundry/tree/main/docs/examples/docker/compose" target="_blank" rel="noopener noreferrer nofollow">Docker Compose casting</a> to run SigNoz on Docker. Foundry generates the Compose file and configs, then deploys with Docker.
+
+### Step 1. Install foundryctl
+
+`foundryctl` is the command-line tool you use to deploy SigNoz with Foundry.
+
+Download and extract the binary from <a href="https://github.com/SigNoz/foundry/releases" target="_blank" rel="noopener noreferrer nofollow">GitHub Releases</a>.
+
+**Linux:**
+
+```bash
+curl -L "https://github.com/SigNoz/foundry/releases/download/v0.0.1-rc.2/foundry_linux_$(uname -m | sed 's/x86_64/amd64/g' | sed 's/aarch64/arm64/g').tar.gz" -o foundry.tar.gz
+tar -xzf foundry.tar.gz
+```
+
+**macOS:**
+
+```bash
+curl -L "https://github.com/SigNoz/foundry/releases/download/v0.0.1-rc.2/foundry_darwin_$(uname -m | sed 's/x86_64/amd64/g' | sed 's/arm64/arm64/g').tar.gz" -o foundry.tar.gz
+tar -xzf foundry.tar.gz
+```
+
+Run `foundryctl` from the unpacked directory (e.g. `./foundry/bin/foundryctl`) or add that directory to your `PATH`.
+
+### Step 2. Create casting.yaml
+
+For Docker, use `mode: docker` and `flavor: compose`.
+
 
 <Admonition type="info">
-Please use non-root user (mainly for Git repository cloning), otherwise you may end up seeing file system permissions errors after the installation.
+For a complete guide on casting configuration, see <a href="https://github.com/SigNoz/foundry/blob/main/docs/casting.md" target="_blank" rel="noopener noreferrer nofollow">How to Write a Casting</a>.
 </Admonition>
 
-1. <CloneRepo />
+```yaml
+apiVersion: v1alpha1
+metadata:
+  name: {deployment-name}
+spec:
+  deployment:
+    mode: docker
+    flavor: compose
+```
 
-2. Run the `install.sh` script:
-   ```bash
-   ./install.sh
-   ```
+- Replace `{deployment-name}` with your deployment name (e.g. signoz).
 
-## Install SigNoz Using Docker Compose
+### Step 3. Verify dependencies
 
-<Admonition type="info">
-Before you install SigNoz, ensure that [Docker Compose](https://docs.docker.com/compose/install/) is installed on your machine.
-</Admonition>
+```bash
+foundryctl gauge -f casting.yaml
+```
+
+### Step 4. Deploy
+
+```bash
+foundryctl cast -f casting.yaml
+```
+
+Foundry generates the Compose file and configs, then starts the containers.
+
+### (Optional) Verify the Installation
+
+1. Ensure that your containers are running correctly. To view the status of your containers, run the following command:
+
+```bash
+docker ps
+```
+  The output should look similar to the following:
+
+```output
+CONTAINER ID   IMAGE                                         COMMAND                     CREATED          STATUS                       PORTS                                                              NAMES
+e54e10357ba5   signoz/signoz-otel-collector:latest           "/signoz-otel-collec…"      15 seconds ago   Up 3 seconds (health: starting)  0.0.0.0:4317-4318->4317-4318/tcp, [::]:4317-4318->4317-4318/tcp   <deployment-name>-ingester-1
+8e639ce75aa5   signoz/signoz:latest                          "./signoz server"           15 seconds ago   Up 4 seconds (health: starting)  0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp                       <deployment-name>-signoz-1
+275a996ba9c4   clickhouse/clickhouse-server:25.5.6           "/entrypoint.sh"            16 seconds ago   Up 10 seconds (healthy)          8123/tcp, 9000/tcp, 9009/tcp                                      <deployment-name>-telemetrystore-clickhouse-0-0
+8dd268a3df7f   postgres:16                                  "docker-entrypoint.s…"      16 seconds ago   Up 15 seconds (healthy)          5432/tcp                                                          <deployment-name>-metastore-postgres-0
+860da2c52ea8   clickhouse/clickhouse-keeper:25.5.6           "/usr/bin/clickhouse…"      16 seconds ago   Up 15 seconds (healthy)          2181/tcp, 9181/tcp, 10181/tcp, 44444/tcp                          <deployment-name>-telemetrykeeper-clickhousekeeper-0
+```
+
+2. Wait for all containers to be running, then point your browser to `http://{IP-ADDRESS}:8080/` to access the dashboard.
+
+   - Replace `{IP-ADDRESS}` with the IP address of the machine where you installed SigNoz.
+
+  **Example**:
+    - If you're running SigNoz on your local machine, you should point your browser to `http://localhost:8080/`.
+    - If the IP address of the machine on which you're running SigNoz is `66.82.18.247`, you should point your browser to `http://66.82.18.247:8080/`
+
+</TabItem>
+<TabItem value="manual" label="Manual install">
+
+### Install with Docker Compose
 
 1. <CloneRepo />
 
@@ -71,7 +132,7 @@ Before you install SigNoz, ensure that [Docker Compose](https://docs.docker.com/
   docker compose up -d --remove-orphans
   ```
 
-## Verify the Installation
+### (Optional) Verify the Installation
 
 1. Ensure that your containers are running correctly. To view the status of your containers, run the following command:
 
@@ -84,45 +145,85 @@ docker ps
 CONTAINER ID   IMAGE                                        COMMAND                  CREATED          STATUS                    PORTS                                    NAMES
 afd3e434e853   signoz/signoz-otel-collector:0.111.24        "/signoz-collector -…"   47 minutes ago   Up 45 minutes             0.0.0.0:4317-4318->4317-4318/tcp         signoz-otel-collector
 c0b6e58d3d18   signoz/signoz:0.69.0                         "./query-service --c…"   47 minutes ago   Up 46 minutes (healthy)   8080/tcp                                 signoz-signoz
-69431900f6ef   clickhouse/clickhouse-server:24.1.2-alpine   "/entrypoint.sh"         47 minutes ago   Up 47 minutes (healthy)   8123/tcp, 9000/tcp, 9009/tcp             signoz-clickhouse
+69431900f6ef   clickhouse/clickhouse-server:25.5.6       "/entrypoint.sh"         47 minutes ago   Up 47 minutes (healthy)   8123/tcp, 9000/tcp, 9009/tcp             signoz-clickhouse
 8b69f876a3c7   signoz/zookeeper:3.7.1                      "/opt/bitnami/script…"   47 minutes ago   Up 47 minutes (healthy)   2181/tcp, 2888/tcp, 3888/tcp, 8080/tcp   signoz-zookeeper-1
 ```
 
-2. Wait for all the pods to be in running state, and then point your browser to `http://<IP-ADDRESS>:8080/` to access the dashboard, replacing `<IP-ADDRESS>` with the IP address of the machine where you installed SigNoz.
+2. Wait for all containers to be running, then point your browser to `http://{IP-ADDRESS}:8080/` to access the dashboard.
+
+   - Replace `{IP-ADDRESS}` with the IP address of the machine where you installed SigNoz.
 
   **Example**:
     - If you're running SigNoz on your local machine, you should point your browser to `http://localhost:8080/`.
     - If the IP address of the machine on which you're running SigNoz is `66.82.18.247`, you should point your browser to `http://66.82.18.247:8080/`
 
-{ /* <!--
+</TabItem>
+</Tabs>
 
-You should see a page similar to the one in the image below:
 
---> */}
+## Install a specific version of SigNoz
 
-{ /* 
-<!--
-How is this helpful? I suggest we create something similar to the Kubernetes section. Do we have a blog post to which I could link out?
---> */}
+<Tabs>
+<TabItem value="foundry-version" label="Foundry" default>
 
-<RetentionInfo />
+Pin the SigNoz (and optionally ingester) image version in your `casting.yaml` by overriding the molding specs, then deploy:
 
-## Install specific version of SigNoz
+```yaml
+apiVersion: v1alpha1
+metadata:
+  name: {deployment-name}
+spec:
+  deployment:
+    mode: docker
+    flavor: compose
+  signoz:
+    spec:
+      image: signoz/signoz:{version}
+  # Optional: pin the ingester (OTel Collector) to match
+  ingester:
+    spec:
+      image: signoz/signoz-otel-collector:{version}
+```
+
+- Replace `{deployment-name}` with your deployment name (e.g. signoz).
+- Replace `{version}` with the version tag from [SigNoz releases](https://github.com/SigNoz/signoz/releases) (e.g. `0.110.0`). Use the same version for both images when pinning.
+
+Then run:
+
+```bash
+foundryctl cast -f casting.yaml
+```
+
+</TabItem>
+<TabItem value="manual-version" label="Manual install">
 
 1. <CloneRepo />
 
-2. Checkout to the specific version tag. For example, to install SigNoz version `v0.6.1`:
-	```
-	git checkout v0.6.1
-	```
+2. Check out the version tag you want:
+   ```bash
+   git checkout {version}
+   ```
+   - Replace `{version}` with the version tag from [SigNoz releases](https://github.com/SigNoz/signoz/releases) (e.g. `v0.6.1`).
 
-3. Run the `install.sh` script:
+3. Start the stack with Docker Compose:
+   ```bash
+   cd docker
+   docker compose up -d --remove-orphans
+   ```
 
-	```bash
-	./install.sh
-	```
+</TabItem>
+</Tabs>
 
-## Next Steps
-- [Collect Telemetry from your Docker Clusters](/docs/collection-agents/docker/install/)
-- [Instrument Your Application](/docs/instrumentation/overview)
-- [Tutorials](/docs/tutorials/)
+## Troubleshooting
+
+- **Containers exit or stay unhealthy**:
+  - Run `docker compose logs` (from the directory containing your Compose file) to inspect logs.
+  - For Foundry, the Compose file is in the `pours/` directory after you run `foundryctl cast`.
+  - Ensure at least 4GB memory is allocated to Docker.
+- **Port already in use**: Ports 8080, 4317, and 4318 must be free. Stop conflicting services or change the published ports in your Compose configuration.
+
+## Next steps
+
+- <a href="https://signoz.io/docs/collection-agents/docker/install/" target="_blank" rel="noopener noreferrer nofollow">Collect telemetry from your Docker clusters</a>
+- <a href="https://signoz.io/docs/instrumentation/overview" target="_blank" rel="noopener noreferrer nofollow">Instrument your application</a>
+- <a href="https://signoz.io/docs/tutorials/" target="_blank" rel="noopener noreferrer nofollow">Tutorials</a>

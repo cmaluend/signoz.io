@@ -207,6 +207,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            label: 'Deploying to Render',
+            route: '/docs/install/render',
+          },
+          {
+            type: 'doc',
             isExpanded: false,
             label: 'Deploying from Marketplaces',
             route: '/docs/install/marketplaces',
