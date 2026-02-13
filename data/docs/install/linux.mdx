@@ -55,7 +55,7 @@ clickhouse-server --version
 clickhouse-keeper --version
 ```
 
-> **Note:** Do not start the ClickHouse service manually. Foundry will configure and start it during deployment.
+> **Note:** If ClickHouse auto-started during installation, stop it with `sudo systemctl stop clickhouse-server clickhouse-keeper`. Foundry will configure and start it during deployment.
 
 ### PostgreSQL (Metastore)
 
@@ -646,7 +646,7 @@ curl -X GET http://localhost:8080/api/v1/health
 {"status":"ok"}
 ```
 
-## Next steps
+## Next Steps
 
 - [Send data to SigNoz](https://signoz.io/docs/ingestion/) — instrument your applications and send traces, metrics, and logs.
 - [OpenTelemetry Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/configuration/) — configure collectors and pipelines.

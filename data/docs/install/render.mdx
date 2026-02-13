@@ -25,18 +25,16 @@ Download and extract the `foundryctl` binary from <a href="https://github.com/Si
 **Linux:**
 
 ```bash
-curl -L "https://github.com/SigNoz/foundry/releases/download/{version}/foundry_linux_$(uname -m | sed 's/x86_64/amd64/g' | sed 's/aarch64/arm64/g').tar.gz" -o foundry.tar.gz
+curl -L "https://github.com/SigNoz/foundry/releases/download/v0.0.1-rc.2/foundry_linux_$(uname -m | sed 's/x86_64/amd64/g' | sed 's/aarch64/arm64/g').tar.gz" -o foundry.tar.gz
 tar -xzf foundry.tar.gz
 ```
 
 **macOS:**
 
 ```bash
-curl -L "https://github.com/SigNoz/foundry/releases/download/{version}/foundry_darwin_$(uname -m | sed 's/x86_64/amd64/g' | sed 's/arm64/arm64/g').tar.gz" -o foundry.tar.gz
+curl -L "https://github.com/SigNoz/foundry/releases/download/v0.0.1-rc.2/foundry_darwin_$(uname -m | sed 's/x86_64/amd64/g' | sed 's/arm64/arm64/g').tar.gz" -o foundry.tar.gz
 tar -xzf foundry.tar.gz
 ```
-
-- Replace `{version}` with the latest release from [Foundry releases](https://github.com/SigNoz/foundry/releases).
 
 Run `foundryctl` from the unpacked directory (e.g. `./foundry/bin/foundryctl`) or add that directory to your `PATH`.
 
@@ -62,21 +60,22 @@ spec:
 
 ## Step 3. Generate the Blueprint (forge)
 
-For Render, Foundry does not deploy for you. You must run **forge** to generate the Render Blueprint and configs:
+Run **forge** to generate the Render Blueprint and configuration files:
 
 ```bash
 foundryctl forge -f casting.yaml
 ```
 
-Foundry writes the generated files (including `render.yaml`) into the `pours/` directory. If you run `foundryctl cast` with a Render casting, it only prints a reminder to run forge and then deploy `render.yaml` to Render using <a href="https://render.com/docs/infrastructure-as-code#setup" target="_blank" rel="noopener noreferrer nofollow">Render's Infrastructure as Code</a>.
+The generated files, including `render.yaml`, will be created in the `pours/` directory. You can then deploy `render.yaml` to Render using <a href="https://render.com/docs/infrastructure-as-code#setup" target="_blank" rel="noopener noreferrer nofollow">Render's Infrastructure as Code</a>.
+
 
 ## Step 4. Deploy on Render
 
-Deploy the generated Blueprint using Render's IaC flow:
+1. Commit and push the contents of `pours/` (including `render.yaml`) to a Git repository that Render can access.
+2. In the <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer nofollow">Render Dashboard</a>, go to **New Blueprint**. Connect the repository and set the Blueprint file path to the generated file (e.g. `pours/render.yaml`).
+3. Review the services and resources, then deploy the Blueprint.
 
-1. **Commit and push** the contents of `pours/` (including `render.yaml`) to a Git repository that Render can access.
-2. Follow <a href="https://render.com/docs/infrastructure-as-code#setup" target="_blank" rel="noopener noreferrer nofollow">Render's Infrastructure as Code setup</a>: in the <a href="https://dashboard.render.com" target="_blank" rel="noopener noreferrer nofollow">Render Dashboard</a>, go to **New &gt; Blueprint**, connect your repository, and point Render to the Blueprint file (e.g. `pours/render.yaml`).
-3. **Review** the services and resources Render will create, then deploy the Blueprint.
+For full details, see the <a href="https://render.com/docs/infrastructure-as-code#setup" target="_blank" rel="noopener noreferrer nofollow">Render Infrastructure as Code setup guide</a>.
 
 Render will provision and run the SigNoz services (SigNoz, ClickHouse, OTel Collector, etc.) as defined in the Blueprint. When deployment finishes, use the URL Render assigns to the SigNoz web service to access the UI.
 
@@ -95,7 +94,7 @@ curl -X GET https://{your-signoz-service}.onrender.com/api/v1/health
 - **Blueprint fails to apply**: Check that the Blueprint YAML in `pours/` is valid and that all required fields (e.g. `type`, `name`, `runtime`) are present. See the [Render Blueprint spec](https://render.com/docs/blueprint-spec).
 - **Services not starting**: In the Render Dashboard, open the logs for each service. Ensure environment variables and service links (e.g. database URLs) match what Foundry generated.
 
-## Next steps
+## Next Steps
 
 - <a href="https://signoz.io/docs/collection-agents/docker/install/" target="_blank" rel="noopener noreferrer nofollow">Collect telemetry from your Docker clusters</a>
 - <a href="https://signoz.io/docs/instrumentation/overview" target="_blank" rel="noopener noreferrer nofollow">Instrument your application</a>
