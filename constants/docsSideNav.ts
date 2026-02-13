@@ -1165,6 +1165,11 @@ const docsSideNav = [
           },
         ],
       },
+      {
+        type: 'doc',
+        route: '/docs/traces-management/long-term-storage',
+        label: 'Long Term Storage',
+      },
     ],
   },
   {
@@ -1237,8 +1242,8 @@ const docsSideNav = [
               },
               {
                 type: 'doc',
-                route: '/docs/userguide/collecting_application_logs_otel_sdk_java',
-                label: 'Using OTel Java SDK',
+                route: '/docs/logs-management/send-logs/java-logs',
+                label: 'Java Logs',
               },
               {
                 type: 'doc',
@@ -2046,6 +2051,11 @@ const docsSideNav = [
           },
           {
             type: 'doc',
+            route: '/docs/dashboards/dashboard-templates/ollama-dashboard',
+            label: 'Ollama',
+          },
+          {
+            type: 'doc',
             route: '/docs/dashboards/dashboard-templates/openai-dashboard',
             label: 'OpenAI',
           },
@@ -2560,6 +2570,11 @@ const docsSideNav = [
         type: 'doc',
       },
       {
+        route: '/docs/ollama-monitoring',
+        label: 'Ollama',
+        type: 'doc',
+      },
+      {
         route: '/docs/openai-monitoring',
         label: 'OpenAI',
         type: 'doc',
@@ -2756,6 +2771,19 @@ const docsSideNav = [
         type: 'doc',
         route: '/docs/aws-monitoring/vpc',
         label: 'VPC',
+      },
+      {
+        type: 'category',
+        isExpanded: false,
+        label: 'Troubleshooting',
+        route: '/docs/aws-monitoring/troubleshooting',
+        items: [
+          {
+            type: 'doc',
+            route: '/docs/aws-monitoring/troubleshooting/faqs',
+            label: 'FAQs',
+          },
+        ],
       },
     ],
   },
