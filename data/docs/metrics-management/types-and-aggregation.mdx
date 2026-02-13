@@ -1,7 +1,7 @@
 ---
-date: 2024-06-06
+date: 2026-02-13
 title: Metric Types and Aggregation
-
+description: Metric Types and Aggregation
 id: types-and-aggregation
 ---
 
@@ -17,7 +17,6 @@ SigNoz supports the following types of metrics:
 
 - **Histogram**: A histogram is a metric that represents the distribution of a set of values. Histograms are used to track the distribution of values over time. For example, the response time of a web service.
 
-- **Exponential Histogram**: An exponential histogram is a metric that represents the distribution of a set of values on a logarithmic scale. Exponential histograms are used to track the distribution of values that span several orders of magnitude. For example, the latency of a network request.
 
 ### Temporality of Metrics
 
@@ -34,7 +33,6 @@ A table representing the different types of metrics and their temporality suppor
 | Counter     | Yes         | Yes     |
 | Gauge       | N/A          | N/A     |
 | Histogram   | Yes         | Yes      |
-| Exponential Histogram | No | Yes |
 
 The Gauge metric type does not have a temporality, as it represents a single value at a point in time.
 
@@ -54,7 +52,6 @@ A table representing the different types of metrics and their temporal and spati
 | Counter     | Increase, Rate | Sum, Avg, Min, Max |
 | Gauge       | Latest, Sum, Avg, Min, Max, Count, Count Distinct                   | Sum, Avg, Min, Max                 |
 | Histogram   | - | P50, P75, P90, P95, P99 |
-| Exponential Histogram | - | P50, P75, P90, P95, P99 |
 
 The next few sections describe how SigNoz performs temporal and spatial aggregation for each metric type.
 
@@ -359,7 +356,7 @@ The following table shows the increase in the number of requests received in eac
 
 This step is the same as the Cumulative Counter.
 
-## Histogram & Exponential Histogram
+## Histogram
 
 The aggregation of Histogram metrics is similar to that of Counter metrics. The difference is that Histogram metrics store the distribution of a set of values. There is no configuration required for temporal aggregation as the values get aggregated into buckets based on the histogram configuration. The result of the temporal aggregation is a single aggregated histogram for each interval within the time series.
 
