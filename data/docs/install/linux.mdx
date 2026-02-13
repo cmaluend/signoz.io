@@ -325,16 +325,26 @@ sudo systemctl start clickhouse-server.service
 
 ### Verify ClickHouse and Zookeeper
 
-Check service status:
+1. Check the status of the clickhouse and zookeeper services:
 
 ```bash
 sudo systemctl status clickhouse-server.service
 sudo systemctl status zookeeper.service
 ```
 
-Both services should show as active (running).
+2. If the services are running, you should see the following output:
 
-Optionally, check logs:
+```bash
+clickhouse-server.service - ClickHouse Server (analytic DBMS for big data)
+    Loaded: loaded (/lib/systemd/system/clickhouse-server.service; enabled; preset: enabled)
+    Active: active (running) since ...
+
+zookeeper.service - Zookeeper
+    Loaded: loaded (/etc/systemd/system/zookeeper.service; disabled; preset: enabled)
+    Active: active (running) ...
+```
+
+3. (Optional) Check the logs of the clickhouse and zookeeper services:
 
 ```bash
 sudo journalctl -u clickhouse-server.service -f
@@ -432,15 +442,21 @@ sudo systemctl start signoz.service
 
 ### Verify installation
 
-Check service status:
+1. Check the status of the signoz service:
 
 ```bash
 sudo systemctl status signoz.service
 ```
 
-The service should show as active (running).
+2. If the services are running, you should see the following output:
 
-Optionally, check logs:
+```bash
+signoz.service - SigNoz
+    Loaded: loaded (/etc/systemd/system/signoz.service; enabled; preset: enabled)
+    Active: active (running) since ...
+```
+
+3. (Optional) Check the logs of the signoz service:
 
 ```bash
 sudo journalctl -u signoz.service -f
@@ -594,15 +610,21 @@ sudo systemctl start signoz-otel-collector.service
 
 ### Verify installation
 
-Check service status:
+1. Check the status of the signoz otel collector service:
 
 ```bash
 sudo systemctl status signoz-otel-collector.service
 ```
 
-The service should show as active (running).
+2. If the services are running, you should see the following output:
 
-Optionally, check logs:
+```bash
+signoz-otel-collector.service - SigNoz OTel Collector
+    Loaded: loaded (/etc/systemd/system/signoz-otel-collector.service; enabled; preset: enabled)
+    Active: active (running) since ...
+```
+
+3. (Optional) Check the logs of the signoz otel collector service:
 
 ```bash
 sudo journalctl -u signoz-otel-collector.service -f
@@ -613,14 +635,13 @@ sudo journalctl -u signoz-otel-collector.service -f
 
 ## Test the Installation
 
-Verify that SigNoz is running correctly:
+1. Run the following command to check the health of signoz:
 
 ```bash
 curl -X GET http://localhost:8080/api/v1/health
 ```
 
-You should see:
-
+2. If the installation is successful, you should see the following output:
 ```bash
 {"status":"ok"}
 ```
