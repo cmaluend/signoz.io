@@ -1,705 +1,280 @@
 ---
-date: 2024-07-16
+date: 2026-02-13
 id: tracing
-
-title: Cloud Functions Tracing
-description: This guide provides a detailed walkthrough on how to set up a Google Cloud Function to send the traces to SigNoz.
-hide_table_of_contents: true
+title: Cloud Functions OpenTelemetry Tracing
+description: Send traces from Google Cloud Functions to SigNoz Cloud using OpenTelemetry with a dedicated tracing.js setup file.
+doc_type: howto
 ---
 
-## Overview
+This guide shows you how to send traces from a Google Cloud Function to SigNoz using OpenTelemetry. You will set up OpenTelemetry once in `tracing.js`, import it in `index.js`, and create one custom span to verify end-to-end tracing.
 
-This documentation provides a detailed walkthrough on how to set up a Google Cloud Function to send the traces to SigNoz. 
-
-{/* **Here's a quick summary of what we will be doing in this guide**
-
-
-* Create and configure a Cloud Function
-* Invoke the Cloud Function
-* Send and Visualize the traces in SigNoz */}
-
-<Tabs entityName="plans">
-<TabItem value="signoz-cloud" label="SigNoz Cloud" default>
+<KeyPointCallout title="Using self-hosted SigNoz?" defaultCollapsed={true}>
+Most steps are identical. To adapt this guide, update the endpoint and remove the ingestion key header as shown in [Cloud to Self-Hosted](https://signoz.io/docs/ingestion/cloud-vs-self-hosted/#cloud-to-self-hosted).
+</KeyPointCallout>
 
 ## Prerequisites
 
+- A Google Cloud project with billing enabled.
+- Cloud Functions API enabled in your project.
+- A 2nd gen Cloud Function using Node.js 20.
+- A SigNoz Cloud account or self-hosted SigNoz instance.
 
-* [Google Cloud account](https://console.cloud.google.com/) with administrative privilege or Cloud Functions Admin privilege.
-* Access to a project in GCP
-* Google Cloud Functions APIs enabled (follow [this](https://support.google.com/googleapi/answer/6158841?hl=en) guide to see how to enable an API in Google Cloud)
+## Send traces to SigNoz
 
-## Setup
+### Step 1. Create an HTTP Cloud Function
 
-### Get started with Cloud Function Configuration
+In Google Cloud Console:
 
-Follow these steps to create the Cloud Function:
+1. Open **Cloud Functions** and click **Create function**.
+2. Select **2nd gen**.
+3. Set **Runtime** to **Node.js 20**.
+4. Set **Trigger** to **HTTP**.
 
-Step 1: Go to your GCP console and search for Cloud Functions, go to Functions and click on **CREATE FUNCTION**.
+You will add runtime environment variables and code in the next steps.
 
+### Step 2. Configure OpenTelemetry environment variables
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/cloud-function.webp"
-        alt="GCP Cloud Function"
-    />
-<figcaption>
-<i>
-GCP Cloud Functions
-</i>
-</figcaption>
-</figure>
+In **Runtime, build, connections and security settings** -> **Runtime environment variables**, add:
 
+- `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://ingest.<region>.signoz.cloud/v1/traces`
+- `OTEL_EXPORTER_OTLP_HEADERS=signoz-ingestion-key=<your-ingestion-key>`
+- `OTEL_SERVICE_NAME=<your-service-name>`
+- `OTEL_SERVICE_NAMESPACE=<your-team-or-system>` (optional)
+- `OTEL_SERVICE_VERSION=<release-version>` (optional)
+- `OTEL_DEPLOYMENT_ENVIRONMENT=production` (deployment tier, for example: `production`, `staging`, `dev`, `local`)
 
-Step 2: Fill in the following details to create a Cloud Function:
+Verify these values:
 
+- `<region>`: your SigNoz Cloud region (`us`, `eu`, or `in`). See https://signoz.io/docs/ingestion/signoz-cloud/overview/#endpoint
+- `<your-ingestion-key>`: your SigNoz Cloud ingestion key.
+- `<your-service-name>`: name that will appear in SigNoz Services (for example, `gcp-fn-orders`).
+- `<your-team-or-system>`: optional group for related services (for example, `payments`).
+- `<release-version>`: optional version label (for example, `1.12.3` or a git SHA).
 
-1. Environment: 2nd gen
-2. Function name: Name for the Cloud Function
-3. Region: Takes the default region of the GCP account
-4. Trigger: Defines how to trigger the Cloud Function
-    1. Trigger Type: HTTPS - this allows us to trigger the Cloud Function using a URL
-    2. Authentication: Choose whether you need authenticated or unauthenticated invocations. We have chosen an unauthenticated invocation for this demonstration.
+### Step 3. Install the required packages
 
+Run this in your Cloud Function project directory:
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/create-function.webp"
-        alt="Create Cloud function"
-    />
-<figcaption>
-<i>
-Create Cloud Function
-</i>
-</figcaption>
-</figure>
+```bash
+npm install --save \
+  @google-cloud/functions-framework \
+  @google-cloud/opentelemetry-cloud-trace-propagator \
+  @opentelemetry/api \
+  @opentelemetry/core \
+  @opentelemetry/exporter-trace-otlp-http \
+  @opentelemetry/resource-detector-gcp \
+  @opentelemetry/resources \
+  @opentelemetry/sdk-node \
+  @opentelemetry/semantic-conventions
+```
 
-Step 3: Expand the **Runtime, build, connections, and security settings** section, and under **Runtime environment variables:**
+This creates or updates `package.json` and `package-lock.json` with the dependencies used by the examples in this guide.
 
-Add `OTEL_EXPORTER_OTLP_HEADERS` and `OTEL_EXPORTER_OTLP_ENDPOINT` with **Ingestion Key** and **Ingestion URL** respectively and add `OTEL_EXPORTER_OTLP_PROTOCOL` with **grpc**. You can get Ingestion Key and Ingestion URL.
+<Admonition type="info">
+Version check (verified on February 13, 2026): this guide was tested with Node.js 20 and the package versions currently published on npm at that time, including `@opentelemetry/sdk-node@0.212.0`, `@opentelemetry/core@2.5.1`, `@opentelemetry/resources@2.5.1`, `@opentelemetry/semantic-conventions@1.39.0`, `@google-cloud/functions-framework@5.0.1`, `@google-cloud/opentelemetry-cloud-trace-propagator@0.21.0`, and `@opentelemetry/resource-detector-gcp@0.46.0`.
 
+OpenTelemetry JS recommends using matching `latest` packages together and provides a compatibility matrix here: https://github.com/open-telemetry/opentelemetry-js#package-version-compatibility
+</Admonition>
 
+### Step 4. Create `tracing.js`
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/runtime-variables.webp"
-        alt="Cloud Function Runtime Environment Variables"
-    />
-<figcaption>
-<i>
-Set Cloud Function Runtime Environment Variables
-</i>
-</figcaption>
-</figure>
+Create a new file named `tracing.js` in your function source. This initializes the OpenTelemetry Node SDK, OTLP exporter, and GCP resource detection.
 
+```js:tracing.js
+'use strict';
 
-Step 4: Click on the **NEXT** button, which will bring us to the page where we can add our code.
+const { NodeSDK } = require('@opentelemetry/sdk-node');
+const {
+  CompositePropagator,
+  W3CBaggagePropagator,
+  W3CTraceContextPropagator,
+} = require('@opentelemetry/core');
+const { CloudPropagator } = require('@google-cloud/opentelemetry-cloud-trace-propagator');
+const { gcpDetector } = require('@opentelemetry/resource-detector-gcp');
+const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
+const { resourceFromAttributes } = require('@opentelemetry/resources');
+const {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_NAMESPACE,
+  ATTR_SERVICE_VERSION,
+} = require('@opentelemetry/semantic-conventions');
+const { ATTR_DEPLOYMENT_ENVIRONMENT_NAME } = require('@opentelemetry/semantic-conventions/incubating');
 
+const functionId = process.env.FUNCTION_ID || 'A';
+const deploymentEnvironment =
+  process.env.OTEL_DEPLOYMENT_ENVIRONMENT || process.env.DEPLOYMENT_ENVIRONMENT || 'local';
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/entrypoint.webp"
-        alt="Runtime and Entry Point of Cloud Function"
-    />
-<figcaption>
-<i>
-Set entrypoint and source code
-</i>
-</figcaption>
-</figure>
-
-
-### Add code to the Google Cloud Function
-
-For this demonstration, we will be using Node.js 20.
-
-Below is the comprehensive code of the `index.js` file, followed by a high-level overview of what the code is doing.
-
-
-```js
-const { trace, context, diag, DiagConsoleLogger, DiagLogLevel } = require("@opentelemetry/api");
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { W3CTraceContextPropagator, AlwaysOnSampler } = require('@opentelemetry/core');
-const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
-const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
-const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-proto");
-const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
-const { Resource } = require("@opentelemetry/resources");
-
-const http = require("http");
-const https = require("https");
-
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.ALL);
-
-function initializeOtel(serviceIdentifier) {
- // create tracer provider
- const tracerProvider = new NodeTracerProvider({
-   resource: new Resource({
-     [SemanticResourceAttributes.SERVICE_NAME]: serviceIdentifier,
-   }),
-   sampler: new AlwaysOnSampler()
- });
-
- // add OTLP exporter
- const traceExporter = new OTLPTraceExporter();
-  const spanProcessor = new BatchSpanProcessor(traceExporter, {
-   onSuccess: () => {
-     console.log("Traces sent successfully.");
-   },
-   onError: (error) => {
-     console.error("Error sending traces:", error);
-   }
- });
- tracerProvider.addSpanProcessor(spanProcessor);
-
- // register globally
- tracerProvider.register({
-   propagator: new W3CTraceContextPropagator()
- });
-
- // add http automatic instrumentation
- registerInstrumentations({
-   instrumentations: [
-     new HttpInstrumentation()
-   ],
- });
-
- return tracerProvider;
-}
-
-async function fetchUrl(url) {
- return new Promise((resolve, reject) => {
-   const isHttps = url.startsWith("https://");
-   const httpLib = isHttps ? https : http;
-   const request = httpLib.get(url, (res) => {
-     console.log(`${url} status code - ${res.statusCode}`);
-     const responseData = [];
-     res.on("error", (error) => {
-       console.error(`${url} response error - ${error}`);
-       reject(error);
-     });
-     res.on("data", (chunk) => {
-       responseData.push(chunk);
-     });
-     res.on("end", () => {
-       resolve({ statusCode: res.statusCode, data: responseData });
-     });
-   });
-
-   request.on("error", error => {
-     console.error(`${url} request error - ${error}`);
-     reject(error);
-   });
-   request.end();
- });
-}
-
-async function handleRequest(req, res) {
- // Perform outgoing HTTP calls
- await fetchUrl('https://example.com');
- await fetchUrl('http://example.net');
-
- let message = req.query.message || req.body.message || 'Hello World!';
- res.status(200).send(message);
+const resourceAttributes = {
+  [ATTR_SERVICE_NAME]: process.env.OTEL_SERVICE_NAME || `function-${functionId.toLowerCase()}`,
+  [ATTR_DEPLOYMENT_ENVIRONMENT_NAME]: deploymentEnvironment,
 };
 
-function setupHandler(handler, serviceName) {
- initializeOtel(serviceName);
- return (req, res) => {
-   const span = trace.getSpan(context.active());
-
-   if (span != null) {
-     span.updateName(serviceName);
-   }
-
-   handler(req, res);
- };
+if (process.env.OTEL_SERVICE_NAMESPACE) {
+  resourceAttributes[ATTR_SERVICE_NAMESPACE] = process.env.OTEL_SERVICE_NAMESPACE;
 }
 
-exports.helloWorld = setupHandler(handleRequest, "helloWorld");
-
-// Make sure the http(s) library is patched before the first call
-require("http");
-require("https");
-```
-
-Below is a high-level overview of the above code snippet:
-
-**Imports Modules**: Imports OpenTelemetry modules and Node.js HTTP/HTTPS modules.
-**Setup Logging**: Configures diagnostic logging with `DiagConsoleLogger`.
-
-**Initialize OpenTelemetry:**
-    * Creates `NodeTracerProvider` with service name.
-    * Adds `OTLPTraceExporter` and `BatchSpanProcessor`.
-    * Registers `W3CTraceContextPropagator` and HTTP instrumentation.
-    
-**HTTP GET Helper (`fetchUrl`)**:
-
-    * Performs HTTP/HTTPS GET requests.
-    * Logs status and handles response data and errors.
-
-**Request Handler (`handleRequest`)**:
-
-    * Performs outgoing HTTP requests.
-    * Extracts message from request and sends response.
-
-**Setup Handler (`setupHandler`)**:
-
-    * Initializes OpenTelemetry for the service.
-    * Wraps handler to update span name.
-
-**Export Handler:** Exports the instrumented handler as `welcometosignoz`.
-
-**Patch HTTP/HTTPS:** Ensures HTTP/HTTPS libraries are patched for tracing.
-
-
-To install the required packages, add a package.json file to the source with the following content: 
-
-```json
-{
- "dependencies": {
-   "@opentelemetry/api": "^1.0.4",
-   "@opentelemetry/core": "^1.0.1",
-   "@opentelemetry/exporter-trace-otlp-proto": "^0.27.0",
-   "@opentelemetry/instrumentation": "^0.27.0",
-   "@opentelemetry/instrumentation-http": "^0.27.0",
-   "@opentelemetry/sdk-trace-node": "^1.0.1",
-   "@opentelemetry/semantic-conventions": "^1.0.1"
- }
+if (process.env.OTEL_SERVICE_VERSION) {
+  resourceAttributes[ATTR_SERVICE_VERSION] = process.env.OTEL_SERVICE_VERSION;
 }
+
+const textMapPropagator = new CompositePropagator({
+  propagators: [
+    new W3CTraceContextPropagator(),
+    new CloudPropagator(),
+    new W3CBaggagePropagator(),
+  ],
+});
+
+const sdk = new NodeSDK({
+  resource: resourceFromAttributes(resourceAttributes),
+  autoDetectResources: true,
+  resourceDetectors: [gcpDetector],
+  traceExporter: new OTLPTraceExporter(),
+  textMapPropagator,
+});
+
+(async () => {
+  try {
+    await sdk.start();
+  } catch (err) {
+    console.error('Error starting OTel SDK', err);
+  }
+})();
+
+async function shutdownAndExit(exitCode) {
+  try {
+    await sdk.shutdown();
+    process.exit(exitCode);
+  } catch (err) {
+    console.error('Error shutting down OTel SDK', err);
+    process.exit(1);
+  }
+}
+
+process.on('SIGTERM', () => shutdownAndExit(0));
+process.on('SIGINT', () => shutdownAndExit(0));
+
+module.exports = { sdk };
 ```
 
+### Step 5. Update `index.js` with one small trace
 
-The package.json file should contain all the packages that your Cloud Function depends upon. This file is used by Google Cloud Function to create an environment with all the required packages.
+Import `tracing.js` first, then create one active span inside your HTTP handler:
 
-Once you've finished writing your code, locate the **DEPLOY** button. After clicking the **DEPLOY** button, Google Cloud Function initiates deployment, starts provisioning the function according to the specified configuration, initializes the environment, handles dependencies, and makes the function ready to handle incoming requests.
+```js:index.js
+'use strict';
 
+require('./tracing');
 
-## Testing your cloud function
+const functions = require('@google-cloud/functions-framework');
+const { context, propagation, ROOT_CONTEXT, trace } = require('@opentelemetry/api');
 
-Step 1: After completing the deployment, navigate to the **TRIGGER** section to obtain the URL to invoke the function.
+const tracer = trace.getTracer('gcp-function-tracer');
 
+functions.http('entryPoint', async (req, res) => {
+  const extractedContext = propagation.extract(ROOT_CONTEXT, req.headers);
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/deploying-function.webp"
-        alt="Deploying Function"
-    />
-<figcaption>
-<i>
-Deploying Cloud Function
-</i>
-</figcaption>
-</figure>
+  await context.with(extractedContext, async () => {
+    await tracer.startActiveSpan('entryPoint.handler', async (span) => {
+      try {
+        span.setAttribute('function.name', process.env.K_SERVICE || 'entryPoint');
 
-Step 2: Hit the URL that you have obtained, you will see the function output.
+        res.status(200).json({
+          ok: true,
+          message: req.query.message || 'Hello from Cloud Functions',
+        });
+      } catch (err) {
+        span.recordException(err);
+        span.setStatus({ code: 2, message: err.message });
+        res.status(500).json({ ok: false, error: err.message });
+      } finally {
+        span.end();
+      }
+    });
+  });
+});
+```
 
+What this does:
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/cloud-function-url.webp"
-        alt="Cloud Function URL"
-    />
-<figcaption>
-<i>
-Cloud function URL.
-</i>
-</figcaption>
-</figure>
+- `require('./tracing')` starts the OpenTelemetry SDK before your handler runs.
+- `startActiveSpan` creates one custom span: `entryPoint.handler`.
+- `propagation.extract(...)` links this span to upstream traces when trace headers are present.
 
+### Step 6. Deploy and invoke the function
 
-Step 3: Click on the **logs** section in your Cloud Function to view the logs, indicating that the traces have been sent to SigNoz successfully.
+1. Deploy the function.
+2. Copy the HTTPS trigger URL after deployment.
+3. Invoke it once:
 
+```bash
+curl "https://<your-cloud-function-url>?message=hello-signoz"
+```
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/function-logs.webp"
-        alt="Cloud Function Logs"
-    />
-<figcaption>
-<i>
-View Cloud Function Logs to verify traces being sent to SigNoz
-</i>
-</figcaption>
-</figure>
+## Validate
 
-## Visualize the traces in SigNoz Cloud
+<Admonition type="info">
+If your trace looks like it is missing the first (root) span in SigNoz, you're not doing anything wrong. This is expected on GCP-managed serverless entrypoints.
 
-Go to your SigNoz UI, and navigate to the SigNoz dashboard. Click on the **traces** section to view the traces.
+Cloud Run/Cloud Functions can generate the incoming request trace context at the platform layer and pass only the trace headers (like `traceparent` or `X-Cloud-Trace-Context`) to your function. Your function can continue that trace using `propagation.extract(...)`, but the platform-generated root span itself remains in Cloud Trace and is not sent by your app exporter to SigNoz.
 
-**Note**: The default SigNoz dashboard endpoint would be `http://<signoz-host-ip>:3301` in case of Self-Host installation, however, the URL can be different based on how you have set up the infrastructure.
+In practice, this can show up as:
 
-**Note**: If you have multiple applications already sending traces to SigNoz, you can check by adding `resource-type`, `resource-name`, and `resource-region` filters in the Search filters field. 
+- A missing root span in SigNoz for some requests.
+- Partial service maps when the upstream/root service exists only in Cloud Trace data.
+</Admonition>
 
+After invoking the function, verify traces in SigNoz:
 
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/cloud/signoz-dashboard.webp"
-        alt="SigNoz Dashboard"
-    />
-<figcaption>
-<i>
-SigNoz Dashboard
-</i>
-</figcaption>
-</figure>
+1. Open SigNoz and go to **Services**.
+2. Find the service name you set in `OTEL_SERVICE_NAME`.
+3. Open **Traces** and filter by `service.name=<your-service-name>`.
+4. Open a trace and confirm the span `entryPoint.handler` is present.
 
-That's it! You have successfully set up monitoring for your Cloud Function's traces with SigNoz Cloud.
+<details>
+<ToggleHeading>
+## Setup OpenTelemetry Collector (Optional)
+</ToggleHeading>
 
+### What is the OpenTelemetry Collector?
 
+The OTel Collector acts as a middleman between your app and SigNoz. Instead of sending data directly, your application sends everything to the Collector first, which then forwards it along.
+
+### Why use it?
+
+- **Cleaning up data** — Filter out noisy traces you don't care about, or remove sensitive info before it leaves your servers.
+- **Keeping your app lightweight** — Let the Collector handle batching, retries, and compression instead of your application code.
+- **Adding context automatically** — The Collector can tag your data with useful info like which Kubernetes pod or cloud region it came from.
+- **Future flexibility** — Want to send data to multiple backends later? The Collector makes that easy without changing your app.
+
+See [Switch from direct export to Collector](https://signoz.io/docs/opentelemetry-collection-agents/opentelemetry-collector/switch-to-collector/) for step-by-step instructions.
+
+</details>
+
+<details>
+<ToggleHeading>
 ## Troubleshooting
+</ToggleHeading>
 
-If you encounter any issues while setting up monitoring for your Cloud Function's traces with SigNoz, here are a few troubleshooting steps you can try:
+### Why don't traces appear in SigNoz?
 
+- Check that `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` includes `/v1/traces`.
+- Check that `OTEL_EXPORTER_OTLP_HEADERS` is exactly `signoz-ingestion-key=<your-ingestion-key>`.
+- Check Cloud Function logs for `Error starting OTel SDK`.
+- Invoke the function a few times; cold starts can delay the first export.
 
+### Why do I see 401/403 from the SigNoz endpoint?
 
-* Verify that your Cloud Function instance is running and accessible.
-* Ensure that you have the necessary permissions to access the traces in your function.
-* If you are using a SigNoz Cloud Account, check and mention the correct URL of the SigNoz Cloud account and the Ingestion(token) key.
+Your ingestion key is incorrect or missing. Recopy it from https://signoz.io/docs/ingestion/signoz-cloud/keys/ and redeploy.
 
-By following this guide, you should be able to easily send the traces of your Google Cloud Function's system to SigNoz and gain valuable insights in case there is some issue.
+### Why is my service missing from the Services list?
 
-</TabItem>
+Set `OTEL_SERVICE_NAME` to a stable value, redeploy, and invoke again. If unset, the fallback name is `gcp-cloud-function`.
 
-<TabItem value='self-host' label='Self-Host'>
+</details>
 
-## Prerequisites
+## Next steps
 
-* [Google Cloud account](https://console.cloud.google.com/) with administrative privilege or Cloud Functions Admin privilege.
-* Access to a project in GCP
-* Google Cloud Functions APIs enabled (follow [this](https://support.google.com/googleapi/answer/6158841?hl=en) guide to see how to enable an API in Google Cloud)
-
-
-## Setup
-
-### Get started with Cloud Function Configuration
-
-Follow these steps to create the Cloud Function:
-
-Step 1: Go to your GCP console and search for Cloud Functions, go to Functions and click on **CREATE FUNCTION**.
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/cloud-function.webp"
-        alt="GCP Cloud Function"
-    />
-<figcaption>
-<i>
-GCP Cloud Functions
-</i>
-</figcaption>
-</figure>
-
-
-Step 2: Fill in the following details to create a Cloud Function:
-
-
-
-1. Environment: 2nd gen
-2. Function name: Name for the Cloud Function
-3. Region: Takes the default region of the GCP account
-4. Trigger: Defines how to trigger the Cloud Function
-    1. Trigger Type: HTTPS - this allows us to trigger the Cloud Function using a URL
-    2. Authentication: Choose whether you need authenticated or unauthenticated invocations. We have chosen an unauthenticated invocation for this demonstration.
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/create-function.webp"
-        alt="Create Cloud function"
-    />
-<figcaption>
-<i>
-Create Cloud Function
-</i>
-</figcaption>
-</figure>
-
-
-Step 3: Expand the **Runtime, build, connections, and security settings** section, and under **Runtime environment variables:**
-
-Add `OTEL_EXPORTER_OTLP_PROTOCOL` with `http`. The Self-Hosted SigNoz endpoint would be `http://<Self-Hosted SigNoz-host-ip>:4318`.
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/runtime-variables.webp"
-        alt="Cloud Function Runtime Environment Variables"
-    />
-<figcaption>
-<i>
-Set Cloud Function Runtime Environment Variables
-</i>
-</figcaption>
-</figure>
-
-
-Step 4: Click on the **NEXT** button, which will bring us to the page where we can add our code.
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/entrypoint.webp"
-        alt="Runtime and Entry Point of Cloud Function"
-    />
-<figcaption>
-<i>
-Set entrypoint and source code
-</i>
-</figcaption>
-</figure>
-
-### Add code to the Google Cloud Function
-
-For this demonstration, we will be using Node.js 20.
-
-Below is the comprehensive code of the `index.js` file, followed by a high-level overview of what the code is doing.
-
-
-```javascript
-const { trace, context, diag, DiagConsoleLogger, DiagLogLevel } = require("@opentelemetry/api");
-const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node');
-const { W3CTraceContextPropagator, AlwaysOnSampler } = require('@opentelemetry/core');
-const { registerInstrumentations } = require('@opentelemetry/instrumentation');
-const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
-const { SemanticResourceAttributes } = require('@opentelemetry/semantic-conventions');
-const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-proto");
-const { BatchSpanProcessor } = require("@opentelemetry/sdk-trace-base");
-const { Resource } = require("@opentelemetry/resources");
-
-const http = require("http");
-const https = require("https");
-
-diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.ALL);
-
-function initializeOtel(serviceIdentifier) {
- // create tracer provider
- const tracerProvider = new NodeTracerProvider({
-   resource: new Resource({
-     [SemanticResourceAttributes.SERVICE_NAME]: serviceIdentifier,
-   }),
-   sampler: new AlwaysOnSampler()
- });
-
- // add OTLP exporter
- const traceExporter = new OTLPTraceExporter();
-  const spanProcessor = new BatchSpanProcessor(traceExporter, {
-   onSuccess: () => {
-     console.log("Traces sent successfully.");
-   },
-   onError: (error) => {
-     console.error("Error sending traces:", error);
-   }
- });
- tracerProvider.addSpanProcessor(spanProcessor);
-
- // register globally
- tracerProvider.register({
-   propagator: new W3CTraceContextPropagator()
- });
-
- // add http automatic instrumentation
- registerInstrumentations({
-   instrumentations: [
-     new HttpInstrumentation()
-   ],
- });
-
- return tracerProvider;
-}
-
-async function fetchUrl(url) {
- return new Promise((resolve, reject) => {
-   const isHttps = url.startsWith("https://");
-   const httpLib = isHttps ? https : http;
-   const request = httpLib.get(url, (res) => {
-     console.log(`${url} status code - ${res.statusCode}`);
-     const responseData = [];
-     res.on("error", (error) => {
-       console.error(`${url} response error - ${error}`);
-       reject(error);
-     });
-     res.on("data", (chunk) => {
-       responseData.push(chunk);
-     });
-     res.on("end", () => {
-       resolve({ statusCode: res.statusCode, data: responseData });
-     });
-   });
-
-   request.on("error", error => {
-     console.error(`${url} request error - ${error}`);
-     reject(error);
-   });
-   request.end();
- });
-}
-
-async function handleRequest(req, res) {
- // Perform outgoing HTTP calls
- await fetchUrl('https://example.com');
- await fetchUrl('http://example.net');
-
- let message = req.query.message || req.body.message || 'Hello World!';
- res.status(200).send(message);
-};
-
-function setupHandler(handler, serviceName) {
- initializeOtel(serviceName);
- return (req, res) => {
-   const span = trace.getSpan(context.active());
-
-   if (span != null) {
-     span.updateName(serviceName);
-   }
-
-   handler(req, res);
- };
-}
-
-exports.helloWorld = setupHandler(handleRequest, "helloWorld");
-
-// Make sure the http(s) library is patched before the first call
-require("http");
-require("https");
-```
-
-
-Below is a high-level overview of the above code snippet:
-
-**Imports Modules**: Imports OpenTelemetry modules and Node.js HTTP/HTTPS modules.
-
-**Setup Logging**: Configures diagnostic logging with `DiagConsoleLogger`.
-
-**Initialize OpenTelemetry:**
-
-    * Creates `NodeTracerProvider` with service name.
-    * Adds `OTLPTraceExporter` and `BatchSpanProcessor`.
-    * Registers `W3CTraceContextPropagator` and HTTP instrumentation.
-
-**HTTP GET Helper (`fetchUrl`)**:
-
-    * Performs HTTP/HTTPS GET requests.
-    * Logs status and handles response data and errors.
-
-**Request Handler (`handleRequest`)**:
-
-    * Performs outgoing HTTP requests.
-    * Extracts message from request and sends response.
-
-**Setup Handler (`setupHandler`)**:
-
-    * Initializes OpenTelemetry for the service.
-    * Wraps handler to update span name.
-
-**Export Handler:** Exports the instrumented handler as `welcometoSelf-Hosted SigNoz`.
-
-
-**Patch HTTP/HTTPS:** Ensures HTTP/HTTPS libraries are patched for tracing.
-
-
-To install the required packages, add a package.json file to the source with the following content:
-
-```json 
-
-{
- "dependencies": {
-   "@opentelemetry/api": "^1.0.4",
-   "@opentelemetry/core": "^1.0.1",
-   "@opentelemetry/exporter-trace-otlp-proto": "^0.27.0",
-   "@opentelemetry/instrumentation": "^0.27.0",
-   "@opentelemetry/instrumentation-http": "^0.27.0",
-   "@opentelemetry/sdk-trace-node": "^1.0.1",
-   "@opentelemetry/semantic-conventions": "^1.0.1"
- }
-}
-```
-
-The package.json file should contain all the packages that your Cloud Function depends upon. This file is used by Google Cloud Function to create an environment with all the required packages.
-
-Once you've finished writing your code, locate the **DEPLOY** button. After clicking the **DEPLOY** button, Google Cloud Function initiates deployment, starts provisioning the function according to the specified configuration, initializes the environment, handles dependencies, and makes the function ready to handle incoming requests.
-
-
-## Testing your cloud function
-
-Step 1: After completing the deployment, navigate to the **TRIGGER** section to obtain the URL to invoke the function.
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/deploying-function.webp"
-        alt="Deploying Function"
-    />
-<figcaption>
-<i>
-Deploying Cloud Function
-</i>
-</figcaption>
-</figure>
-
-
-Step 2: Hit the URL that you have obtained, you will see the function output.
-
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/cloud-function-url.webp"
-        alt="Cloud Function URL"
-    />
-<figcaption>
-<i>
-Cloud function URL.
-</i>
-</figcaption>
-</figure>
-
-
-Step 3: Click on the **logs** section in your Cloud Function to view the logs, indicating that the traces have been sent to Self-Hosted SigNoz successfully.
-
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/function-logs.webp"
-        alt="Cloud Function Logs"
-    />
-<figcaption>
-<i>
-View Cloud Function Logs to verify traces being sent to SigNoz
-</i>
-</figcaption>
-</figure>
-
-## Visualize the traces in Self-Hosted SigNoz
-
-Go to your Self-Hosted SigNoz UI, and navigate to the Self-Hosted SigNoz dashboard. Click on the **traces** section to view the traces.
-
-**Note**: The default Self-Hosted SigNoz dashboard endpoint would be `http://<Self-Hosted SigNoz-host-ip>:3301`, however, the URL can be different based on how you have set up the infrastructure.
-
-**Note**: If you have multiple applications already sending traces to Self-Hosted SigNoz, you can check by adding `resource-type`, `resource-name`, and `resource-region` filters in the Search filters field. 
-
-
-<figure data-zoomable align="left">
-    <img
-        src="/img/docs/gcp-monitoring/self-hosted/signoz-dashboard.webp"
-        alt="SigNoz Dashboard"
-    />
-<figcaption>
-<i>
-SigNoz Dashboard
-</i>
-</figcaption>
-</figure>
-
-That's it! You have successfully set up monitoring for your Cloud Function's traces with Self-Hosted SigNoz Cloud.
-
-
-## Troubleshooting
-
-If you encounter any issues while setting up monitoring for your Cloud Function's traces with Self-Hosted SigNoz, here are a few troubleshooting steps you can try:
-
-
-* Verify that your Cloud Function instance is running and accessible.
-* Ensure that you have the necessary permissions to access the traces in your function.
-* Check and mention the correct `OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_EXPORTER_OTLP_PROTOCOL` of the Self-Hosted SigNoz, OTEL configuration, and routing.
-
-By following this guide, you should be able to easily send the traces of your Google Cloud Function's system to Self-Hosted SigNoz and gain valuable insights in case there is some issue.
-
-</TabItem>
-
-</Tabs>
+- Correlate traces with logs: https://signoz.io/docs/traces-management/guides/correlate-traces-and-logs/
+- Create trace-based alerts: https://signoz.io/docs/alerts-management/
+- Build dashboards for latency and errors: https://signoz.io/docs/userguide/manage-dashboards/
