@@ -7,6 +7,9 @@ SKIP_IF_ONLY_CHANGES_IN=(
   "data-assets"
   ".github/workflows"
   "scripts/vercel-ignore-build.sh"
+  "scripts/sync-content-to-strapi.js"
+  "scripts/update-pr-comment.js"
+  ".gitignore"
 )
 
 set -e
