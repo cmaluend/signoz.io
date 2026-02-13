@@ -102,6 +102,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ show, showHeader 
     30: 0.4,
     90: 0.6,
     180: 0.8,
+    365: 1.4,
   }
 
   const METRICS_PRICES = {
@@ -117,6 +118,7 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({ show, showHeader 
       { days: 30, price: 0.4 },
       { days: 90, price: 0.6 },
       { days: 180, price: 0.8 },
+      { days: 365, price: 1.4 },
     ],
     METRICS: [
       { months: 1, price: 0.1 },

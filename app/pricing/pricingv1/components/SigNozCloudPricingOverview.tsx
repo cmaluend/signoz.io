@@ -28,6 +28,7 @@ const SigNozCloudPricingOverview: React.FC<SigNozCloudPricingOverviewProps> = ({
       { days: 30, price: 0.4 },
       { days: 90, price: 0.6 },
       { days: 180, price: 0.8 },
+      { days: 365, price: 1.4 },
     ] as TracesAndLogsRetention[],
     METRICS: [
       { months: 1, price: 0.1 },
