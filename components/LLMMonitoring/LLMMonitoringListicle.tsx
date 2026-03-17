@@ -11,6 +11,7 @@ import {
   SiPydantic,
   SiTemporal,
   SiOllama,
+  SiHuggingface,
 } from 'react-icons/si'
 
 interface IconCardData {
@@ -72,6 +73,12 @@ const LLMMonitoringData: IconCardData[] = [
     clickName: 'Claude Code Monitoring',
   },
   {
+    name: 'Claude Agent SDK',
+    href: '/docs/claude-agent-monitoring',
+    icon: <SiClaude className="h-7 w-7" style={{ color: '#b55c04' }} />,
+    clickName: 'Claude Agent SDK Monitoring',
+  },
+  {
     name: 'Codex (OpenAI)',
     href: '/docs/codex-monitoring',
     icon: <SiOpenai className="h-7 w-7 text-white" />,
@@ -130,6 +137,24 @@ const LLMMonitoringData: IconCardData[] = [
       <img src="/svgs/icons/LLMMonitoring/groq-logo.webp" alt="Groq Icon" className="h-7 w-7" />
     ),
     clickName: 'Groq Monitoring',
+  },
+  {
+    name: 'Haystack',
+    href: '/docs/haystack-monitoring',
+    icon: (
+      <img
+        src="/svgs/icons/LLMMonitoring/haystack-logo.webp"
+        alt="Haystack Icon"
+        className="h-7 w-7"
+      />
+    ),
+    clickName: 'Haystack Monitoring',
+  },
+  {
+    name: 'Hugging Face',
+    href: '/docs/huggingface-observability',
+    icon: <SiHuggingface className="h-7 w-7" style={{ color: '#fcba03' }} />,
+    clickName: 'Hugging Face Monitoring',
   },
   {
     name: 'Inkeep',
@@ -204,6 +229,14 @@ const LLMMonitoringData: IconCardData[] = [
     clickName: 'OpenAI Monitoring',
   },
   {
+    name: 'OpenClaw',
+    href: '/docs/openclaw-monitoring',
+    icon: (
+      <img src="/img/docs/llm/openclaw/openclaw-logo.svg" alt="OpenClaw Icon" className="h-7 w-7" />
+    ),
+    clickName: 'OpenClaw Monitoring',
+  },
+  {
     name: 'OpenLIT',
     href: '/docs/openlit',
     icon: (
@@ -214,6 +247,18 @@ const LLMMonitoringData: IconCardData[] = [
       />
     ),
     clickName: 'OpenLIT',
+  },
+  {
+    name: 'OpenRouter',
+    href: '/docs/openrouter-observability',
+    icon: (
+      <img
+        src="/svgs/icons/LLMMonitoring/openrouter-logo.webp"
+        alt="OpenRouter Icon"
+        className="h-7 w-7"
+      />
+    ),
+    clickName: 'OpenRouter Monitoring',
   },
   {
     name: 'Pipecat',
